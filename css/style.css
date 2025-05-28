@@ -1,0 +1,259 @@
+/* Global Resets & Body Styling */
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Prevent scrollbars for the deck itself */
+    font-family: 'Roboto', sans-serif;
+    background-color: #121212; /* Dark base, inspired by space/tech */
+    color: #e0e0e0; /* Light text for contrast */
+    line-height: 1.6;
+}
+
+.deck-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    perspective: 1000px; /* For potential 3D transitions if desired later */
+}
+
+/* Slide Styling */
+.slide {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(100%); /* Start off-screen to the right */
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out, visibility 0.6s;
+    background-color: #1a1a1a; /* Slightly lighter than body for depth */
+    border: 1px solid #00ff9930; /* Subtle techy border, using BioShift green as accent */
+}
+
+.slide.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0%);
+}
+
+.slide.prev { /* For sliding out to the left */
+    transform: translateX(-100%);
+}
+
+.slide-content {
+    max-width: 900px;
+    width: 100%;
+}
+
+/* Typography */
+h1, h2, h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00ff99; /* BioShift Green - primary accent */
+    margin-bottom: 0.75em;
+    text-shadow: 0 0 5px #00ff9960;
+}
+
+h1 {
+    font-size: 3em; /* Large for title slide */
+}
+
+h2 {
+    font-size: 2.2em;
+    border-bottom: 2px solid #00cc7a; /* Accent color underline */
+    padding-bottom: 0.3em;
+    margin-bottom: 1em;
+}
+
+h3 {
+    font-size: 1.6em;
+    color: #70e0ff; /* Secondary techy accent - cyan/light blue */
+}
+
+p {
+    font-size: 1.1em;
+    margin-bottom: 1em;
+    color: #cccccc;
+}
+
+.subtitle {
+    font-size: 1.5em;
+    color: #b3b3b3;
+    margin-top: -0.5em;
+    margin-bottom: 1em;
+}
+
+.tagline {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.3em;
+    color: #00ff99;
+    margin-top: 1.5em;
+    letter-spacing: 1px;
+}
+
+.core-message, .value-prop {
+    font-style: italic;
+    color: #a0a0a0;
+    margin-top: 2em;
+    font-size: 1.2em;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+ul li {
+    background-color: #252525;
+    border-left: 4px solid #00ff99; /* Accent color strip */
+    padding: 10px 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    text-align: left;
+    transition: background-color 0.3s ease;
+}
+
+ul li:hover {
+    background-color: #303030;
+}
+
+/* Specific Slide Elements */
+.title-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo {
+    max-width: 200px; /* Adjust as needed */
+    margin-bottom: 30px;
+}
+.logo-small {
+    max-width: 100px;
+    margin: 20px 0;
+}
+
+.problem-columns, .columns {
+    display: flex;
+    justify-content: space-around;
+    gap: 20px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.column {
+    flex: 1;
+    padding: 15px;
+    background-color: #222; /* Slightly different background for columns */
+    border-radius: 5px;
+    border: 1px solid #00cc7a40;
+}
+.column h3 {
+    margin-top: 0;
+}
+
+.diagram-placeholder, .mockup-placeholder {
+    width: 80%;
+    height: 200px; /* Adjust as needed */
+    background-color: #282c34; /* Placeholder color */
+    border: 2px dashed #00ff99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px auto;
+    color: #555;
+    font-family: 'Orbitron', sans-serif;
+}
+
+.features-list .feature-icon {
+    margin-right: 10px;
+    font-size: 1.2em; /* Make icons slightly larger */
+}
+
+.thank-you {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5em;
+    color: #00ff99;
+    margin-top: 2em;
+}
+
+
+/* Navigation */
+.navigation-arrows {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.navigation-arrows button {
+    background-color: rgba(0, 255, 153, 0.6); /* Semi-transparent BioShift green */
+    color: #121212;
+    border: none;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 1.5em;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 255, 153, 0.3);
+}
+
+.navigation-arrows button:hover {
+    background-color: rgba(0, 255, 153, 0.9);
+}
+
+.slide-indicator {
+    position: fixed;
+    bottom: 30px;
+    left: 30px;
+    z-index: 1000;
+    font-family: 'Orbitron', sans-serif;
+    color: #00ff99;
+    background-color: rgba(18, 18, 18, 0.7);
+    padding: 5px 10px;
+    border-radius: 3px;
+}
+
+/* Organic/Technological Fusion Aesthetic Hints */
+body::before { /* Subtle background gradient/pattern */
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    /* Example: A very subtle, dark radial gradient or a faint circuit board pattern */
+    /* background: radial-gradient(circle, rgba(30,30,30,0.5) 0%, rgba(18,18,18,1) 70%); */
+    /* Or a technological SVG background pattern */
+    /* background-image: url('path/to/tech-pattern.svg'); */
+    opacity: 0.3;
+}
+
+.slide {
+    /* Adding a subtle inner shadow or glow to lift the slide */
+    box-shadow: inset 0 0 15px rgba(0, 255, 153, 0.1), 0 0 5px rgba(0,0,0,0.5);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    h1 { font-size: 2.2em; }
+    h2 { font-size: 1.8em; }
+    h3 { font-size: 1.4em; }
+    p { font-size: 1em; }
+    .subtitle { font-size: 1.2em; }
+    .slide { padding: 20px; }
+    .problem-columns, .columns { flex-direction: column; }
+    .navigation-arrows button { padding: 8px 12px; font-size: 1.2em; }
+    .slide-indicator { bottom: 15px; left: 15px; font-size: 0.9em;}
+}
