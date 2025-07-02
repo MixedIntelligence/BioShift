@@ -64,6 +64,11 @@ import s from './Layout.module.scss';
 import { DashboardThemes } from '../../reducers/layout';
 import ProductEdit from '../../pages/management/components/productEdit';
 import BreadcrumbHistory from '../BreadcrumbHistory';
+import { GigsListPage, GigDetailsPage } from '../../pages/gigs';
+import PostGigPage from '../../pages/gigs/PostGigPage';
+import LabDashboardPage from '../../pages/dashboard/LabDashboardPage';
+import WorkerDashboardPage from '../../pages/dashboard/WorkerDashboardPage';
+import LabsListPage from '../../pages/labs/LabsListPage';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -205,6 +210,12 @@ class Layout extends React.Component {
                     <Route path="/app/core/typography" exact component={CoreTypography} />
                     <Route path="/app/core/colors" exact component={CoreColors} />
                     <Route path="/app/core/grid" exact component={CoreGrid} />
+                    <Route path="/app/gigs" exact component={GigsListPage} />
+                    <Route path="/app/gigs/:id" exact component={GigDetailsPage} />
+                    <Route path="/app/post-gig" exact component={PostGigPage} />
+                    <Route path="/app/dashboard/lab" exact component={LabDashboardPage} />
+                    <Route path="/app/dashboard/worker" exact component={WorkerDashboardPage} />
+                    <Route path="/app/labs" exact component={LabsListPage} />
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>

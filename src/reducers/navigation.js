@@ -6,8 +6,8 @@ import {
 } from '../actions/navigation';
 
 const initialState = {
-  sidebarOpened: false,
-  sidebarStatic: false,
+  sidebarOpened: true, // Always open
+  sidebarStatic: true, // Always static/expanded
   activeItem: JSON.parse(localStorage.getItem('staticSidebar')) ? window.location.pathname : null,
 };
 

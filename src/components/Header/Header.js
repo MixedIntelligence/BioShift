@@ -11,7 +11,6 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
-  UncontrolledTooltip,
   InputGroup,
   Input,
   Form,
@@ -25,7 +24,6 @@ import { logoutUser } from '../../actions/auth';
 import { toggleSidebar, openSidebar, closeSidebar, changeActiveSidebarItem } from '../../actions/navigation';
 
 import adminDefault from '../../images/chat/chat2.png';
-import Menu from '../../images/sidebar/basil/Menu';
 import Exchange from '../../images/sidebar/basil/Exchange';
 import Cross from '../../images/sidebar/basil/Cross';
 import Settings from '../../images/sidebar/basil/Settings';
@@ -228,30 +226,7 @@ class Header extends React.Component {
         {/*/>*/}
         <div className="d-flex flex-row justify-content-md-start flex-grow-1 align-content-center align-self-start">
           <Nav className="my-auto">
-            <NavItem>
-              <NavLink className={`d-md-down-none ${s.toggleSidebar}`} id="toggleSidebar" onClick={this.toggleSidebar}>
-              <span className={s.headerSvgFlipColor}>
-                <Menu/>
-              </span>
-              </NavLink>
-              <UncontrolledTooltip placement="bottom" target="toggleSidebar">
-                Turn on/off<br />sidebar<br />collapsing
-              </UncontrolledTooltip>
-              <NavLink className="fs-lg d-md-none" onClick={this.switchSidebar}>
-                <span
-                  className={`rounded rounded-lg d-md-none d-sm-down-block`}>
-                    <span
-                      className={s.headerSvgFlipColor}
-                      style={{fontSize: 30}}
-                    >
-                      <Menu/>
-                    </span>
-                </span>
-                <span className={`ms-3 d-sm-down-none ${s.headerSvgFlipColor}`}>
-                    <Menu/>
-                </span>
-              </NavLink>
-            </NavItem>
+            {/* Sidebar toggle removed for permanent expansion */}
             <NavItem className="d-sm-down-none">
               <NavLink className="px-2">
               <span className={s.headerSvgFlipColor}>

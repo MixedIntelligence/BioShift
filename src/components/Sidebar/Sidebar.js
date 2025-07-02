@@ -1,18 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Progress, Alert } from 'reactstrap';
-import { withRouter } from 'react-router-dom';
 import { dismissAlert } from '../../actions/alerts';
 import s from './Sidebar.module.scss';
 import LinksGroup from './LinksGroup/LinksGroup';
 import { openSidebar, closeSidebar, changeActiveSidebarItem } from '../../actions/navigation';
 import isScreen from '../../core/screenHelper';
 import { logoutUser } from '../../actions/auth';
+import { withRouter } from 'react-router-dom';
 
 import Home from '../../images/sidebar/basil/Home';
 import User from '../../images/sidebar/basil/User';
-import ShoppingCart from '../../images/sidebar/basil/ShoppingCart';
 import Chat from '../../images/sidebar/basil/Chat';
 import Stack from '../../images/sidebar/basil/Stack';
 import Envelope from '../../images/sidebar/basil/Envelope';
@@ -87,122 +85,145 @@ class Sidebar extends React.Component {
           <a href="https://demo.flatlogic.com/sing-app-react/"><span className={s.logoStyle}>Sing <span className={s.logoPart}>App</span></span> </a>
         </header>
         <ul className={s.nav}>
+          <h5 className={s.navTitle}>BioShift</h5>
           <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
             header="Dashboard"
-            isHeader
-            iconName="flaticon-home"
-            iconElement={<Home/>}
+            iconElement={<Home />}
             link="/app/main"
-            index="main"
+            isHeader
+          />
+          <LinksGroup
+            header="Profile"
+            iconElement={<User />}
+            isHeader
             childrenLinks={[
-              {
-                header: 'Analytics', link: '/app/main/analytics',
-              },
-              {
-                header: 'Visits', link: '/app/main/dashboard',
-              },
-              {
-                header: 'Widgets', link: '/app/main/widgets',
-              },
+              { header: 'My Profile', link: '/app/profile' },
+              { header: 'Edit Profile', link: '/app/edit_profile' },
+              { header: 'Upskill', link: '/app/upskill' },
+              { header: 'Change Password', link: '/app/password' },
+              { header: 'Payments/Banking', link: '/app/payments' },
+              { header: 'History', link: '/app/history' },
+              { header: 'Startups', link: '/app/startups' },
+              { header: 'Documents', link: '/app/documents' },
+              { header: 'Publications', link: '/app/publications' },
+              { header: 'Patents', link: '/app/patents' },
+              { header: 'My LabLeap Bionics', link: '/app/bionics' },
+            ]}
+          />
+          <h5 className={s.navTitle}>LabLeap</h5>
+          <LinksGroup
+            header="Gigs"
+            iconElement={<Stack />}
+            isHeader
+            childrenLinks={[
+              { header: 'My Gigs', link: '/app/my-gigs' },
+              { header: 'View Gig Marketplace', link: '/app/gigs' },
+              { header: 'Suggested Gigs / Workers / Lab', link: '/app/suggested' },
             ]}
           />
           <LinksGroup
-              onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-              activeItem={this.props.activeItem}
-              header="Users"
-              isHeader
-              labelColor="danger"
-              iconElement={<User />}
-              conName="flaticon-user"
-              link="/admin"
-              index="admin"
-              label="Real App"
-              exact={false}
-              childrenLinks={[
-                  {
-                    header: 'User Management', link: '/admin/users',
-                  },
-                  {
-                    header: 'My Profile', link: '/app/profile',
-                  },
-                  {
-                      header: 'Edit Profile', link: '/app/edit_profile',
-                  },
-                  {
-                      header: 'Change Password', link: '/app/password',
-                  },
-              ]}
+            header="Chat"
+            iconElement={<Chat />}
+            link="/app/chat"
+            isHeader
+          />
+          <LinksGroup
+            header="Messages"
+            iconElement={<Envelope />}
+            link="/app/inbox"
+            isHeader
+          />
+          <LinksGroup
+            header="BioShift Connect"
+            iconElement={<Document />}
+            link="/app/connect"
+            isHeader
+          />
+          <h5 className={s.navTitle}>Labels</h5>
+          <ul className={s.sidebarLabels}>
+            <li>
+              <a href="#">
+                <i className={`fa fa-circle me-2 ${s.labelRecent}`} />
+                <span className={s.labelName}>My Recent</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i className={`fa fa-circle me-2 ${s.labelStarred}`} />
+                <span className={s.labelName}>Starred</span>
+              </a>
+            </li>
+            <li>
+              <a href="#">
+                <i className={`fa fa-circle me-2 ${s.labelBackground}`} />
+                <span className={s.labelName}>Background</span>
+              </a>
+            </li>
+          </ul>
+          <h5 className={s.navTitle}>PROJECTS</h5>
+          <div className={s.sidebarAlerts}>
+            <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+              <button type="button" className="btn-close" aria-label="Close"></button>
+              <span>Sales Report</span><br />
+              <div className={`${s.sidebarProgress} sidebar-bottom-aler-primary progress-xs mt-1 progress`}>
+                <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style={{width: '16%'}}></div>
+              </div>
+              <small>Calculating x-axis bias... 65%</small>
+            </div>
+            <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+              <button type="button" className="btn-close" aria-label="Close"></button>
+              <span>Personal Responsibility</span><br />
+              <div className={`${s.sidebarProgress} sidebar-bottom-aler-danger progress-xs mt-1 progress`}>
+                <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style={{width: '23%'}}></div>
+              </div>
+              <small>Provide required notes</small>
+            </div>
+          </div>
+          <h5 className={s.navTitle}>Admin Dashboard</h5>
+          <LinksGroup
+            header="Dashboard"
+            iconElement={<Home />}
+            link="/app/main"
+            isHeader
+          />
+          <LinksGroup
+            header="Users"
+            iconElement={<User />}
+            link="/admin/users"
+            isHeader
           />
           <LinksGroup
             header="Chat"
+            iconElement={<Chat />}
             link="/app/chat"
             isHeader
-            iconElement={<Chat/>}
-            label="Awesome"
-            iconName="flaticon-users"
-            labelColor="info"
           />
-            <LinksGroup
-                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-                activeItem={this.props.activeItem}
-                header="E-commerce"
-                isHeader
-                labelColor="danger"
-                iconElement={<ShoppingCart />}
-                iconName="flaticon-diamond"
-                link="/app/ecommerce"
-                index="ecommerce"
-                label="NodeJS/.NET"
-                exact={false}
-                childrenLinks={[
-                    {
-                        header: 'Product Management', link: '/app/ecommerce/management',
-                    },
-                    {
-                        header: 'Products Grid', link: '/app/ecommerce/products',
-                    },
-                    {
-                        header: 'Product Page', link: '/app/ecommerce/product',
-                    },
-                ]}
-            />
           <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
+            header="E-Commerce"
+            iconElement={<Stack />}
+            link="/app/ecommerce"
+            isHeader
+          />
+          <LinksGroup
             header="Sing Package"
-            iconElement={<Stack/>}
+            iconElement={<Stack />}
             link="/app/package"
             isHeader
-            iconName="flaticon-database-1"
-            index="packages"
           />
           <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
             header="Email"
+            iconElement={<Envelope />}
             link="/app/inbox"
-            iconElement={<Envelope/>}
             isHeader
-            iconName="flaticon-paper-plane"
-            index="inbox"
-            badge="9"
           />
           <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
             header="Documentation"
+            iconElement={<Document />}
             link="/documentation"
             isHeader
-            iconElement={<Document/>}
-            iconName="flaticon-file"
-            index="documentation"
-            label="new"
-            labelColor="success"
-            target="_blank"
           />
-          <h5 className={[s.navTitle, s.groupTitle].join(' ')}>TEMPLATE</h5>
+          <h5 className={s.navTitle}>Template</h5>
+          {/* Move all template/demo items here as before */}
           <LinksGroup
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
@@ -485,18 +506,22 @@ class Sidebar extends React.Component {
           PROJECTS
         </h5>
         <div className={s.sidebarAlerts}>
-          {this.props.alertsList.map(alert => // eslint-disable-line
-            <Alert
-              key={alert.id}
-              className={s.sidebarAlert} color="transparent"
-              isOpen={true} // eslint-disable-line
-              toggle={() => { this.dismissAlert(alert.id); }}
-            >
-              <span>{alert.title}</span><br />
-              <Progress className={`${s.sidebarProgress} sidebar-bottom-aler-${alert.color} progress-xs mt-1`} color={'unset'} value={alert.value} />
-              <small>{alert.footer}</small>
-            </Alert>,
-          )}
+          <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+            <button type="button" className="btn-close" aria-label="Close"></button>
+            <span>Sales Report</span><br />
+            <div className={`${s.sidebarProgress} sidebar-bottom-aler-primary progress-xs mt-1 progress`}>
+              <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style={{width: '16%'}}></div>
+            </div>
+            <small>Calculating x-axis bias... 65%</small>
+          </div>
+          <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+            <button type="button" className="btn-close" aria-label="Close"></button>
+            <span>Personal Responsibility</span><br />
+            <div className={`${s.sidebarProgress} sidebar-bottom-aler-danger progress-xs mt-1 progress`}>
+              <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style={{width: '23%'}}></div>
+            </div>
+            <small>Provide required notes</small>
+          </div>
         </div>
       </nav >
       </div>
