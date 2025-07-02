@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Switch, Route, withRouter, Redirect } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Hammer from 'rc-hammerjs';
+import { ToastContainer, CloseButton } from 'react-toastify';
 
 import Profile from '../../pages/profile';
 import Login from '../../pages/login';
@@ -69,6 +70,7 @@ import PostGigPage from '../../pages/gigs/PostGigPage';
 import LabDashboardPage from '../../pages/dashboard/LabDashboardPage';
 import WorkerDashboardPage from '../../pages/dashboard/WorkerDashboardPage';
 import LabsListPage from '../../pages/labs/LabsListPage';
+import RoleSwitcher from '../RoleSwitcher';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -137,6 +139,7 @@ class Layout extends React.Component {
           
           <Hammer onSwipe={this.handleSwipe}>
             <main className={s.content}>
+            <RoleSwitcher currentUser={this.props.currentUser} onSwitch={user => this.props.dispatch({ type: 'AUTH_SET_USER', payload: { currentUser: user } })} />
             <BreadcrumbHistory url={this.props.location.pathname} />
               <TransitionGroup>
                 <CSSTransition
@@ -146,7 +149,7 @@ class Layout extends React.Component {
                 >
                   <Switch>
                     <Route path="/app/main" exact render={() => <Redirect to="/app/main/analytics" />} />
-                    <Route path="/app/main/dashboard" exact component={Dashboard} />
+                    <Route path="/app/main/dashboard" exact component={require('../../pages/dashboard/RoleBasedDashboard').default} />
                     <Route path="/app/main/widgets" exact component={Widgets} />
                     <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
                     <Route path="/app/edit_profile" exact component={UserFormPage} />

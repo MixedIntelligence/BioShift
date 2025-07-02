@@ -75,6 +75,8 @@ class Sidebar extends React.Component {
   }
 
   render() {
+    const { currentUser } = this.props;
+    const role = currentUser?.role;
     return (
       <div className={`${(!this.props.sidebarOpened && !this.props.sidebarStatic ) ? s.sidebarClose : ''} ${s.sidebarWrapper}`}>
       <nav
@@ -86,16 +88,21 @@ class Sidebar extends React.Component {
         </header>
         <ul className={s.nav}>
           <h5 className={s.navTitle}>BioShift</h5>
+          {/* Dashboard is visible to all roles */}
           <LinksGroup
             header="Dashboard"
             iconElement={<Home />}
             link="/app/main"
             isHeader
+            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+            activeItem={this.props.activeItem}
           />
+          {/* Profile section for all roles */}
           <LinksGroup
             header="Profile"
             iconElement={<User />}
             isHeader
+            index="profile"
             childrenLinks={[
               { header: 'My Profile', link: '/app/profile' },
               { header: 'Edit Profile', link: '/app/edit_profile' },
@@ -109,420 +116,405 @@ class Sidebar extends React.Component {
               { header: 'Patents', link: '/app/patents' },
               { header: 'My LabLeap Bionics', link: '/app/bionics' },
             ]}
-          />
-          <h5 className={s.navTitle}>LabLeap</h5>
-          <LinksGroup
-            header="Gigs"
-            iconElement={<Stack />}
-            isHeader
-            childrenLinks={[
-              { header: 'My Gigs', link: '/app/my-gigs' },
-              { header: 'View Gig Marketplace', link: '/app/gigs' },
-              { header: 'Suggested Gigs / Workers / Lab', link: '/app/suggested' },
-            ]}
-          />
-          <LinksGroup
-            header="Chat"
-            iconElement={<Chat />}
-            link="/app/chat"
-            isHeader
-          />
-          <LinksGroup
-            header="Messages"
-            iconElement={<Envelope />}
-            link="/app/inbox"
-            isHeader
-          />
-          <LinksGroup
-            header="BioShift Connect"
-            iconElement={<Document />}
-            link="/app/connect"
-            isHeader
-          />
-          <h5 className={s.navTitle}>Labels</h5>
-          <ul className={s.sidebarLabels}>
-            <li>
-              <a href="#">
-                <i className={`fa fa-circle me-2 ${s.labelRecent}`} />
-                <span className={s.labelName}>My Recent</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i className={`fa fa-circle me-2 ${s.labelStarred}`} />
-                <span className={s.labelName}>Starred</span>
-              </a>
-            </li>
-            <li>
-              <a href="#">
-                <i className={`fa fa-circle me-2 ${s.labelBackground}`} />
-                <span className={s.labelName}>Background</span>
-              </a>
-            </li>
-          </ul>
-          <h5 className={s.navTitle}>PROJECTS</h5>
-          <div className={s.sidebarAlerts}>
-            <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
-              <button type="button" className="btn-close" aria-label="Close"></button>
-              <span>Sales Report</span><br />
-              <div className={`${s.sidebarProgress} sidebar-bottom-aler-primary progress-xs mt-1 progress`}>
-                <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style={{width: '16%'}}></div>
-              </div>
-              <small>Calculating x-axis bias... 65%</small>
-            </div>
-            <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
-              <button type="button" className="btn-close" aria-label="Close"></button>
-              <span>Personal Responsibility</span><br />
-              <div className={`${s.sidebarProgress} sidebar-bottom-aler-danger progress-xs mt-1 progress`}>
-                <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style={{width: '23%'}}></div>
-              </div>
-              <small>Provide required notes</small>
-            </div>
-          </div>
-          <h5 className={s.navTitle}>Admin Dashboard</h5>
-          <LinksGroup
-            header="Dashboard"
-            iconElement={<Home />}
-            link="/app/main"
-            isHeader
-          />
-          <LinksGroup
-            header="Users"
-            iconElement={<User />}
-            link="/admin/users"
-            isHeader
-          />
-          <LinksGroup
-            header="Chat"
-            iconElement={<Chat />}
-            link="/app/chat"
-            isHeader
-          />
-          <LinksGroup
-            header="E-Commerce"
-            iconElement={<Stack />}
-            link="/app/ecommerce"
-            isHeader
-          />
-          <LinksGroup
-            header="Sing Package"
-            iconElement={<Stack />}
-            link="/app/package"
-            isHeader
-          />
-          <LinksGroup
-            header="Email"
-            iconElement={<Envelope />}
-            link="/app/inbox"
-            isHeader
-          />
-          <LinksGroup
-            header="Documentation"
-            iconElement={<Document />}
-            link="/documentation"
-            isHeader
-          />
-          <h5 className={s.navTitle}>Template</h5>
-          {/* Move all template/demo items here as before */}
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+            onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('profile'))}
             activeItem={this.props.activeItem}
-            header="Core"
-            isHeader
-            iconElement={<Apps/>}
-            iconName="flaticon-network"
-            link="/app/core"
-            index="core"
-            childrenLinks={[
-              {
-                header: 'Typography', link: '/app/core/typography',
-              },
-              {
-                header: 'Colors', link: '/app/core/colors',
-              },
-              {
-                header: 'Grid', link: '/app/core/grid',
-              },
-            ]}
           />
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="UI Elements"
-            isHeader
-            iconElement={<Asana/>}
-            iconName="flaticon-layers"
-            link="/app/ui"
-            index="ui"
-            childrenLinks={[
-              {
-                header: 'Alerts', link: '/app/ui/alerts',
-              },
-              {
-                header: 'Badge', link: '/app/ui/badge',
-              },
-              {
-                header: 'Buttons', link: '/app/ui/buttons',
-              },
-              {
-                header: 'Card', link: '/app/ui/card',
-              },
-              {
-                header: 'Carousel', link: '/app/ui/carousel',
-              },
-              {
-                header: 'Jumbotron', link: '/app/ui/jumbotron',
-              },
-              {
-                header: 'Icons', link: '/app/ui/icons',
-              },
-              {
-                header: 'List Groups', link: '/app/ui/list-groups',
-              },
-              {
-                header: 'Modal', link: '/app/ui/modal',
-              },
-              {
-                header: 'Nav', link: '/app/ui/nav',
-              },
-              {
-                header: 'Navbar', link: '/app/ui/navbar',
-              },
-              {
-                header: 'Notifications', link: '/app/ui/notifications',
-              },
-              {
-                header: 'Pagination', link: '/app/tables/dynamic',
-              },
-              {
-                header: 'Popovers & Tooltips', link: '/app/ui/popovers',
-              },
-              {
-                header: 'Progress', link: '/app/ui/progress',
-              },
-              {
-                header: 'Tabs & Accordion', link: '/app/ui/tabs-accordion',
-              },
-            ]}
-          />
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Forms"
-            isHeader
-            iconElement={<Columns/>}
-            iconName="flaticon-list"
-            link="/app/forms"
-            index="forms"
-            childrenLinks={[
-              {
-                header: 'Forms Elements', link: '/app/forms/elements',
-              },
-              {
-                header: 'Forms Validation', link: '/app/forms/validation',
-              },
-              {
-                header: 'Forms Wizard', link: '/app/forms/wizard',
-              },
-            ]}
-          />
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Charts"
-            link="/app/charts"
-            isHeader
-            iconElement={<ChartPieAlt/>}
-            iconName="flaticon-controls"
-            index="charts"
-            childrenLinks={[
-              {
-                header: 'Charts Overview', link: '/app/charts/overview',
-              },
-              {
-                header: 'Apex Charts', link: '/app/charts/apex',
-              },
-              {
-                header: 'Echarts Charts', link: '/app/charts/echarts',
-              },
-              {
-                header: 'Highcharts Charts', link: '/app/charts/highcharts',
-              },
-            ]}
-          />
-          <LinksGroup
-            header="Grid"
-            link="/app/grid"
-            iconElement={<Layout/>}
-            isHeader
-            iconName="flaticon-menu-4"
-          />
-          <LinksGroup
-            onActiveSidebarItemChange={t => this.props.dispatch(changeActiveSidebarItem(t))}
-            activeItem={this.props.activeItem}
-            header="Tables"
-            isHeader
-            iconElement={<Rows/>}
-            iconName="flaticon-equal-1"
-            link="/app/tables"
-            index="tables"
-            childrenLinks={[
-              {
-                header: 'Tables Basic', link: '/app/tables/static',
-              },
-              {
-                header: 'Tables Dynamic', link: '/app/tables/dynamic',
-              },
-            ]}
-          />
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Maps"
-            isHeader
-            iconElement={<Location/>}
-            iconName="flaticon-map-location"
-            link="/app/maps"
-            index="maps"
-            childrenLinks={[
-              {
-                header: 'Google Maps', link: '/app/maps/google',
-              },
-              {
-                header: 'Vector Map', link: '/app/maps/vector',
-              },
-            ]}
-          />
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Extra"
-            isHeader
-            iconElement={<Fire/>}
-            iconName="flaticon-star"
-            link="/app/extra"
-            index="extra"
-            childrenLinks={[
-              {
-                header: 'Calendar', link: '/app/extra/calendar',
-              },
-              {
-                header: 'Invoice', link: '/app/extra/invoice',
-              },
-              {
-                header: 'Login Page', link: '/app/loginpage',
-              },
-              {
-                header: 'Error Page', link: '/error',
-              },
-              {
-                header: 'Gallery', link: '/app/extra/gallery',
-              },
-              {
-                header: 'Search Result', link: '/app/extra/search',
-              },
-              {
-                header: 'Time line', link: '/app/extra/timeline',
-              },
-            ]}
-          />
-          <LinksGroup
-            onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
-            activeItem={this.props.activeItem}
-            header="Menu Levels"
-            isHeader
-            iconElement={<Menu/>}
-            iconName="flaticon-folder-10"
-            link="/app/menu"
-            index="menu"
-            childrenLinks={[
-              {
-                header: 'Level 1.1', link: '/app/menu/level1',
-              },
-              {
-                header: 'Level 1.2',
-                link: '/app/menu/level_12',
-                index: 'level_12',
-                childrenLinks: [
+          {/* LabLeap section for all except admin */}
+          {role !== 'admin' && (
+            <>
+              <h5 className={s.navTitle}>LabLeap</h5>
+              <LinksGroup
+                header="Gigs"
+                iconElement={<Stack />}
+                isHeader
+                index="gigs"
+                childrenLinks={[
+                  { header: 'My Gigs', link: '/app/my-gigs' },
+                  { header: 'View Gig Marketplace', link: '/app/gigs' },
+                  // Role-dependent Suggested item
+                  (role === 'worker')
+                    ? { header: 'Suggested Gigs', link: '/app/suggested' }
+                    : (role === 'lab')
+                    ? { header: 'Suggested Talent', link: '/app/suggested' }
+                    : (role === 'provider')
+                    ? { header: 'Suggested Labs', link: '/app/suggested' }
+                    : { header: 'Suggested', link: '/app/suggested' }
+                ]}
+                onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('gigs'))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Chat"
+                iconElement={<Chat />}
+                link="/app/chat"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Messages"
+                iconElement={<Envelope />}
+                link="/app/inbox"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="BioShift Connect"
+                iconElement={<Document />}
+                link="/app/connect"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+            </>
+          )}
+          {/* Admin Dashboard only for admin */}
+          {role === 'admin' && (
+            <>
+              <h5 className={s.navTitle}>Admin Dashboard</h5>
+              <LinksGroup
+                header="Dashboard"
+                iconElement={<Home />}
+                link="/app/main"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Users"
+                iconElement={<User />}
+                link="/admin/users"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Chat"
+                iconElement={<Chat />}
+                link="/app/chat"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="E-Commerce"
+                iconElement={<Stack />}
+                link="/app/ecommerce"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Sing Package"
+                iconElement={<Stack />}
+                link="/app/package"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Email"
+                iconElement={<Envelope />}
+                link="/app/inbox"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Documentation"
+                iconElement={<Document />}
+                link="/documentation"
+                isHeader
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+            </>
+          )}
+          {/* Template options only for Admin */}
+          {role === 'admin' && (
+            <>
+              <h5 className={s.navTitle}>Template</h5>
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="Core"
+                isHeader
+                iconElement={<Apps/>}
+                iconName="flaticon-network"
+                link="/app/core"
+                index="core"
+                childrenLinks={[
                   {
-                    header: 'Level 2.1',
-                    link: '/app/menu/level_12/level_21',
-                    index: 'level_21',
+                    header: 'Typography', link: '/app/core/typography',
                   },
                   {
-                    header: 'Level 2.2',
-                    link: '/app/menu/level_12/level_22',
-                    index: 'level_22',
+                    header: 'Colors', link: '/app/core/colors',
+                  },
+                  {
+                    header: 'Grid', link: '/app/core/grid',
+                  },
+                ]}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="UI Elements"
+                isHeader
+                iconElement={<Asana/>}
+                iconName="flaticon-layers"
+                link="/app/ui"
+                index="ui"
+                childrenLinks={[
+                  {
+                    header: 'Alerts', link: '/app/ui/alerts',
+                  },
+                  {
+                    header: 'Badge', link: '/app/ui/badge',
+                  },
+                  {
+                    header: 'Buttons', link: '/app/ui/buttons',
+                  },
+                  {
+                    header: 'Card', link: '/app/ui/card',
+                  },
+                  {
+                    header: 'Carousel', link: '/app/ui/carousel',
+                  },
+                  {
+                    header: 'Jumbotron', link: '/app/ui/jumbotron',
+                  },
+                  {
+                    header: 'Icons', link: '/app/ui/icons',
+                  },
+                  {
+                    header: 'List Groups', link: '/app/ui/list-groups',
+                  },
+                  {
+                    header: 'Modal', link: '/app/ui/modal',
+                  },
+                  {
+                    header: 'Nav', link: '/app/ui/nav',
+                  },
+                  {
+                    header: 'Navbar', link: '/app/ui/navbar',
+                  },
+                  {
+                    header: 'Notifications', link: '/app/ui/notifications',
+                  },
+                  {
+                    header: 'Pagination', link: '/app/tables/dynamic',
+                  },
+                  {
+                    header: 'Popovers & Tooltips', link: '/app/ui/popovers',
+                  },
+                  {
+                    header: 'Progress', link: '/app/ui/progress',
+                  },
+                  {
+                    header: 'Tabs & Accordion', link: '/app/ui/tabs-accordion',
+                  },
+                ]}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="Forms"
+                isHeader
+                iconElement={<Columns/>}
+                iconName="flaticon-list"
+                link="/app/forms"
+                index="forms"
+                childrenLinks={[
+                  {
+                    header: 'Forms Elements', link: '/app/forms/elements',
+                  },
+                  {
+                    header: 'Forms Validation', link: '/app/forms/validation',
+                  },
+                  {
+                    header: 'Forms Wizard', link: '/app/forms/wizard',
+                  },
+                ]}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="Charts"
+                link="/app/charts"
+                isHeader
+                iconElement={<ChartPieAlt/>}
+                iconName="flaticon-controls"
+                index="charts"
+                childrenLinks={[
+                  {
+                    header: 'Charts Overview', link: '/app/charts/overview',
+                  },
+                  {
+                    header: 'Apex Charts', link: '/app/charts/apex',
+                  },
+                  {
+                    header: 'Echarts Charts', link: '/app/charts/echarts',
+                  },
+                  {
+                    header: 'Highcharts Charts', link: '/app/charts/highcharts',
+                  },
+                ]}
+              />
+              <LinksGroup
+                header="Grid"
+                link="/app/grid"
+                iconElement={<Layout/>}
+                isHeader
+                iconName="flaticon-menu-4"
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={t => this.props.dispatch(changeActiveSidebarItem(t))}
+                activeItem={this.props.activeItem}
+                header="Tables"
+                isHeader
+                iconElement={<Rows/>}
+                iconName="flaticon-equal-1"
+                link="/app/tables"
+                index="tables"
+                childrenLinks={[
+                  {
+                    header: 'Tables Basic', link: '/app/tables/static',
+                  },
+                  {
+                    header: 'Tables Dynamic', link: '/app/tables/dynamic',
+                  },
+                ]}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="Maps"
+                isHeader
+                iconElement={<Location/>}
+                iconName="flaticon-map-location"
+                link="/app/maps"
+                index="maps"
+                childrenLinks={[
+                  {
+                    header: 'Google Maps', link: '/app/maps/google',
+                  },
+                  {
+                    header: 'Vector Map', link: '/app/maps/vector',
+                  },
+                ]}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="Extra"
+                isHeader
+                iconElement={<Fire/>}
+                iconName="flaticon-star"
+                link="/app/extra"
+                index="extra"
+                childrenLinks={[
+                  {
+                    header: 'Calendar', link: '/app/extra/calendar',
+                  },
+                  {
+                    header: 'Invoice', link: '/app/extra/invoice',
+                  },
+                  {
+                    header: 'Login Page', link: '/app/loginpage',
+                  },
+                  {
+                    header: 'Error Page', link: '/error',
+                  },
+                  {
+                    header: 'Gallery', link: '/app/extra/gallery',
+                  },
+                  {
+                    header: 'Search Result', link: '/app/extra/search',
+                  },
+                  {
+                    header: 'Time line', link: '/app/extra/timeline',
+                  },
+                ]}
+              />
+              <LinksGroup
+                onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
+                activeItem={this.props.activeItem}
+                header="Menu Levels"
+                isHeader
+                iconElement={<Menu/>}
+                iconName="flaticon-folder-10"
+                link="/app/menu"
+                index="menu"
+                childrenLinks={[
+                  {
+                    header: 'Level 1.1', link: '/app/menu/level1',
+                  },
+                  {
+                    header: 'Level 1.2',
+                    link: '/app/menu/level_12',
+                    index: 'level_12',
                     childrenLinks: [
                       {
-                        header: 'Level 3.1',
-                        link: '/app/menu/level_12/level_22/level_31',
-                        index: 'level_31',
+                        header: 'Level 2.1',
+                        link: '/app/menu/level_12/level_21',
+                        index: 'level_21',
                       },
                       {
-                        header: 'Level 3.2',
-                        link: '/app/menu/level_12/level_22/level_32',
-                        index: 'level_32 ',
+                        header: 'Level 2.2',
+                        link: '/app/menu/level_12/level_22',
+                        index: 'level_22',
+                        childrenLinks: [
+                          {
+                            header: 'Level 3.1',
+                            link: '/app/menu/level_12/level_22/level_31',
+                            index: 'level_31',
+                          },
+                          {
+                            header: 'Level 3.2',
+                            link: '/app/menu/level_12/level_22/level_32',
+                            index: 'level_32 ',
+                          },
+                        ],
+                      },
+                      {
+                        header: 'Level 2.3',
+                        link: '/app/menu/level_12/level_23',
+                        index: 'level_23',
                       },
                     ],
                   },
-                  {
-                    header: 'Level 2.3',
-                    link: '/app/menu/level_12/level_23',
-                    index: 'level_23',
-                  },
-                ],
-              },
-            ]}
-          />
+                ]}
+              />
+            </>
+          )}
+          {/* Projects for Lab, Worker, Provider */}
+          {(role === 'lab' || role === 'worker' || role === 'provider') && (
+            <>
+              <h5 className={s.navTitle}>Projects</h5>
+              <div className={s.sidebarAlerts}>
+                <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+                  <button type="button" className="btn-close" aria-label="Close"></button>
+                  <span>Sales Report</span><br />
+                  <div className={`${s.sidebarProgress} sidebar-bottom-aler-primary progress-xs mt-1 progress`}>
+                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style={{width: '16%'}}></div>
+                  </div>
+                  <small>Calculating x-axis bias... 65%</small>
+                </div>
+                <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+                  <button type="button" className="btn-close" aria-label="Close"></button>
+                  <span>Personal Responsibility</span><br />
+                  <div className={`${s.sidebarProgress} sidebar-bottom-aler-danger progress-xs mt-1 progress`}>
+                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style={{width: '23%'}}></div>
+                  </div>
+                  <small>Provide required notes</small>
+                </div>
+              </div>
+            </>
+          )}
         </ul>
-        <h5 className={s.navTitle}>
-          LABELS
-          {/* eslint-disable-next-line */}
-        </h5>
-        {/* eslint-disable */}
-        <ul className={s.sidebarLabels}>
-          <li>
-            <a href="#">
-              <i className={`fa fa-circle me-2 ${s.labelRecent}`} />
-              <span className={s.labelName}>My Recent</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i className={`fa fa-circle me-2 ${s.labelStarred}`} />
-              <span className={s.labelName}>Starred</span>
-            </a>
-          </li>
-          <li>
-            <a href="#">
-              <i className={`fa fa-circle me-2 ${s.labelBackground}`} />
-              <span className={s.labelName}>Background</span>
-            </a>
-          </li>
-        </ul>
-        {/* eslint-enable */}
-        <h5 className={s.navTitle}>
-          PROJECTS
-        </h5>
-        <div className={s.sidebarAlerts}>
-          <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
-            <button type="button" className="btn-close" aria-label="Close"></button>
-            <span>Sales Report</span><br />
-            <div className={`${s.sidebarProgress} sidebar-bottom-aler-primary progress-xs mt-1 progress`}>
-              <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style={{width: '16%'}}></div>
-            </div>
-            <small>Calculating x-axis bias... 65%</small>
-          </div>
-          <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
-            <button type="button" className="btn-close" aria-label="Close"></button>
-            <span>Personal Responsibility</span><br />
-            <div className={`${s.sidebarProgress} sidebar-bottom-aler-danger progress-xs mt-1 progress`}>
-              <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style={{width: '23%'}}></div>
-            </div>
-            <small>Provide required notes</small>
-          </div>
-        </div>
       </nav >
       </div>
     );
@@ -537,6 +529,7 @@ function mapStateToProps(store) {
     activeItem: store.navigation.activeItem,
     navbarType: store.navigation.navbarType,
     sidebarColor: store.layout.sidebarColor,
+    currentUser: store.auth.currentUser, // Inject current user from Redux
   };
 }
 

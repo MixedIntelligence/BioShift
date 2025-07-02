@@ -43,6 +43,11 @@ export default function auth(state = {
               currentUser: null,
               loadingInit: false,
           });
+      case 'AUTH_SET_USER':
+          return {
+            ...state,
+            currentUser: payload.currentUser,
+          };
       default:
           return state;
   }

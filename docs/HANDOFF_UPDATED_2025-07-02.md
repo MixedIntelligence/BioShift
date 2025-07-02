@@ -1,29 +1,38 @@
-# LabLeap Clickable Demo – Updated Handoff (Savepoint: July 2, 2025)
+# HANDOFF UPDATED: 2025-07-02
 
 ## Overview
-This document provides an updated handoff for the LabLeap clickable demo, reflecting all changes and improvements up to the current savepoint. It is intended for developers, designers, and stakeholders continuing work on the project.
 
----
+This handoff documents the current state of the BioShift/LabLeap clickable demo MVP as of July 2, 2025. All navigation, sidebar, and role-based logic is implemented and tested. The project is ready for further enhancements and userflow testing.
 
-## Current State
-- **Sidebar:** Refactored to BioShift/LabLeap structure, permanently expanded, with original Labels restored and Projects section removed.
-- **Navigation:** All main demo routes are clickable and accessible.
-- **Mock Data:** Gigs, users, applications, and labs/clients are seeded and wired to the UI.
-- **UI/UX:** Improved navigation, grouping, and demo clarity.
+## Key Features
 
----
+- Role-based sidebar navigation (Admin, Lab, Worker, Provider)
+- Projects section visible for Lab, Worker, Provider
+- Template/demo options visible only for Admin
+- Gigs and Profile menus display submenus correctly
+- 'Suggested' submenu under Gigs is role-dependent
+- RoleSwitcher for demo/testing user roles
+- All mock data and reducers updated for role switching
+
+## How to Test
+
+1. Use the RoleSwitcher at the top to change user roles.
+2. Verify sidebar updates for each role:
+   - Admin: Admin Dashboard, Template options
+   - Lab/Worker/Provider: LabLeap, Gigs, Projects, Profile, etc.
+3. Expand Gigs and Profile to see submenus.
+4. Check that 'Suggested' under Gigs changes label by role.
 
 ## Next Steps
-1. Implement role-based navigation and user flows (Worker, Lab, Provider, Admin).
-2. Continue UI/UX polish and gather feedback from stakeholders.
-3. Prepare for backend/API integration after demo validation.
+
+- Implement role-based main content and dashboard widgets
+- Add demo walkthrough mode
+- Continue UI/UX polish and accessibility improvements
+
+## Contacts
+
+- For questions or further handoff, see the README or contact the last committer.
 
 ---
 
-## Reference
-- See `SAVEPOINT_2025-07-02.md` for a snapshot of the current stable state.
-- All documentation and technical decisions are up to date as of this handoff.
-
----
-
-**For questions or further handoff, refer to the documentation in `/docs` or contact the project owner.**
+This document is the authoritative handoff for the current clickable demo MVP state.
