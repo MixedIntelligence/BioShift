@@ -25,9 +25,12 @@ class UsersFormPage extends Component {
     }
     else {
       if (this.isProfile()) {
-        const currentUser = JSON.parse(localStorage.getItem('user'));
-        const currentUserId = currentUser.user.id;
-        dispatch(actions.doFind(currentUserId));
+        const userStr = localStorage.getItem('user');
+        const currentUser = userStr ? JSON.parse(userStr) : null;
+        const currentUserId = currentUser && currentUser.user ? currentUser.user.id : null;
+        if (currentUserId) {
+          dispatch(actions.doFind(currentUserId));
+        }
       }
       else {
         dispatch(actions.doNew());
@@ -55,10 +58,11 @@ class UsersFormPage extends Component {
 
   isProfile = () => {
     const { match } = this.props;
-    const currentUser = JSON.parse(localStorage.getItem('user'));
-    const currentUserId = currentUser.user.id;
-    if (match.params.id === currentUserId) {
-      return true
+    const userStr = localStorage.getItem('user');
+    const currentUser = userStr ? JSON.parse(userStr) : null;
+    const currentUserId = currentUser && currentUser.user ? currentUser.user.id : null;
+    if (currentUserId && match.params.id === currentUserId) {
+      return true;
     }
     return match.url === '/app/edit_profile';
   };
