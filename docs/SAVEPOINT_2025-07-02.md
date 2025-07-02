@@ -1,29 +1,28 @@
-# SAVEPOINT: 2025-07-02 (EVENING)
+# SAVEPOINT: 2025-07-02 (NIGHT)
 
 ## Summary
 
-- Role-based sidebar and dashboards are fully functional.
-- Projects, Gigs, and Profile menus are clickable and show submenus.
-- Provider dashboard is implemented with demo widgets.
-- Demo data and clickable flows are being expanded next.
-- UI/UX improvements and additional demo flows are planned for the next iteration.
+- Demo gig flows (posting, applying, awarding, messaging) are now fully integrated into the main Gigs userflow.
+- Role-based actions and UI for Lab (Manager) and Worker (Professional) are live in the main gig details page.
+- Sidebar and route links to old demo gig flows have been removed.
+- Current user/role is injected from Redux, so UI updates dynamically with RoleSwitcher.
+- GigsListPage and GigDetailsPage are now the core of the clickable demo for all roles.
 
 ## Key Files Changed
 
-- `src/components/Sidebar/Sidebar.js`
-- `src/pages/dashboard/RoleBasedDashboard.js`
-- `src/pages/dashboard/ProviderDashboardPage.js`
-- `src/pages/dashboard/LabDashboardPage.js`
-- `src/pages/dashboard/WorkerDashboardPage.js`
+- `src/pages/gigs/GigDetailsPage.js` (role-based actions, demo logic merged)
+- `src/pages/gigs/GigsListPage.js` (Redux integration)
+- `src/components/Sidebar/Sidebar.js` (removed demo links)
+- `src/components/Layout/Layout.js` (removed demo routes)
 - Documentation files in `/docs`
 
 ## Next Steps
 
 - Expand mock/demo data for gigs, labs, users, and applications.
-- Add more clickable flows (gig application, lab invite, user messaging, etc).
+- Add more clickable flows (messaging, credential upload, payment release, etc).
 - UI/UX polish and accessibility improvements.
-- Update documentation and handoff as features are completed.
+- Final handoff documentation after all flows are integrated.
 
 ---
 
-This savepoint captures the current state before expanding demo data and flows for the clickable MVP.
+This savepoint captures the state after integrating all gig demo flows into the main userflow for a seamless clickable MVP.

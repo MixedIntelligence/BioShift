@@ -1,8 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import gigs from './mock';
 import { Card, CardBody, CardTitle, CardText, Button, Row, Col } from 'reactstrap';
 
-const GigsListPage = () => (
+const GigsListPage = ({ currentUser }) => (
   <div className="container mt-4">
     <h2>Available Projects & Gigs</h2>
     <Row>
@@ -29,4 +30,4 @@ const GigsListPage = () => (
   </div>
 );
 
-export default GigsListPage;
+export default connect(state => ({ currentUser: state.auth.currentUser }))(GigsListPage);
