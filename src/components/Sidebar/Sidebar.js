@@ -84,7 +84,7 @@ class Sidebar extends React.Component {
         className={s.root}
       >
         <header className={s.logo}>
-          <a href="https://demo.flatlogic.com/sing-app-react/"><span className={s.logoStyle}>Sing <span className={s.logoPart}>App</span></span> </a>
+          <a href="/app/main/dashboard"><span className={s.logoStyle}>BioShift <span className={s.logoPart}></span></span></a>
         </header>
         <ul className={s.nav}>
           <h5 className={s.navTitle}>BioShift</h5>

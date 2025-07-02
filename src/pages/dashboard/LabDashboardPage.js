@@ -42,6 +42,7 @@ const LabDashboardPage = () => {
               <li>Project "Protein Purification" marked as Completed</li>
               <li>New applicant for "Cell Culture Scale-Up"</li>
               <li>Project "Analytical Method Validation" posted</li>
+              <li>Suggested Talent: 3 new matches</li>
             </ul>
           </Widget>
         </Col>

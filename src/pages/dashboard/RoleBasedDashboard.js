@@ -4,9 +4,7 @@ import { Redirect } from 'react-router-dom';
 import Dashboard from '../../pages/dashboard/Dashboard';
 import LabDashboardPage from '../../pages/dashboard/LabDashboardPage';
 import WorkerDashboardPage from '../../pages/dashboard/WorkerDashboardPage';
-
-// You can add ProviderDashboardPage if you want a unique dashboard for providers
-// import ProviderDashboardPage from '../../pages/dashboard/ProviderDashboardPage';
+import ProviderDashboardPage from '../../pages/dashboard/ProviderDashboardPage';
 
 const RoleBasedDashboard = () => {
   const currentUser = useSelector(state => state.auth.currentUser);
@@ -18,8 +16,8 @@ const RoleBasedDashboard = () => {
       return <LabDashboardPage />;
     case 'worker':
       return <WorkerDashboardPage />;
-    // case 'provider':
-    //   return <ProviderDashboardPage />;
+    case 'provider':
+      return <ProviderDashboardPage />;
     case 'admin':
       return <Dashboard />;
     default:

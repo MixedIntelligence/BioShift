@@ -42,6 +42,7 @@ const WorkerDashboardPage = () => {
               <li>Applied to "Protein Purification for Oncology Study"</li>
               <li>Received offer for "Cell Culture Scale-Up"</li>
               <li>Certification "GLP" expiring soon</li>
+              <li>Suggested Gigs: 2 new matches</li>
             </ul>
           </Widget>
         </Col>
