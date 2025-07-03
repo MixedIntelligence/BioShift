@@ -28,7 +28,7 @@ export default class RevenueChart extends PureComponent {
       ...this.chartOptions,
       series: [
         {
-          name: 'Light Blue',
+          name: 'BioShift Gigs',
           data: data[0],
           color: config.app.themeColors.primary,
           type: 'areaspline',
@@ -37,13 +37,13 @@ export default class RevenueChart extends PureComponent {
         },
         {
           type: 'spline',
-          name: 'RNS App',
+          name: 'LabLeap Projects',
           data: data[1],
           color: config.app.themeColors.warning,
         },
         {
           type: 'spline',
-          name: 'Sing App',
+          name: 'Marketplace Activity',
           data: data[2],
           color: config.app.themeColors.primary,
         }

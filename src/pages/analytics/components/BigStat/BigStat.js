@@ -44,7 +44,7 @@ class BigStat extends Component {
             <div className="d-flex justify-content-between flex-wrap">
               <h4 className={cx('d-flex align-items-center pb-1', s.bigStatTitle)}>
                 <span className={`circle bg-${color} me-2`} style={{ fontSize: '6px' }} />
-                  Statistic <span className="fw-normal ms-2">{product}</span>
+                  {product}
               </h4>
               <UncontrolledButtonDropdown className={s.dropdown}>
                 <DropdownToggle
@@ -78,7 +78,7 @@ class BigStat extends Component {
                   rotate-${registrations.profit ? '315' : '45'}`}
                 />
               </div>
-              <p className="text-muted mb-0 me-2"><small>Registrations</small></p>
+              <p className="text-muted mb-0 me-2"><small>New Applicants</small></p>
             </div>
             <div className="w-50 py-3 pl-4">
               <div className="d-flex align-items-start h3">
@@ -88,7 +88,7 @@ class BigStat extends Component {
                   rotate-${bounce.profit ? '315' : '45'}`}
                 />
               </div>
-              <p className="text-muted mb-0 me-2"><small>Bounce Rate</small></p>
+              <p className="text-muted mb-0 me-2"><small>Completion Rate</small></p>
             </div>
           </div>
         </Widget>

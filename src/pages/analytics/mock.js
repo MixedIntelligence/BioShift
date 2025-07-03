@@ -27,41 +27,54 @@ export default {
   ],
   bigStat: [
     {
-      product: 'Light Blue',
-      total: '4,232',
+      product: 'Active Gigs',
+      total: '12',
       color: 'primary',
       registrations: {
-        value: 830,
+        value: 4,
         profit: true,
       },
       bounce: {
-        value: 4.5,
+        value: 92,
+        profit: true,
+      },
+    },
+    {
+      product: 'Pending Payments',
+      total: '$8,200',
+      color: 'success',
+      registrations: {
+        value: 2,
+        profit: false,
+      },
+      bounce: {
+        value: 80,
         profit: false,
       },
     },
     {
-      product: 'Sing App',
-      total: '754',
-      color: 'danger',
+      product: 'Upcoming Deadlines',
+      total: '3',
+      color: 'warning',
       registrations: {
-        value: 30,
+        value: 1,
         profit: true,
       },
       bounce: {
-        value: 2.5,
+        value: 60,
         profit: true,
       },
     },
     {
-      product: 'RNS',
-      total: '1,025',
-      color: 'default',
+      product: 'Unread Messages',
+      total: '5',
+      color: 'danger',
       registrations: {
-        value: 230,
+        value: 3,
         profit: true,
       },
       bounce: {
-        value: 21.5,
+        value: 75,
         profit: false,
       },
     },
