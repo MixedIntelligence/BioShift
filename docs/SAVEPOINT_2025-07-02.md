@@ -6,6 +6,7 @@
 - My LabLeap Bionics page now details agentic AI layer, capabilities, and mock implementations.
 - All routes registered and accessible from sidebar/profile menu.
 - UI/UX modernized using eCommerce and dashboard components throughout.
+- Dockerfile and .dockerignore added for local and cloud deployment.
 
 ## Code Quality
 - No major lint or runtime errors.

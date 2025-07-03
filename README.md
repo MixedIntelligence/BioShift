@@ -1,122 +1,52 @@
-# 🚀 Sing App React - A Free & Open-Source React Admin Dashboard Template!
+# BioShift LabLeap – Clickable MVP Demo
 
-[View Demo](https://flatlogic.com/templates/sing-app-react/demo) | [Download](https://github.com/flatlogic/sing-app-react/archive/refs/heads/master.zip) | [More Templates](https://flatlogic.com/templates) | [Discord Community](https://discord.gg/flatlogic-community) | [Support Forum](https://flatlogic.com/forum)
+## Overview
+LabLeap is a modern, agentic gig marketplace for science, built by BioShift. This clickable MVP demonstrates the core user flows, agentic AI (Bionics) layer, and integrations dashboard, all using mock data and a modern, eCommerce-inspired UI/UX. The project is fully dockerized for easy local and cloud deployment.
 
-**Originally a premium product priced at $69+, made available for free in January 2025!** 🎉
+## Features
+- Two-sided gig marketplace (labs & professionals)
+- Profile, dashboard, and gig management flows
+- Payments, history, upskill, and document management
+- BioShift Connect integrations (cloud, chat, productivity, LLMs)
+- LabLeap Bionics agentic AI layer (recommendations, chat, compliance, upskilling)
+- Modern, responsive UI/UX
 
-Looking for a perfect codebase generator for your Startup? Try [Flatlogic AI Web App Generator](https://flatlogic.com/generator) - our new tool, sort of a template++.
+## Quick Start
 
----
+### Local Development
+```sh
+yarn install
+yarn start
+```
 
-## 🎯 Why Sing App React?
-- **Ex-Premium**: This template was previously paid. Enjoy it for free now. 😉
-- **React + Bootstrap 5**: Built using modern tech stack for scalability and performance.
-- **Join the Community**: [Flatlogic Discord](https://discord.gg/flatlogic-community) is where the action happens.
-- **Free Node.js Backend**: Pair it up with [this backend](https://github.com/flatlogic/nodejs-backend) to go full-stack.
+### Docker
+```sh
+docker build -t biolab-leap .
+docker run -p 3000:3000 biolab-leap
+```
 
----
+Then open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## 🚀 Quick Start
+## Project Structure
+- `src/pages/profile/` – Profile subpages (Payments, History, Upskill, etc.)
+- `src/pages/connect/` – Integrations dashboard
+- `src/components/Layout/` – Main layout, sidebar, and routing
+- `src/mockUsers.js` – Example mock data
+- `Dockerfile`, `.dockerignore` – Containerization support
+- `docs/` – PRD, Roadmap, Developer Brief, Handoff, Savepoint
 
-1. **Clone the repo**  
-   ```bash
-   git clone https://github.com/flatlogic/sing-app-react.git
-   cd sing-app-react
-   ```
-2. **Install dependencies**  
-   ```bash
-   yarn install  # Or npm install
-   ```
-3. **Run the app**  
-   ```bash
-   yarn start
-   ```
-   Navigate to http://localhost:3000/.
+## Next Steps
+- Finalize UI/UX polish for clickable demo
+- Begin backend/API development (see PRD and Roadmap)
 
-4. **Backend Support**  
-   ```bash
-   yarn start:backend
-   ```
-
-5. **Build for production**  
-   ```bash
-   yarn build
-   ```
-
----
-
-## 🧩 Features
-
-- Fully Responsive Layout
-- Bootstrap 5
-- React 17
-- Reactstrap 9
-- 8 Chart Libraries
-- 2 Dashboards
-- Theme Support
-- E-Commerce Section
-- Static & Hover Sidebar
-- Fully Documented Codebase
+## Documentation
+- PRD: `docs/PRD_2025.md`
+- Roadmap: `docs/ROADMAP_2025-07-02.md`
+- Developer Brief: `docs/DEVELOPER_BRIEF_2025.md`
+- Handoff: `docs/HANDOFF_UPDATED_2025-07-02.md`
+- Savepoint: `docs/SAVEPOINT_2025-07-02.md`
 
 ---
 
-## 🛠 Built With
-- React 17
-- Bootstrap 5
-- Redux
-- Webpack
-- JavaScript (ES6)
-
----
-
-## 📦 Pages
-- Dashboard
-- E-commerce (Product Grid, Product Page, Management)
-- Profile
-- Forms
-- Charts
-- Tables
-- Maps
-- Icons
-- Notifications
-- Login / Error Pages
-
----
-
-## 🌍 Available Variants
-
-|               | **Material**                                              | **Transparent**                                         | **Classic**                                          | **Sofia**                                          | **Flatlogic**                                      |
-|---------------|-----------------------------------------------------------|---------------------------------------------------------|-------------------------------------------------------|-----------------------------------------------------|----------------------------------------------------|
-| **React**     | [React Material Admin](https://github.com/flatlogic/react-material-admin-full) | [Light Blue React](https://github.com/flatlogic/light-blue-react) | [Sing App React](https://github.com/flatlogic/sing-app-react) | [Sofia React](https://github.com/flatlogic/sofia-react) | [One React](https://github.com/flatlogic/one-react) |
-| **Angular**   | [Angular Material Admin](https://github.com/flatlogic/angular-material-admin-full) | [Light Blue Angular](https://github.com/flatlogic/light-blue-angular) | [Sing App Angular](https://github.com/flatlogic/sing-app-angular) | - | - |
-| **Vue**       | [Material Vue](https://github.com/flatlogic/material-vue-full) | [Light Blue Vue](https://github.com/flatlogic/light-blue-vue) | [Sing App Vue](https://github.com/flatlogic/sing-app-vue) | - | - |
-| **Bootstrap** | - | [Light Blue HTML5](https://github.com/flatlogic/light-blue-html5) | [Sing App HTML5](https://github.com/flatlogic/sing-app-html5) | - | [One Bootstrap](https://github.com/flatlogic/one-bootstrap-template-full) |
-
-
-Additionally, these templates are tailored for specific business needs:
-- [E-Commerce Frontend (React)](https://github.com/flatlogic/ecommerce-frontend) - A complete e-commerce solution.
-- [Bookkeeper UI (React)](https://github.com/flatlogic/bookkeeper-ui) - Accounting dashboard for finance management.
-- [User Management Template (React)](https://github.com/flatlogic/user-management-template) - User authentication and management.
-
----
-
-## 👨‍💻 How to Contribute
-- **Star this repo ⭐** - show some love.
-- **Report bugs** - but be nice.
-- **Join the [Discord](<insert-discord-invite-link>)** - meet fellow devs.
-
----
-
-## 🔥 About Flatlogic
-[Flatlogic AI Software Engineer](https://flatlogic.com/ai-software-development-agent) builds modern business software so you don't have to. Our AI Software Development Agent helps you generate, deploy, and maintain enterprise applications with minimal effort.
-
----
-
-## 📜 License
-This template is free to use. Modify it, break it, make it your own. Just don’t try to sell it back to us. 😎
-
----
-
-> **Questions or feedback?**  
-> Join our [Flatlogic Community Discord](https://discord.gg/flatlogic-community) or visit our [support forum](https://flatlogic.com/forum). We might even reply!
+© 2025 BioShift. LabLeap™ is a trademark of BioShift.
 
