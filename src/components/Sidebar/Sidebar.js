@@ -493,23 +493,39 @@ class Sidebar extends React.Component {
           {/* Projects for Lab, Worker, Provider */}
           {(role === 'lab' || role === 'worker' || role === 'provider') && (
             <>
-              <h5 className={s.navTitle}>Projects</h5>
+              <h5 className={s.navTitle}>BioShift Gigs & Projects</h5>
               <div className={s.sidebarAlerts}>
                 <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
                   <button type="button" className="btn-close" aria-label="Close"></button>
-                  <span>Sales Report</span><br />
+                  <span>Protein Purification Gig</span><br />
                   <div className={`${s.sidebarProgress} sidebar-bottom-aler-primary progress-xs mt-1 progress`}>
-                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="16" aria-valuemin="0" aria-valuemax="100" style={{width: '16%'}}></div>
+                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100" style={{width: '72%'}}></div>
                   </div>
-                  <small>Calculating x-axis bias... 65%</small>
+                  <small>In progress · 72% complete</small>
                 </div>
                 <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
                   <button type="button" className="btn-close" aria-label="Close"></button>
-                  <span>Personal Responsibility</span><br />
-                  <div className={`${s.sidebarProgress} sidebar-bottom-aler-danger progress-xs mt-1 progress`}>
-                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="23" aria-valuemin="0" aria-valuemax="100" style={{width: '23%'}}></div>
+                  <span>Genomics Data Analysis</span><br />
+                  <div className={`${s.sidebarProgress} sidebar-bottom-aler-success progress-xs mt-1 progress`}>
+                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style={{width: '45%'}}></div>
                   </div>
-                  <small>Provide required notes</small>
+                  <small>Awaiting results · 45% complete</small>
+                </div>
+                <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+                  <button type="button" className="btn-close" aria-label="Close"></button>
+                  <span>Automation Setup Project</span><br />
+                  <div className={`${s.sidebarProgress} sidebar-bottom-aler-warning progress-xs mt-1 progress`}>
+                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" style={{width: '90%'}}></div>
+                  </div>
+                  <small>Finalizing · 90% complete</small>
+                </div>
+                <div className={`${s.sidebarAlert} alert alert-transparent alert-dismissible fade show`} role="alert">
+                  <button type="button" className="btn-close" aria-label="Close"></button>
+                  <span>CRISPR Screening Gig</span><br />
+                  <div className={`${s.sidebarProgress} sidebar-bottom-aler-info progress-xs mt-1 progress`}>
+                    <div className="progress-bar bg-unset" role="progressbar" aria-valuenow="28" aria-valuemin="0" aria-valuemax="100" style={{width: '28%'}}></div>
+                  </div>
+                  <small>New applicant · 28% complete</small>
                 </div>
               </div>
             </>

@@ -32,6 +32,8 @@ LabLeap is a modern, agentic gig marketplace for science, built as a React click
 6. **UI/UX Polish:**
    - Focus on consistent, modern design using eCommerce and dashboard components.
    - All routes and sidebar links should be functional.
+   - Sidebar Projects section now features BioShift/Gig Marketplace projects with progress and relevant text.
+   - Dashboards (Lab, Worker, Provider) modernized and polished with analytics/admin components and BioShift-specific content.
 
 7. **Docker & Deployment:**
    - The app is fully dockerized for local and cloud deployment.

@@ -10,6 +10,8 @@
 - Key demo flows: Gigs List, Gig Details, Post a Gig, Lab and Worker Dashboards, all seeded with example data.
 - Modern dashboard charts using proven analytics components (Highcharts-based, not Chart.js).
 - Sidebar and routing updated for all new pages.
+- Sidebar Projects section now features BioShift/Gig Marketplace projects with progress and relevant text.
+- Dashboards (Lab, Worker, Provider) modernized and polished with analytics/admin components and BioShift-specific content.
 - Documentation for onboarding, handoff, and next steps.
 
 ---
@@ -43,9 +45,9 @@
 
 ## Next Steps
 
-- Expand demo flows (profiles, admin, etc.)
-- Connect to a backend if needed
-- Polish UI/UX and add more realistic data
+- Use this clickable MVP to define backend API requirements and data models.
+- Begin backend/API integration as outlined in the roadmap and PRD.
+- Replace mock data with real API calls as backend is built.
 
 ---
 

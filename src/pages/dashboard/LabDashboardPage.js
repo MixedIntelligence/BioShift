@@ -1,24 +1,48 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Card, CardBody, CardTitle, CardText, Badge, Button } from 'reactstrap';
+import { Row, Col } from 'reactstrap';
 import Widget from '../../components/Widget/Widget';
 import MainChart from '../analytics/components/Charts/MainChart';
 import BigStat from '../analytics/components/BigStat/BigStat';
-import { receiveDataRequest } from '../../actions/analytics';
+import TaskContainer from '../analytics/components/TaskContainer/TaskContainer';
+import TableContainer from '../analytics/components/TableContainer/TableContainer';
+import Calendar from '../dashboard/components/calendar/Calendar';
 import mock from '../analytics/mock';
-import gigs from '../gigs/mock';
+import { receiveDataRequest } from '../../actions/analytics';
 
-const publications = [
-  { title: 'Protein Purification Advances', journal: 'Nature Methods', year: 2025 },
-  { title: 'Cell Culture Scale-Up Strategies', journal: 'Biotech Today', year: 2024 },
+// Additional mock data for Lab Dashboard
+const labNews = [
+  { title: 'AI Accelerates Protein Design', source: 'Nature News', time: '1h ago' },
+  { title: 'Lab Automation Trends 2025', source: 'LabTech', time: '3h ago' },
+  { title: 'BioShift Connect Launches New API', source: 'BioShift Blog', time: 'Today' },
 ];
-const journals = [
-  { name: 'Nature Biotechnology', url: 'https://www.nature.com/nbt/' },
-  { name: 'Journal of Lab Automation', url: 'https://journals.sagepub.com/home/jla' },
+const labMessages = [
+  { from: 'BioShift Connect', content: 'Integration with Google Drive successful.', time: 'Just now' },
+  { from: 'System', content: 'New applicant: Elena Vance for "Protein Purification".', time: '10m ago' },
+  { from: 'Payments', content: 'Payment released to Dr. Smith.', time: '1h ago' },
 ];
-const upskill = [
-  { skill: 'Advanced Chromatography', provider: 'Coursera' },
-  { skill: 'Lab Data Science', provider: 'edX' },
+const labDeadlines = [
+  { task: 'Submit grant proposal', due: '2025-07-05' },
+  { task: 'Review gig applications', due: '2025-07-03' },
+  { task: 'Order reagents', due: '2025-07-04' },
+];
+const labTasks = [
+  { id: 10, type: 'Approval', title: 'Approve payment for "Genomics Analysis"', time: '09:30' },
+  { id: 11, type: 'Meeting', title: 'Schedule team meeting', time: '11:00' },
+  { id: 12, type: 'Upload', title: 'Upload SOP for new protocol', time: '13:00' },
+  { id: 13, type: 'Alert', title: 'Respond to BioShift Connect alert', time: '15:00' },
+];
+const labKPIs = [
+  { product: 'Active Gigs', total: '12', color: 'primary', registrations: { value: 4, profit: true }, bounce: { value: 2.1, profit: true } },
+  { product: 'Pending Payments', total: '$8,200', color: 'success', registrations: { value: 2, profit: false }, bounce: { value: 1.2, profit: false } },
+  { product: 'Upcoming Deadlines', total: '3', color: 'warning', registrations: { value: 1, profit: true }, bounce: { value: 0.5, profit: true } },
+  { product: 'Unread Messages', total: '5', color: 'danger', registrations: { value: 3, profit: true }, bounce: { value: 0.8, profit: false } },
+];
+const labTable = [
+  { name: 'Elena Vance', email: 'elena@lab.com', product: 'Protein Purification', price: '$2,000', date: '2025-07-01', city: 'Boston', status: 'Pending' },
+  { name: 'Dr. Smith', email: 'smith@lab.com', product: 'Genomics Analysis', price: '$5,000', date: '2025-06-28', city: 'San Diego', status: 'Sent' },
+  { name: 'Lab Automation', email: 'auto@lab.com', product: 'Automation Setup', price: '$1,200', date: '2025-06-25', city: 'Austin', status: 'Declined' },
+  { name: 'SOP Upload', email: 'sop@lab.com', product: 'Protocol Update', price: '$0', date: '2025-06-20', city: 'Remote', status: 'Sent' },
 ];
 
 const LabDashboardPage = () => {
@@ -29,62 +53,65 @@ const LabDashboardPage = () => {
     dispatch(receiveDataRequest());
   }, [dispatch]);
 
-  // Demo summary data
-  const totalGigs = gigs.length;
-  const activeGigs = gigs.filter(g => g.status === 'Open' || g.status === 'Awarded' || g.status === 'Applied').length;
-  const completedGigs = gigs.filter(g => g.status === 'Completed').length;
-  const totalEarnings = gigs.filter(g => g.status === 'Completed').length * 5000; // demo
-  const budget = 20000;
-
   return (
-    <div className="container mt-4">
-      <h2>Lab Dashboard</h2>
-      <Row className="mb-3">
-        <Col md={3}><Card body className="text-center"><CardTitle tag="h5">Total Gigs</CardTitle><CardText><h3>{totalGigs}</h3></CardText></Card></Col>
-        <Col md={3}><Card body className="text-center"><CardTitle tag="h5">Active Gigs</CardTitle><CardText><h3>{activeGigs}</h3></CardText></Card></Col>
-        <Col md={3}><Card body className="text-center"><CardTitle tag="h5">Completed</CardTitle><CardText><h3>{completedGigs}</h3></CardText></Card></Col>
-        <Col md={3}><Card body className="text-center"><CardTitle tag="h5">Budget</CardTitle><CardText><h3>${budget.toLocaleString()}</h3></CardText></Card></Col>
+    <div className="container-fluid mt-4" style={{ maxWidth: 1600 }}>
+      <Row className="mb-4">
+        {labKPIs.map((stat, idx) => (
+          <Col key={idx} md={3} sm={6} xs={12} className="mb-3">
+            <BigStat {...stat} />
+          </Col>
+        ))}
       </Row>
       <Row>
         <Col lg={8} xs={12}>
-          <MainChart data={mainChart} isReceiving={isReceiving} />
+          <Widget title={<h5>Lab Analytics</h5>}>
+            <MainChart data={mainChart} isReceiving={isReceiving} />
+          </Widget>
+          <Row>
+            <Col md={6}>
+              <TaskContainer data={[...mock.tasks, ...labTasks]} />
+            </Col>
+            <Col md={6}>
+              <Widget title={<h5>Recent Activity</h5>}>
+                <TableContainer data={labTable} />
+              </Widget>
+            </Col>
+          </Row>
+          {/* Removed the row for Map and Chats */}
         </Col>
         <Col lg={4} xs={12}>
-          <Widget title={<h5>Financials</h5>}>
-            <ul>
-              <li>Total Earnings: <b>${totalEarnings.toLocaleString()}</b></li>
-              <li>Budget Remaining: <b>${(budget - totalEarnings).toLocaleString()}</b></li>
-              <li>Pending Payments: <b>$2,000</b></li>
+          <Widget title={<h5>Calendar</h5>}>
+            <Calendar />
+          </Widget>
+          <Widget title={<h5>Deadlines</h5>}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {labDeadlines.map((d, i) => (
+                <li key={i} style={{ marginBottom: 10 }}>
+                  <i className="fa fa-calendar text-info me-2" />{d.task}
+                  <span style={{ float: 'right', color: '#aaa', fontSize: 13 }}>{d.due}</span>
+                </li>
+              ))}
             </ul>
           </Widget>
-          <Widget title={<h5>Tasks & Suggestions</h5>}>
-            <ul>
-              <li>Review new applicant for "Cell Culture Scale-Up"</li>
-              <li>Complete project report for "Analytical Method Validation"</li>
-              <li>Suggested Talent: 3 new matches</li>
+          <Widget title={<h5>Messages & Notifications</h5>}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {labMessages.map((m, i) => (
+                <li key={i} style={{ marginBottom: 10 }}>
+                  <b>{m.from}:</b> {m.content}
+                  <span style={{ float: 'right', color: '#aaa', fontSize: 13 }}>{m.time}</span>
+                </li>
+              ))}
             </ul>
           </Widget>
-        </Col>
-      </Row>
-      <Row className="mt-3">
-        <Col md={4}>
-          <Widget title={<h5>Upskill Opportunities</h5>}>
-            <ul>
-              {upskill.map(u => <li key={u.skill}>{u.skill} <Badge color="info">{u.provider}</Badge></li>)}
-            </ul>
-          </Widget>
-        </Col>
-        <Col md={4}>
-          <Widget title={<h5>Recent Publications</h5>}>
-            <ul>
-              {publications.map(p => <li key={p.title}><b>{p.title}</b> <br /><small>{p.journal}, {p.year}</small></li>)}
-            </ul>
-          </Widget>
-        </Col>
-        <Col md={4}>
-          <Widget title={<h5>Relevant Journals</h5>}>
-            <ul>
-              {journals.map(j => <li key={j.name}><a href={j.url} target="_blank" rel="noopener noreferrer">{j.name}</a></li>)}
+          <Widget title={<h5>News & Insights</h5>}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {labNews.map((n, i) => (
+                <li key={i} style={{ marginBottom: 10 }}>
+                  <button style={{ fontWeight: 600, background: 'none', border: 'none', color: '#007bff', padding: 0, cursor: 'pointer' }}>{n.title}</button>
+                  <span style={{ color: '#888', marginLeft: 8 }}>{n.source}</span>
+                  <span style={{ float: 'right', color: '#aaa', fontSize: 13 }}>{n.time}</span>
+                </li>
+              ))}
             </ul>
           </Widget>
         </Col>

@@ -3,6 +3,8 @@
 ## What’s Ready
 - Complete clickable MVP with all profile, gig, and integration flows
 - UI/UX polish and eCommerce-inspired design
+- Sidebar Projects section updated for BioShift/Gig Marketplace, with multiple example projects and progress
+- Dashboards (Lab, Worker, Provider) modernized and polished with analytics/admin components and BioShift-specific content
 - Dockerfile and .dockerignore for local/cloud deployment
 - Mock data for users, gigs, labs, applications, certifications, and more
 - BioShift Connect and Bionics agentic layer implemented (mock logic)

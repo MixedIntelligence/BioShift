@@ -1,58 +1,115 @@
-import React from 'react';
-import { Row, Col, Card, CardBody, CardTitle, CardText, Badge } from 'reactstrap';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Row, Col } from 'reactstrap';
 import Widget from '../../components/Widget/Widget';
+import MainChart from '../analytics/components/Charts/MainChart';
+import BigStat from '../analytics/components/BigStat/BigStat';
+import TaskContainer from '../analytics/components/TaskContainer/TaskContainer';
+import TableContainer from '../analytics/components/TableContainer/TableContainer';
+import Calendar from '../dashboard/components/calendar/Calendar';
+import mock from '../analytics/mock';
+import { receiveDataRequest } from '../../actions/analytics';
 
-const publications = [
-  { title: 'Provider Collaboration Models', journal: 'Science Partnering', year: 2025 },
-  { title: 'Trends in Pharma Outsourcing', journal: 'Pharma Journal', year: 2024 },
+// Additional mock data for Provider Dashboard
+const providerNews = [
+  { title: 'Pharma Outsourcing Growth', source: 'Pharma News', time: '3h ago' },
+  { title: 'BioShift Connect: New Partner Labs', source: 'BioShift Blog', time: 'Today' },
+  { title: 'Provider Collaboration Best Practices', source: 'Science Daily', time: '1d ago' },
 ];
-const journals = [
-  { name: 'Science Partnering', url: 'https://sciencepartnering.com/' },
-  { name: 'Pharma Journal', url: 'https://pharmajournal.com/' },
+const providerMessages = [
+  { from: 'BioShift Connect', content: 'New partnership request from "LabLeap".', time: 'Just now' },
+  { from: 'System', content: 'Contract signed for "Protein Purification".', time: '1h ago' },
+  { from: 'Offers', content: 'Offer received: "Lab Automation Project".', time: '2h ago' },
 ];
-const upskill = [
-  { skill: 'Project Management', provider: 'Coursera' },
-  { skill: 'Pharma Business', provider: 'edX' },
+const providerDeadlines = [
+  { task: 'Review contract for "Genomics Analysis"', due: '2025-07-04' },
+  { task: 'Respond to partnership request', due: '2025-07-05' },
+];
+const providerTasks = [
+  { id: 30, type: 'Contract', title: 'Sign contract for "Protein Purification"', time: '09:00' },
+  { id: 31, type: 'Offer', title: 'Review new offer', time: '11:00' },
+  { id: 32, type: 'Call', title: 'Schedule kickoff call', time: '13:00' },
+  { id: 33, type: 'Alert', title: 'Respond to Connect alert', time: '15:00' },
+];
+const providerKPIs = [
+  { product: 'Active Collabs', total: '4', color: 'primary', registrations: { value: 2, profit: true }, bounce: { value: 1.2, profit: true } },
+  { product: 'Pending Offers', total: '3', color: 'success', registrations: { value: 1, profit: false }, bounce: { value: 0.7, profit: false } },
+  { product: 'Completed Projects', total: '8', color: 'warning', registrations: { value: 2, profit: true }, bounce: { value: 0.4, profit: true } },
+  { product: 'Unread Messages', total: '5', color: 'danger', registrations: { value: 3, profit: true }, bounce: { value: 0.9, profit: false } },
+];
+const providerTable = [
+  { name: 'LabLeap', email: 'contact@lableap.com', product: 'Collab', price: '$10,000', date: '2025-07-01', city: 'Boston', status: 'Pending' },
+  { name: 'Genomics Analysis', email: 'lab@biomvp.com', product: 'Contract', price: '$5,000', date: '2025-06-28', city: 'San Diego', status: 'Sent' },
+  { name: 'Automation Project', email: 'auto@lab.com', product: 'Offer', price: '$2,500', date: '2025-06-25', city: 'Austin', status: 'Declined' },
+  { name: 'Kickoff Call', email: 'call@lab.com', product: 'Call', price: '$0', date: '2025-06-20', city: 'Remote', status: 'Sent' },
 ];
 
 const ProviderDashboardPage = () => {
-  // Demo summary data
-  const collaborations = 2;
-  const offers = 1;
-  const completed = 5;
+  const dispatch = useDispatch();
+  const { mainChart, isReceiving } = useSelector(state => state.analytics);
+
+  useEffect(() => {
+    dispatch(receiveDataRequest());
+  }, [dispatch]);
 
   return (
-    <div className="container mt-4">
-      <h2>Provider Dashboard</h2>
-      <Row className="mb-3">
-        <Col md={4}><Card body className="text-center"><CardTitle tag="h5">Active Collabs</CardTitle><CardText><h3>{collaborations}</h3></CardText></Card></Col>
-        <Col md={4}><Card body className="text-center"><CardTitle tag="h5">Pending Offers</CardTitle><CardText><h3>{offers}</h3></CardText></Card></Col>
-        <Col md={4}><Card body className="text-center"><CardTitle tag="h5">Completed Projects</CardTitle><CardText><h3>{completed}</h3></CardText></Card></Col>
+    <div className="container-fluid mt-4" style={{ maxWidth: 1600 }}>
+      <Row className="mb-4">
+        {providerKPIs.map((stat, idx) => (
+          <Col key={idx} md={3} sm={6} xs={12} className="mb-3">
+            <BigStat {...stat} />
+          </Col>
+        ))}
       </Row>
       <Row>
-        <Col md={6}>
-          <Widget title={<h5>Suggestions & Tasks</h5>}>
-            <ul>
-              <li>Review contract for "Protein Purification"</li>
-              <li>Respond to partnership request from "FoodSafe Labs"</li>
-              <li>Suggested Labs: 2 new matches</li>
-            </ul>
+        <Col lg={8} xs={12}>
+          <Widget title={<h5>Provider Analytics</h5>}>
+            <MainChart data={mainChart} isReceiving={isReceiving} />
           </Widget>
-          <Widget title={<h5>Upskill Opportunities</h5>}>
-            <ul>
-              {upskill.map(u => <li key={u.skill}>{u.skill} <Badge color="info">{u.provider}</Badge></li>)}
-            </ul>
-          </Widget>
+          <Row>
+            <Col md={6}>
+              <TaskContainer data={[...mock.tasks, ...providerTasks]} />
+            </Col>
+            <Col md={6}>
+              <Widget title={<h5>Recent Activity</h5>}>
+                <TableContainer data={providerTable} />
+              </Widget>
+            </Col>
+          </Row>
         </Col>
-        <Col md={6}>
-          <Widget title={<h5>Recent Publications</h5>}>
-            <ul>
-              {publications.map(p => <li key={p.title}><b>{p.title}</b> <br /><small>{p.journal}, {p.year}</small></li>)}
+        <Col lg={4} xs={12}>
+          <Widget title={<h5>Calendar</h5>}>
+            <Calendar />
+          </Widget>
+          <Widget title={<h5>Deadlines</h5>}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {providerDeadlines.map((d, i) => (
+                <li key={i} style={{ marginBottom: 10 }}>
+                  <i className="fa fa-calendar text-info me-2" />{d.task}
+                  <span style={{ float: 'right', color: '#aaa', fontSize: 13 }}>{d.due}</span>
+                </li>
+              ))}
             </ul>
           </Widget>
-          <Widget title={<h5>Relevant Journals</h5>}>
-            <ul>
-              {journals.map(j => <li key={j.name}><a href={j.url} target="_blank" rel="noopener noreferrer">{j.name}</a></li>)}
+          <Widget title={<h5>Messages & Notifications</h5>}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {providerMessages.map((m, i) => (
+                <li key={i} style={{ marginBottom: 10 }}>
+                  <b>{m.from}:</b> {m.content}
+                  <span style={{ float: 'right', color: '#aaa', fontSize: 13 }}>{m.time}</span>
+                </li>
+              ))}
+            </ul>
+          </Widget>
+          <Widget title={<h5>News & Insights</h5>}>
+            <ul style={{ listStyle: 'none', padding: 0 }}>
+              {providerNews.map((n, i) => (
+                <li key={i} style={{ marginBottom: 10 }}>
+                  <button style={{ fontWeight: 600, background: 'none', border: 'none', color: '#007bff', padding: 0, cursor: 'pointer' }}>{n.title}</button>
+                  <span style={{ color: '#888', marginLeft: 8 }}>{n.source}</span>
+                  <span style={{ float: 'right', color: '#aaa', fontSize: 13 }}>{n.time}</span>
+                </li>
+              ))}
             </ul>
           </Widget>
         </Col>
