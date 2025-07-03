@@ -1,19 +1,23 @@
-FROM node:14
+# --- Build Stage ---
+FROM node:20 AS build
 
-# Create app directory
-WORKDIR /usr/src/app
+WORKDIR /app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY package*.json ./
+COPY package*.json yarn.lock ./
+RUN yarn install --frozen-lockfile
 
-RUN yarn install
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source
 COPY . .
+RUN yarn build
+
+# --- Production Stage ---
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+# Install serve to serve the build folder
+RUN yarn global add serve
+
+COPY --from=build /app/build ./build
 
 EXPOSE 3000
-CMD [ "yarn", "start:backend" ]
+CMD ["serve", "-s", "build", "-l", "3000"]

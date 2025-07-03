@@ -243,7 +243,7 @@ class Layout extends React.Component {
                 </CSSTransition>
               </TransitionGroup>
               <footer className={s.contentFooter}>
-                Sing App React Admin Dashboard Template - Made by <a href="https://flatlogic.com" rel="nofollow noopener noreferrer" target="_blank">Flatlogic</a>
+                © 2025 BioShift. All rights reserved. LabLeap™ is a trademark of BioShift.
               </footer>
             </main>
           </Hammer>
