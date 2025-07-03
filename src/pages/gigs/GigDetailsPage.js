@@ -31,6 +31,10 @@ const GigDetailsPage = ({ currentUser }) => {
   const [applied, setApplied] = useState(false);
   const [awardedId, setAwardedId] = useState(null);
   const [messageSent, setMessageSent] = useState(false);
+  const [showCredentialUpload, setShowCredentialUpload] = useState(false);
+  const [credentialUploaded, setCredentialUploaded] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentReleased, setPaymentReleased] = useState(false);
 
   if (!gig) {
     return <div className="container mt-4"><h4>Gig not found.</h4></div>;
@@ -58,7 +62,16 @@ const GigDetailsPage = ({ currentUser }) => {
             )}
             {' '}
             <Button color="secondary" onClick={() => setMessageSent(true)}>Message Lab</Button>
+            {' '}
+            <Button color="info" onClick={() => setShowCredentialUpload(true)}>Upload Credential</Button>
             {messageSent && <Alert color="info" className="mt-2">Demo: Message sent to lab!</Alert>}
+            {showCredentialUpload && !credentialUploaded && (
+              <div className="mt-3">
+                <input type="file" onChange={() => setCredentialUploaded(true)} />
+                <Button color="primary" className="ms-2" onClick={() => setCredentialUploaded(true)}>Submit Credential</Button>
+              </div>
+            )}
+            {credentialUploaded && <Alert color="success" className="mt-2">Demo: Credential uploaded!</Alert>}
           </CardBody>
         </Card>
         {applied && (
@@ -70,6 +83,20 @@ const GigDetailsPage = ({ currentUser }) => {
                 <b>Lab:</b> {gig.lab.name}
               </CardText>
               <Button color="success" disabled>Awaiting Award</Button>
+            </CardBody>
+          </Card>
+        )}
+        {awardedId === currentUser?.id && (
+          <Card className="mb-4">
+            <CardBody>
+              <CardTitle tag="h5">Payment</CardTitle>
+              <Button color="success" onClick={() => setShowPayment(true)}>Release Payment</Button>
+              {showPayment && !paymentReleased && (
+                <div className="mt-2">
+                  <Button color="primary" onClick={() => setPaymentReleased(true)}>Confirm Release</Button>
+                </div>
+              )}
+              {paymentReleased && <Alert color="success" className="mt-2">Demo: Payment released!</Alert>}
             </CardBody>
           </Card>
         )}
@@ -97,22 +124,41 @@ const GigDetailsPage = ({ currentUser }) => {
         </Card>
         <h4>Applicants</h4>
         <Row>
-          {mockApplicants.map(app => (
-            <Col md={6} key={app.id} className="mb-3">
-              <Card>
-                <CardBody>
-                  <CardTitle tag="h5">{app.name} <Badge color={awardedId === app.id ? 'success' : 'info'}>{awardedId === app.id ? 'Awarded' : app.status}</Badge></CardTitle>
-                  <CardText>
-                    <b>Skills:</b> {app.skills.join(', ')}<br/>
-                    <b>Certifications:</b> {app.certifications.join(', ')}
-                  </CardText>
-                  <Button color="success" disabled={awardedId !== null} onClick={() => setAwardedId(app.id)}>{awardedId === app.id ? 'Awarded' : 'Award Gig'}</Button>{' '}
-                  <Button color="secondary" onClick={() => setMessageSent(true)}>Message</Button>
-                  {messageSent && <Alert color="info" className="mt-2">Demo: Message sent to applicant!</Alert>}
-                </CardBody>
-              </Card>
-            </Col>
-          ))}
+          {mockApplicants.map(app => {
+            const isAwarded = awardedId === app.id;
+            return (
+              <Col md={6} key={app.id} className="mb-3">
+                <Card>
+                  <CardBody>
+                    <CardTitle tag="h5">{app.name} <Badge color={isAwarded ? 'success' : 'info'}>{isAwarded ? 'Awarded' : app.status}</Badge></CardTitle>
+                    <CardText>
+                      <b>Skills:</b> {app.skills.join(', ')}<br/>
+                      <b>Certifications:</b> {app.certifications.join(', ')}
+                    </CardText>
+                    <Button color="success" disabled={awardedId !== null} onClick={() => setAwardedId(app.id)}>{isAwarded ? 'Awarded' : 'Award Gig'}</Button>{' '}
+                    <Button color="secondary" onClick={() => setMessageSent(true)}>Message</Button>{' '}
+                    {isAwarded && (
+                      <>
+                        <Button color="info" onClick={() => setShowCredentialUpload(true)}>Request Credential</Button>
+                        {showCredentialUpload && !credentialUploaded && (
+                          <Alert color="warning" className="mt-2">Demo: Credential request sent to applicant!</Alert>
+                        )}
+                        {credentialUploaded && <Alert color="success" className="mt-2">Demo: Credential received!</Alert>}
+                        <Button color="primary" className="mt-2" onClick={() => setShowPayment(true)}>Release Payment</Button>
+                        {showPayment && !paymentReleased && (
+                          <div className="mt-2">
+                            <Button color="primary" onClick={() => setPaymentReleased(true)}>Confirm Release</Button>
+                          </div>
+                        )}
+                        {paymentReleased && <Alert color="success" className="mt-2">Demo: Payment released to applicant!</Alert>}
+                      </>
+                    )}
+                    {messageSent && <Alert color="info" className="mt-2">Demo: Message sent to applicant!</Alert>}
+                  </CardBody>
+                </Card>
+              </Col>
+            );
+          })}
         </Row>
       </div>
     );

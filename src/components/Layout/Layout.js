@@ -65,7 +65,7 @@ import s from './Layout.module.scss';
 import { DashboardThemes } from '../../reducers/layout';
 import ProductEdit from '../../pages/management/components/productEdit';
 import BreadcrumbHistory from '../BreadcrumbHistory';
-import { GigsListPage, GigDetailsPage } from '../../pages/gigs';
+import { GigsListPage, GigDetailsPage, MyGigsPage, SuggestedPage } from '../../pages/gigs';
 import PostGigPage from '../../pages/gigs/PostGigPage';
 import LabDashboardPage from '../../pages/dashboard/LabDashboardPage';
 import WorkerDashboardPage from '../../pages/dashboard/WorkerDashboardPage';
@@ -215,6 +215,8 @@ class Layout extends React.Component {
                     <Route path="/app/core/grid" exact component={CoreGrid} />
                     <Route path="/app/gigs" exact component={GigsListPage} />
                     <Route path="/app/gigs/:id" exact component={GigDetailsPage} />
+                    <Route path="/app/my-gigs" exact component={MyGigsPage} />
+                    <Route path="/app/suggested" exact component={SuggestedPage} />
                     <Route path="/app/post-gig" exact component={PostGigPage} />
                     <Route path="/app/dashboard/lab" exact component={LabDashboardPage} />
                     <Route path="/app/dashboard/worker" exact component={WorkerDashboardPage} />

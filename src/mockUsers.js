@@ -24,7 +24,12 @@ const users = [
         role: 'Senior Scientist',
         description: 'Led protein purification projects for oncology drug discovery.'
       }
-    ]
+    ],
+    skillMatch: 92, // percent
+    experienceYears: 8,
+    publications: 12,
+    productFit: null,
+    skillGaps: [],
   },
   {
     id: 'user-002',
@@ -49,7 +54,12 @@ const users = [
         role: 'Process Engineer',
         description: 'Scaled up cell cultures for vaccine development.'
       }
-    ]
+    ],
+    skillMatch: 88,
+    experienceYears: 5,
+    publications: 3,
+    productFit: null,
+    skillGaps: [],
   },
   {
     id: 'user-003',
@@ -79,7 +89,95 @@ const users = [
         role: 'Project Lead',
         description: 'Managed analytical chemistry projects for pharma clients.'
       }
-    ]
+    ],
+    skillMatch: null,
+    experienceYears: 10,
+    publications: 18,
+    productFit: 85, // percent
+    skillGaps: ['HPLC', 'GLP'],
+  },
+  {
+    id: 'user-005',
+    firstName: 'Dr. Lisa',
+    lastName: 'Nguyen',
+    email: 'lisa.nguyen@foodsafe.com',
+    role: 'lab',
+    headline: 'Lab Director | Food Safety',
+    summary: 'Director at FoodSafe Labs, specializing in rapid food safety testing and PCR.',
+    skills: ['PCR', 'Microbial Assays', 'Food Safety'],
+    certifications: [
+      {
+        name: 'Food Safety',
+        issuingBody: 'FDA',
+        expiration: '2028-03-10',
+        status: 'Active'
+      }
+    ],
+    experience: [
+      {
+        company: 'FoodSafe Labs',
+        role: 'Lab Director',
+        description: 'Oversaw quality control for food product launches.'
+      }
+    ],
+    skillMatch: 95,
+    experienceYears: 12,
+    publications: 22,
+    productFit: null,
+    skillGaps: [],
+  },
+  {
+    id: 'user-006',
+    firstName: 'Miguel',
+    lastName: 'Santos',
+    email: 'miguel.santos@genomics.com',
+    role: 'worker',
+    headline: 'Bioinformatician | Genomics',
+    summary: 'NGS and data analysis specialist, proficient in R and Python.',
+    skills: ['NGS', 'R', 'Python'],
+    certifications: [
+      {
+        name: 'Bioinformatics',
+        issuingBody: 'ISCB',
+        expiration: '2027-09-01',
+        status: 'Active'
+      }
+    ],
+    experience: [
+      {
+        company: 'GeneInsight',
+        role: 'Bioinformatician',
+        description: 'Analyzed rare disease sequencing data.'
+      }
+    ],
+    skillMatch: 80,
+    experienceYears: 4,
+    publications: 5,
+    productFit: null,
+    skillGaps: [],
+  },
+  {
+    id: 'user-007',
+    firstName: 'Dr. Ahmed',
+    lastName: 'Khan',
+    email: 'ahmed.khan@genomics.com',
+    role: 'provider',
+    headline: 'Provider | Genomics',
+    summary: 'Genomics project manager and NGS expert.',
+    skills: ['NGS', 'Project Management'],
+    certifications: [],
+    experience: [
+      {
+        company: 'GeneInsight',
+        role: 'Project Manager',
+        description: 'Managed genomics research projects.'
+      }
+    ],
+    skillMatch: null,
+    experienceYears: 7,
+    publications: 9,
+    productFit: 90,
+    skillGaps: ['Python', 'Bioinformatics'],
   }
 ];
 
