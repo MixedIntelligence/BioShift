@@ -71,6 +71,15 @@ import LabDashboardPage from '../../pages/dashboard/LabDashboardPage';
 import WorkerDashboardPage from '../../pages/dashboard/WorkerDashboardPage';
 import LabsListPage from '../../pages/labs/LabsListPage';
 import RoleSwitcher from '../RoleSwitcher';
+import PaymentsBanking from '../../pages/profile/payments/PaymentsBanking';
+import Upskill from '../../pages/profile/upskill/Upskill';
+import History from '../../pages/profile/history/History';
+import Startups from '../../pages/profile/startups/Startups';
+import Documents from '../../pages/profile/documents/Documents';
+import Publications from '../../pages/profile/publications/Publications';
+import Patents from '../../pages/profile/patents/Patents';
+import Bionics from '../../pages/profile/bionics/Bionics';
+import Connect from '../../pages/connect/Connect';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -221,6 +230,15 @@ class Layout extends React.Component {
                     <Route path="/app/dashboard/lab" exact component={LabDashboardPage} />
                     <Route path="/app/dashboard/worker" exact component={WorkerDashboardPage} />
                     <Route path="/app/labs" exact component={LabsListPage} />
+                    <Route path="/app/payments" exact component={PaymentsBanking} />
+                    <Route path="/app/upskill" exact component={Upskill} />
+                    <Route path="/app/history" exact component={History} />
+                    <Route path="/app/startups" exact component={Startups} />
+                    <Route path="/app/documents" exact component={Documents} />
+                    <Route path="/app/publications" exact component={Publications} />
+                    <Route path="/app/patents" exact component={Patents} />
+                    <Route path="/app/bionics" exact component={Bionics} />
+                    <Route path="/app/connect" exact component={Connect} />
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>
