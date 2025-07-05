@@ -27,7 +27,8 @@ const addUserSkill = (userId, skill) => {
 const addUserEducation = (userId, education) => {
   const { institution, degree, field_of_study, start_year, end_year } = education;
   const stmt = db.prepare('INSERT INTO user_education (user_id, institution, degree, field_of_study, start_year, end_year) VALUES (?, ?, ?, ?, ?, ?)');
-  stmt.run(userId, institution, degree, field_of_study, start_year, end_year);
+  const result = stmt.run(userId, institution, degree, field_of_study, start_year, end_year);
+  return { id: result.lastInsertRowid, user_id: userId, ...education };
 };
 
 const addUserPublication = (userId, publication) => {

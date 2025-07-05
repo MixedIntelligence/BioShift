@@ -104,9 +104,27 @@ const getUserProfile = (userId) => {
   return apiClient.get(`/users/${userId}/profile`);
 };
 
+// Get current user's profile
+const getCurrentUser = () => {
+  return apiClient.get('/users/me');
+};
+
 // Profile management
 const updateUserProfile = (profileData) => {
   return apiClient.put('/users/me', profileData);
+};
+
+// New profile management endpoints
+const updateProfile = (profileData) => {
+  return apiClient.put('/profile/update', profileData);
+};
+
+const completeOnboarding = () => {
+  return apiClient.post('/profile/onboarding/complete');
+};
+
+const completeProfile = () => {
+  return apiClient.post('/profile/complete');
 };
 
 // Skills endpoints
@@ -180,7 +198,11 @@ const api = {
   markAsRead,
   requestDocumentVerification,
   getUserProfile,
+  getCurrentUser,
   updateUserProfile,
+  updateProfile,
+  completeOnboarding,
+  completeProfile,
   // Skills/Upskill
   getSkills,
   addSkill,

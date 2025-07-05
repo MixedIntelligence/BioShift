@@ -1,5 +1,28 @@
 # Changelog
 
+## [9.2.0] - 05/07/2025
+
+### Onboarding UX Improvements & Bug Fixes - COMPLETED ✅
+- ✅ **Fixed skills API payload mismatch** - frontend now sends `{ upskill }` instead of `{ skill }`
+- ✅ **Fixed education API response** - removed async/await from synchronous function
+- ✅ **Added "Skip For Now" functionality** - users can bypass onboarding and go directly to Gigs
+- ✅ **Enhanced user experience** - immediate access to Gigs marketplace for quick user engagement
+- ✅ **Skip onboarding redirects to `/app/gigs`** - direct access to core platform functionality
+- ✅ **Profile completion can be done later** - flexible user onboarding approach
+- ✅ **Added informational alerts** - explains skip option and profile completion benefits
+- ✅ **Complete backend API testing** - all onboarding endpoints working correctly
+
+### Bug Fixes:
+- Fixed onboarding component skills API to use correct `{ upskill }` payload format
+- Fixed education API route to properly handle synchronous `addUserEducation` function
+- Fixed education model to return created education record with ID
+
+### UX Enhancements:
+- Added "Skip For Now" button to all onboarding steps
+- Added informational alert explaining skip option
+- Improved button layout and navigation flow
+- Direct redirect to Gigs marketplace after skipping
+
 ## [9.1.0] - 05/07/2025
 
 ### Profile System & Onboarding - COMPLETED ✅

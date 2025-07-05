@@ -130,9 +130,9 @@ router.get('/education/:userId', auth, async (req, res) => {
   }
 });
 
-router.post('/education', auth, async (req, res) => {
+router.post('/education', auth, (req, res) => {
   try {
-    const newEducation = await addUserEducation(req.user.id, req.body);
+    const newEducation = addUserEducation(req.user.id, req.body);
     res.json(newEducation);
   } catch (err) {
     console.error(err.message);

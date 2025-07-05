@@ -17,8 +17,8 @@ import {
   Alert
 } from 'reactstrap';
 import { toast } from 'react-toastify';
-import Widget from '../../components/Widget';
-import api from '../../services/api';
+import Widget from '../../../components/Widget/Widget';
+import api from '../../../services/api';
 
 const Onboarding = ({ currentUser, history }) => {
   const [currentStep, setCurrentStep] = useState(1);
@@ -60,8 +60,29 @@ const Onboarding = ({ currentUser, history }) => {
     // Check if user has already completed onboarding
     const checkOnboardingStatus = async () => {
       try {
-        // TODO: Check if user profile is complete
-        // For now, we'll assume they need onboarding
+        const userResponse = await api.getCurrentUser();
+        const user = userResponse.data;
+        
+        // If user has already completed onboarding, redirect to profile
+        if (user.onboarding_completed) {
+          toast.info('You have already completed onboarding!');
+          history.push('/app/profile');
+          return;
+        }
+
+        // Pre-populate form with existing data if any
+        if (user.first_name || user.last_name) {
+          setProfileData(prev => ({
+            ...prev,
+            firstName: user.first_name || '',
+            lastName: user.last_name || '',
+            headline: user.headline || '',
+            bio: user.bio || '',
+            location: user.location || '',
+            companyDescription: user.company_description || '',
+            labDescription: user.lab_description || '',
+          }));
+        }
       } catch (error) {
         console.error('Error checking onboarding status:', error);
       }
@@ -70,7 +91,7 @@ const Onboarding = ({ currentUser, history }) => {
     if (currentUser) {
       checkOnboardingStatus();
     }
-  }, [currentUser]);
+  }, [currentUser, history]);
 
   const handleInputChange = (field, value) => {
     setProfileData(prev => ({
@@ -147,18 +168,56 @@ const Onboarding = ({ currentUser, history }) => {
     }
   };
 
+  const skipOnboarding = async () => {
+    try {
+      // Just mark onboarding as completed without saving profile data
+      await api.completeOnboarding();
+      toast.info('Onboarding skipped. You can complete your profile later from the Profile page.');
+      history.push('/app/gigs');
+    } catch (error) {
+      toast.error('Error skipping onboarding. Please try again.');
+      console.error('Error skipping onboarding:', error);
+    }
+  };
+
   const saveProfileData = async () => {
-    // Save skills
-    for (const skill of profileData.skills) {
-      await api.addSkill({ skill });
-    }
+    try {
+      // Save basic profile information to the new profile fields
+      const profileUpdate = {
+        first_name: profileData.firstName,
+        last_name: profileData.lastName,
+        headline: profileData.headline,
+        bio: profileData.bio,
+        location: profileData.location,
+      };
 
-    // Save education
-    for (const edu of profileData.education) {
-      await api.addEducation(edu);
-    }
+      // Add role-specific fields
+      if (currentUser?.role === 'Provider') {
+        profileUpdate.company_description = profileData.companyDescription;
+      } else if (currentUser?.role === 'Lab') {
+        profileUpdate.lab_description = profileData.labDescription;
+      }
 
-    // TODO: Save other profile data via API
+      // Update profile with new fields
+      await api.updateProfile(profileUpdate);
+
+      // Save skills
+      for (const skill of profileData.skills) {
+        await api.addSkill({ upskill: skill });
+      }
+
+      // Save education
+      for (const edu of profileData.education) {
+        await api.addEducation(edu);
+      }
+
+      // Mark onboarding as completed
+      await api.completeOnboarding();
+
+    } catch (error) {
+      console.error('Error saving profile data:', error);
+      throw error;
+    }
   };
 
   const renderBasicInfoStep = () => (
@@ -443,6 +502,12 @@ const Onboarding = ({ currentUser, history }) => {
                 <p className="text-muted">Let's complete your profile to get started</p>
                 <Progress value={(currentStep / totalSteps) * 100} className="mb-3" />
                 <p>Step {currentStep} of {totalSteps}</p>
+                <Alert color="info" className="mt-3 text-start">
+                  <small>
+                    <strong>Need to get started quickly?</strong> You can skip the profile setup for now and go directly to browse Gigs. 
+                    You can always complete your profile later to unlock more features.
+                  </small>
+                </Alert>
               </div>
             </Widget>
 
@@ -460,15 +525,25 @@ const Onboarding = ({ currentUser, history }) => {
                 Previous
               </Button>
               
-              {currentStep < totalSteps ? (
-                <Button color="primary" onClick={nextStep}>
-                  Next
+              <div className="d-flex gap-2">
+                <Button 
+                  color="outline-secondary" 
+                  onClick={skipOnboarding}
+                  className="me-2"
+                >
+                  Skip For Now
                 </Button>
-              ) : (
-                <Button color="success" onClick={completeOnboarding}>
-                  Complete Profile
-                </Button>
-              )}
+                
+                {currentStep < totalSteps ? (
+                  <Button color="primary" onClick={nextStep}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button color="success" onClick={completeOnboarding}>
+                    Complete Profile
+                  </Button>
+                )}
+              </div>
             </div>
           </Col>
         </Row>
