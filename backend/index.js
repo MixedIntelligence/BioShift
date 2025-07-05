@@ -1,0 +1,69 @@
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+const express = require('express');
+const cors = require('cors');
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// Example route for health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Backend is running.' });
+});
+
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+
+const gigsRoutes = require('./routes/gigs');
+app.use('/api/gigs', gigsRoutes);
+
+const usersRoutes = require('./routes/users');
+app.use('/api/users', usersRoutes);
+
+const paymentsRoutes = require('./routes/payments');
+app.use('/api/payments', paymentsRoutes);
+
+const profileRoutes = require('./routes/profile');
+app.use('/api/profile', profileRoutes);
+
+const applicationsRoutes = require('./routes/applications');
+app.use('/api/applications', applicationsRoutes);
+
+const notificationsRoutes = require('./routes/notifications');
+app.use('/api/notifications', notificationsRoutes);
+
+const connectRoutes = require('./routes/connect');
+app.use('/api/connect', connectRoutes);
+
+const offeringsRoutes = require('./routes/offerings');
+app.use('/api/offerings', offeringsRoutes);
+
+const bankAccountsRoutes = require('./routes/bank_accounts');
+app.use('/api/bank_accounts', bankAccountsRoutes);
+
+const agreementsRoutes = require('./routes/agreements');
+app.use('/api/agreements', agreementsRoutes);
+
+const transactionsRoutes = require('./routes/transactions');
+app.use('/api/transactions', transactionsRoutes);
+
+const verificationRoutes = require('./routes/verification');
+app.use('/api', verificationRoutes);
+
+const providerRoutes = require('./routes/providers');
+app.use('/api/provider', providerRoutes);
+
+const inboxRoutes = require('./routes/inbox');
+app.use('/api/inbox', inboxRoutes);
+
+// TODO: Add bionics and integration routes
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;

@@ -4,7 +4,7 @@ import { withRouter, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Container, Alert, Button } from 'reactstrap';
 import Widget from '../../../components/Widget';
-import { registerUser, authError, loginUser } from '../../../actions/auth';
+import { authError, registerUser } from '../../../actions/auth';
 import microsoft from '../../../images/microsoft.png';
 
 class Register extends React.Component {
@@ -18,7 +18,10 @@ class Register extends React.Component {
         this.state = {
             email: '',
             password: '',
-            confirmPassword: ''
+            confirmPassword: '',
+            role: 'Worker', // Default role
+            companyName: '',
+            website: ''
         };
 
         this.doRegister = this.doRegister.bind(this);
@@ -27,6 +30,9 @@ class Register extends React.Component {
         this.changeEmail = this.changeEmail.bind(this);
         this.changePassword = this.changePassword.bind(this);
         this.changeConfirmPassword = this.changeConfirmPassword.bind(this);
+        this.changeRole = this.changeRole.bind(this);
+        this.changeCompanyName = this.changeCompanyName.bind(this);
+        this.changeWebsite = this.changeWebsite.bind(this);
         this.checkPassword = this.checkPassword.bind(this);
         this.isPasswordValid = this.isPasswordValid.bind(this);
     }
@@ -41,6 +47,18 @@ class Register extends React.Component {
 
     changeConfirmPassword(event) {
         this.setState({confirmPassword: event.target.value});
+    }
+
+    changeRole(event) {
+        this.setState({role: event.target.value});
+    }
+
+    changeCompanyName(event) {
+        this.setState({companyName: event.target.value});
+    }
+
+    changeWebsite(event) {
+        this.setState({website: event.target.value});
     }
 
     checkPassword() {
@@ -65,19 +83,35 @@ class Register extends React.Component {
         if (!this.isPasswordValid()) {
             this.checkPassword();
         } else {
-            this.props.dispatch(registerUser({
-              email: this.state.email,
-              password: this.state.password
-            }));
+            const registrationData = {
+                email: this.state.email,
+                password: this.state.password,
+                role: this.state.role,
+            };
+
+            // Add provider-specific fields if role is Provider
+            if (this.state.role === 'Provider') {
+                if (!this.state.companyName || !this.state.website) {
+                    this.props.dispatch(authError("Company name and website are required for Provider accounts"));
+                    setTimeout(() => {
+                        this.props.dispatch(authError());
+                    }, 3 * 1000);
+                    return;
+                }
+                registrationData.companyName = this.state.companyName;
+                registrationData.website = this.state.website;
+            }
+
+            this.props.dispatch(registerUser(registrationData));
         }
     }
 
     googleLogin() {
-        this.props.dispatch(loginUser({social: "google"}));
+        // a real google login implementation would go here
     }
 
     microsoftLogin() {
-        this.props.dispatch(loginUser({social: "microsoft"}));
+        // a real microsoft login implementation would go here
     }
 
     render() {
@@ -85,13 +119,13 @@ class Register extends React.Component {
             <div className="auth-page">
                 <Container>
                     <h5 className="auth-logo">
-                        <i className="la la-circle text-gray"/>
-                        Sing App React
-                        <i className="la la-circle text-warning"/>
+                        <i className="fa fa-circle text-primary" />
+                        LabLeap
+                        <i className="fa fa-circle text-danger" />
                     </h5>
-                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Create an account</h3>}>
+                    <Widget className="widget-auth mx-auto" title={<h3 className="mt-0">Create your LabLeap account</h3>}>
                         <p className="widget-auth-info">
-                            Please fill all fields below
+                            Join the biotech workforce revolution
                         </p>
                         <form className="mt" onSubmit={this.doRegister}>
                             {
@@ -102,8 +136,22 @@ class Register extends React.Component {
                                 )
                             }
                             <div className="form-group">
+                                <label htmlFor="role" className="form-label">Account Type</label>
+                                <select 
+                                    className="form-control no-border" 
+                                    value={this.state.role}
+                                    onChange={this.changeRole} 
+                                    name="role"
+                                    required
+                                >
+                                    <option value="Worker">Scientist/Worker - Looking for opportunities</option>
+                                    <option value="Lab">Lab - Posting opportunities</option>
+                                    <option value="Provider">Provider - Offering services/products</option>
+                                </select>
+                            </div>
+                            <div className="form-group">
                                 <input className="form-control no-border" value={this.state.email}
-                                       onChange={this.changeEmail} type="text" required name="email"
+                                       onChange={this.changeEmail} type="email" required name="email"
                                        placeholder="Email"/>
                             </div>
                             <div className="form-group">
@@ -114,9 +162,25 @@ class Register extends React.Component {
                             <div className="form-group">
                                 <input className="form-control no-border" value={this.state.confirmPassword}
                                        onChange={this.changeConfirmPassword} onBlur={this.checkPassword} type="password" required name="confirmPassword"
-                                       placeholder="Confirm"/>
+                                       placeholder="Confirm Password"/>
                             </div>
-                            <Button type="submit" color="inverse" className="auth-btn mb-3" size="sm">{this.props.isFetching ? 'Loading...' : 'Register'}</Button>
+                            {this.state.role === 'Provider' && (
+                                <>
+                                    <div className="form-group">
+                                        <input className="form-control no-border" value={this.state.companyName}
+                                               onChange={this.changeCompanyName} type="text" required name="companyName"
+                                               placeholder="Company Name"/>
+                                    </div>
+                                    <div className="form-group">
+                                        <input className="form-control no-border" value={this.state.website}
+                                               onChange={this.changeWebsite} type="url" required name="website"
+                                               placeholder="Company Website (https://...)"/>
+                                    </div>
+                                </>
+                            )}
+                            <Button type="submit" color="primary" className="auth-btn mb-3" size="sm">
+                                {this.props.isFetching ? 'Creating Account...' : 'Create Account'}
+                            </Button>
                             <p className="widget-auth-info">or sign up with</p>
                             <div className="social-buttons">
                                 <Button onClick={this.googleLogin} color="primary" className="social-button mb-2">
@@ -137,7 +201,7 @@ class Register extends React.Component {
                     </Widget>
                 </Container>
                 <footer className="auth-footer">
-                    {new Date().getFullYear()} &copy; Sing App - React Admin Dashboard Template. By <a rel="noopener noreferrer" target="_blank" href="https://flatlogic.com">Flatlogic</a>
+                    {new Date().getFullYear()} &copy; BioShift, Inc. - LabLeap
                 </footer>
             </div>
         );

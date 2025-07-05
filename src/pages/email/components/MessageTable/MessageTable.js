@@ -9,14 +9,27 @@ import Pagination from '../Pagination/Pagination';
 import Compose from '../Compose/Compose';
 import Message from '../Message/Message';
 
-import mock from '../../mock';
+import api from '../../../../services/api';
 import s from './MessageTable.module.scss';
 
 class MessageTable extends Component {
   state = {
-    messages: mock,
+    messages: [],
     checkedIds: [],
     searchString: '',
+  }
+
+  componentDidMount() {
+    this.fetchMessages();
+  }
+
+  async fetchMessages() {
+    try {
+      const response = await api.getConversations();
+      this.setState({ messages: response.data });
+    } catch (error) {
+      console.error("Failed to fetch messages", error);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -151,7 +164,7 @@ class MessageTable extends Component {
     this.setState({ messages: newMessages });
   }
 
-  handleOpenMessage(id) {
+  async handleOpenMessage(id) {
     const newMessages = [...this.state.messages];
 
     newMessages.map((message) => {
@@ -164,7 +177,12 @@ class MessageTable extends Component {
 
     this.setState({ messages: newMessages });
 
-    this.props.openMessage(id);
+    try {
+      const response = await api.getMessages(id);
+      this.props.openMessage(id, response.data);
+    } catch (error) {
+      console.error("Failed to fetch messages for conversation", error);
+    }
   }
 
   search = (value) => {
@@ -175,9 +193,12 @@ class MessageTable extends Component {
     const { searchString } = this.state;
 
     if (searchString) {
-      return (m.content.toLowerCase().indexOf(searchString) !== -1 ||
-        m.from.toLowerCase().indexOf(searchString) !== -1 ||
-        m.theme.toLowerCase().indexOf(searchString) !== -1);
+      const subject = m.subject || '';
+      const last_sender = m.last_sender || '';
+      const last_message = m.last_message || '';
+      return (subject.toLowerCase().indexOf(searchString) !== -1 ||
+        last_sender.toLowerCase().indexOf(searchString) !== -1 ||
+        last_message.toLowerCase().indexOf(searchString) !== -1);
     }
 
     return true;
@@ -185,7 +206,7 @@ class MessageTable extends Component {
 
   render() {
     const { messages, checkedIds } = this.state;
-    const { filter, openedMessage, openMessage, compose, composeData, changeCompose } = this.props;
+    const { filter, openedMessage, openMessage, compose, composeData, changeCompose, openedMessageData } = this.props;
     const filteredMessages = messages.filter(message => message[filter]);
     const dataToDisplay = filter ? filteredMessages : messages;
     return (
@@ -253,10 +274,10 @@ class MessageTable extends Component {
                       <td
                         className={s.messageFrom}
                         onClick={() => this.handleOpenMessage(message.id)}
-                      >{message.from}</td>
-                      <td onClick={() => this.handleOpenMessage(message.id)}>{message.theme}</td>
+                      >{message.last_sender}</td>
+                      <td onClick={() => this.handleOpenMessage(message.id)}>{message.subject}</td>
                       <td className={s.messageClip}>{message.attachments && <i className="fa fa-paperclip" />}</td>
-                      <td className={s.messageDate}>{message.date}</td>
+                      <td className={s.messageDate}>{new Date(message.created_at).toLocaleDateString()}</td>
                     </tr>),
                 )}
               </tbody>
@@ -264,7 +285,7 @@ class MessageTable extends Component {
           </Widget>
           : compose
             ? <Compose data={composeData} />
-            : <Message message={messages[openedMessage]} compose={changeCompose} />
+            : <Message message={openedMessageData} compose={changeCompose} />
         }
         {/* eslint-enable */}
       </div>
@@ -275,6 +296,7 @@ class MessageTable extends Component {
 MessageTable.propTypes = {
   filter: PropTypes.string,
   openedMessage: PropTypes.number,
+  openedMessageData: PropTypes.array,
   openMessage: PropTypes.func.isRequired,
   compose: PropTypes.bool.isRequired,
   composeData: PropTypes.shape({
@@ -287,6 +309,7 @@ MessageTable.propTypes = {
 MessageTable.defaultProps = {
   filter: null,
   openedMessage: null,
+  openedMessageData: null,
   composeData: null,
 };
 

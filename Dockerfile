@@ -1,23 +1,36 @@
-# --- Build Stage ---
-FROM node:20 AS build
-
+# Stage 1: Build the React frontend
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-COPY package*.json yarn.lock ./
+# Copy package configuration and install all dependencies
+COPY package.json yarn.lock ./
 RUN yarn install --frozen-lockfile
 
+# Copy the rest of the application source code
 COPY . .
-RUN yarn build
 
-# --- Production Stage ---
-FROM node:20-alpine AS production
+# Build the frontend
+RUN npm run build
 
+# Stage 2: Create the lightweight production image
+FROM node:18-alpine
 WORKDIR /app
 
-# Install serve to serve the build folder
-RUN yarn global add serve
+# Set the environment to production
+ENV NODE_ENV=production
 
-COPY --from=build /app/build ./build
+# Copy package configuration and install only production dependencies
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production
 
-EXPOSE 3000
-CMD ["serve", "-s", "build", "-l", "3000"]
+# Copy backend code
+COPY backend/ ./backend/
+
+# Copy built frontend assets from the builder stage
+COPY --from=builder /app/build ./build
+
+# Expose the port the backend runs on
+EXPOSE 8080
+
+# Command to start the backend server
+CMD ["node", "backend/index.js"]

@@ -1,0 +1,93 @@
+# LabLeap v9: Technical Revival Plan
+
+**Objective:** This document outlines a focused 4-week plan to transition the LabLeap v9 MVP from a prototype to a functional, beta-ready platform. The goal is to validate the core marketplace loop: labs post gigs, scientists apply, labs review applicants, and they connect.
+
+---
+
+## 1. Immediate Priorities (The Next 4 Weeks)
+
+The focus for the closed beta is exclusively on enabling and validating the core user workflow. All efforts will be directed at the epics and stories below.
+
+### Epic 1: Build End-to-End Application Workflow (P0)
+*This is the highest priority and represents the core value proposition.*
+-   **User Story:** As a Scientist, I can view a list of available gigs fetched from the backend and apply to a gig that interests me.
+-   **User Story:** As a Lab, I can view a list of scientists who have applied to my posted gig.
+-   **User Story:** As a Lab, I can review the profile of an applicant to make an informed decision.
+-   **User Story:** As a Lab, I can accept an applicant, which notifies the scientist and facilitates an offline connection.
+
+### Epic 2: API Integration & State Management (P1)
+*Connect the existing UI to the functional backend.*
+-   **User Story:** As a User, I can register and log in, and my authentication state (JWT) is managed securely on the frontend.
+-   **User Story:** As a User, my role (`Lab` or `Worker`) determines the dashboard and actions available to me.
+-   **User Story:** As a Lab, I can create a new gig using a form, which posts the data to the backend API.
+-   **User Story:** As a User, I see real data from the backend instead of mock data across the application.
+
+### Epic 3: Minimum Viable Profiles (P2)
+*Ensure enough information exists for users to make decisions.*
+-   **User Story:** As a Scientist, I am prompted to fill out essential profile information (e.g., a brief bio, key skills, education) before I can apply for gigs.
+-   **User Story:** As a Lab, I can view the essential profile information of any scientist who applies to my gig.
+
+---
+
+## 2. Technical Task Breakdown
+
+This breakdown focuses on the highest-priority epic: **Build End-to-End Application Workflow**.
+
+### Frontend (React)
+-   [ ] **API Service Layer:** Create a dedicated module (e.g., `src/services/api.js`) to centralize `fetch`/`axios` calls. It should handle adding the JWT `Authorization` header to authenticated requests.
+-   [ ] **Gig List Integration:**
+    -   [ ] In the Gigs list page ([`src/pages/gigs/Gigs.js`](src/pages/gigs/Gigs.js)), replace the mock data import ([`src/pages/gigs/mock.js`](src/pages/gigs/mock.js)) with an API call to the `GET /api/gigs` endpoint.
+    -   [ ] Implement loading and error states for the gig list view.
+-   [ ] **Apply to Gig Functionality:**
+    -   [ ] On the Gig Details page, connect the "Apply" button's `onClick` handler to call the `POST /api/gigs/:gigId/apply` endpoint.
+    -   [ ] The request must be authenticated, sending the scientist's JWT.
+    -   [ ] Provide user feedback on successful application (e.g., toast notification, button state change).
+-   [ ] **Lab Dashboard: View Applicants:**
+    -   [ ] Create a new component for the Lab dashboard to display applicants for a specific gig.
+    -   [ ] This component will fetch data from the `GET /api/gigs/:gigId/applications` endpoint (a new route may be needed or adapted from `listApplications` in [`backend/models/gig.js`](backend/models/gig.js:41)).
+    -   [ ] Display a list of applicants, showing key information (Name, Headline). Make each applicant clickable.
+-   [ ] **Applicant Profile View:**
+    -   [ ] When a lab clicks an applicant, display the applicant's public profile using data from `GET /api/users/:userId`.
+    -   [ ] Ensure this view presents the "Minimum Viable Profile" data.
+-   [ ] **Accept Applicant Workflow:**
+    -   [ ] Add an "Accept" button to the applicant review interface.
+    -   [ ] This button will trigger a backend call (e.g., `POST /api/applications/:applicationId/accept`) to update the application status.
+    -   [ ] On success, display a confirmation to the Lab, indicating that the scientist has been notified and their contact information is now available.
+
+### Backend (Node.js/Express)
+-   [ ] **Review Endpoints:** Verify that all required endpoints (`GET /api/gigs`, `POST /api/gigs/:gigId/apply`, etc.) exist and align with frontend needs.
+-   [ ] **Create `GET /api/gigs/:gigId/applications` Endpoint:** Expose the `listApplications` model function ([`backend/models/gig.js`](backend/models/gig.js:41)) via a secure route. This route must be protected and only accessible by the Lab user who owns the gig.
+-   [ ] **Create Application Status Endpoint:** Implement a new route (e.g., `POST /api/applications/:applicationId/accept`) that updates the status of an application in the `applications` table.
+-   [ ] **Seed Data:** Refine database seeds to include realistic sample gigs and users for development and testing.
+
+---
+
+## 3. Identified Risks & Mitigation Plan
+
+1.  **Risk: Placeholder "Matching" Logic.** The platform implies matching, but the backend has no such algorithm. Users may expect an intelligent system that doesn't exist.
+    *   **Mitigation:** Reframe the feature for the beta. Instead of "matching," we will implement a simple **"Application Notification"** system. When a scientist applies, the lab receives a notification. The lab is responsible for manually reviewing all candidates. This manages expectations and defers the immense complexity of a true matching algorithm until the core loop is validated.
+
+2.  **Risk: Incomplete Profiles Hinder Evaluation.** Scientists can apply with empty or sparse profiles, making it impossible for labs to make a hiring decision, thus breaking the marketplace loop.
+    *   **Mitigation:** Implement a **"Minimum Viable Profile" gate**. Before a `Worker` role user can click "Apply" on any gig, the system will check if their profile contains essential, non-empty fields (e.g., `summary`, `skills`, `education`). If the profile is incomplete, the user is redirected to their profile page with clear instructions on what to fill out.
+
+3.  **Risk: The "Connect" Phase is Undefined.** The workflow ends ambiguously after a lab "accepts" a scientist. This could lead to user confusion and drop-off.
+    *   **Mitigation:** Define a simple, clear "Connect" event for the beta. Upon acceptance, the system will:
+        1.  Update the application status to `accepted` in the database.
+        2.  Send a notification to both the Lab and the Scientist.
+        3.  **Crucially, the notification will contain the other party's contact email.** This explicitly moves the conversation off-platform, which is acceptable for the beta and avoids the need to build in-app messaging or contract management features.
+
+---
+
+## 4. Key Architectural Questions
+
+Alignment on these questions is critical before development resumes.
+
+1.  **Data Model for "Agreements":** What is the simplest possible schema to represent a formal agreement between a Lab and a Scientist post-acceptance? For beta, can we simply add `status` (`pending`, `accepted`, `rejected`) and `accepted_at` fields to the `applications` table, or do we need a separate `agreements` table from day one?
+
+2.  **Credential & Document Verification:** The UI has placeholders for uploading documents. What is our long-term strategy for verifying credentials? For the beta, we will state that all verification is the responsibility of the Lab. When and how will we implement a trusted verification system?
+
+3.  **Notification System:** How will we handle real-time or near-real-time notifications (e.g., "You have a new applicant!")? Is a simple, polling-based approach sufficient for the beta, or should we invest in setting up WebSockets or a push notification service now?
+
+4.  **Data Privacy & Visibility:** What parts of a Scientist's profile are public versus private? What information should be visible only after a formal application or connection is made? We need to define these boundaries clearly to build the API endpoints correctly.
+
+5.  **Payment & Invoicing Stubs:** The backend contains `TODO` stubs for payment features. What is the product roadmap for monetization? Knowing the direction (e.g., commission-based, subscription, listing fees) will influence the data models we build today, even if the features are not implemented for the beta.

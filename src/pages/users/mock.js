@@ -62,6 +62,18 @@ const users = [
     skills: [],
     certifications: [],
     experience: []
+  },
+  {
+    id: 'user-004',
+    firstName: 'BioShift',
+    lastName: 'Admin',
+    email: 'bioshift.admin@example.com',
+    role: 'admin',
+    headline: 'Platform Administrator',
+    summary: 'BioShift admin account for managing users and platform data.',
+    skills: [],
+    certifications: [],
+    experience: []
   }
 ];
 

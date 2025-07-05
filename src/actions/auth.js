@@ -22,7 +22,7 @@ export const REGISTER_SUCCESS = 'REGISTER_SUCCESS';
 
 async function findMe() {
   if (config.isBackend) {
-    const response = await axios.get('/auth/me');
+    const response = await axios.get('/users/me');
     return response.data;
   } else {
     return mockUser;
@@ -126,9 +126,9 @@ export function loginUser(creds) {
         });
         if (creds.social) {
           window.location.href = config.baseURLApi + "/auth/signin/" + creds.social + '?app=' + config.redirectUrl;
-        } else if (creds.email.length > 0 && creds.password.length > 0) {
-          axios.post("/auth/signin/local", creds).then(res => {
-            const token = res.data;
+        } else if (creds && creds.email && creds.password) {
+          axios.post("/auth/login", creds).then(res => {
+            const { token } = res.data;
             dispatch(receiveToken(token));
             dispatch(doInit());
             dispatch(push('/app'));
@@ -205,19 +205,33 @@ export function sendPasswordResetEmail(email) {
 export function registerUser(creds) {
   return (dispatch) => {
     if (!config.isBackend) {
-      dispatch(push('/user/profile'));
+      dispatch(push('/app/profile'));
     } else {
       dispatch({
         type: REGISTER_REQUEST,
       });
 
-      if (creds.email.length > 0 && creds.password.length > 0) {
-        axios.post("/auth/signup", creds).then(res => {
+      if (creds && creds.email && creds.password) {
+        axios.post("/auth/register", creds).then(res => {
+          const { token } = res.data;
           dispatch({
             type: REGISTER_SUCCESS
           });
-          toast.success("You've been registered successfully. Please check your email for verification link");
-          dispatch(push('/user/profile'));
+          // Store token and redirect without calling doInit to avoid potential loops
+          localStorage.setItem('token', token);
+          axios.defaults.headers.common['Authorization'] = "Bearer " + token;
+          
+          // Decode user info from token for immediate use
+          if (config.isBackend) {
+            const user = jwt.decode(token);
+            dispatch({
+              type: 'AUTH_SET_USER',
+              payload: { currentUser: user }
+            });
+          }
+          
+          toast.success("Registration successful! Welcome to BioMVP.");
+          dispatch(push('/app'));
         }).catch(err => {
           dispatch(authError(err.response.data));
         })

@@ -1,24 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cx from 'classnames';
 import {
   Row,
   Col,
-  Input,
-  Label,
-  Form,
-  FormGroup,
+  Nav,
+  NavItem,
+  NavLink,
+  TabContent,
+  TabPane,
 } from 'reactstrap';
 import Widget from '../../components/Widget';
 
 import p19 from '../../images/pictures/19.jpg';
 import a5 from '../../images/people/a5.jpg';
-import a1 from '../../images/people/a1.jpg';
-import a3 from '../../images/people/a3.jpg';
-import avatar from '../../images/avatar.png';
 
 import s from './Profile.module.scss';
+import Skills from './skills/Skills';
+import Education from './education/Education';
+import Publications from './publications/Publications';
+import Documents from './documents/Documents';
+import Payments from './payments/Payments';
+import Agreements from './agreements/Agreements';
+import Transactions from './transactions/Transactions';
 
-const Profile = () => (
+const Profile = () => {
+  const [activeTab, setActiveTab] = useState('1');
+
+  const toggle = (tab) => {
+    if (activeTab !== tab) setActiveTab(tab);
+  };
+
+  return (
   <div className={s.root}>
     <h1 className="page-title">User - <span className="fw-semi-bold">Profile</span>
     </h1>
@@ -88,100 +100,91 @@ const Profile = () => (
         </Widget>
       </Col>
       <Col lg={6} xs={12}>
-        <section className="activities">
-          <h2 className="ms-3">Activities</h2>
-          <section className={s.event}>
-            <header>
-              <span className={s.eventAvatar}>
-                <img className="rounded-circle" src={a5} alt="..." />
-              </span>
-              <h5 className={s.eventTitle}><button className="btn-link">Bob Nilson</button> <small><button className="btn-link">@nils</button></small></h5>
-              <p className={s.eventTimestamp}>February 22, 2014 at 01:59 PM</p>
-            </header>
-
-            <div className={s.eventBody}>
-              There is no such thing as maturity. There is instead an ever-evolving process of maturing.
-              Because when there is a maturity, there is ...
-            </div>
-            <footer className={s.eventFooter}>
-              <ul className="post-links">
-                <li><button className="btn-link">1 hour</button></li>
-                <li><button className="btn-link"><span className="text-danger"><i className="fa fa-heart" /> Like</span></button></li>
-                <li><button className="btn-link">Comment</button></li>
-              </ul>
-            </footer>
-          </section>
-          <section className={s.event}>
-            <header>
-              <h5 className={s.eventTitle}><button className="btn-link">Jessica Smith</button> <small>@jess</small></h5>
-              <p className={s.eventTimestamp}>February 22, 2014 at 01:59 PM</p>
-            </header>
-            <div className={s.eventBody}>
-              Check out this awesome photo I made in Italy last summer. Seems it was lost somewhere deep inside
-              my brand new HDD 40TB. Thanks god I found it!
-            </div>
-            <footer className={s.eventFooter}>
-              <div className="clearfix">
-                <ul className="post-links mt-sm pull-left">
-                  <li><button className="btn-link">1 hour</button></li>
-                  <li><button className="btn-link"><span className="text-danger"><i className="fa fa-heart-o" /> Like</span></button></li>
-                  <li><button className="btn-link">Comment</button></li>
-                </ul>
-
-                <span className="thumb thumb-sm pull-right">
-                  <button className="btn-link">
-                    <img className="rounded-circle" alt="..." src={a1} />
-                  </button>
-                </span>
-                <span className="thumb thumb-sm pull-right">
-                  <button className="btn-link"><img className="rounded-circle" alt="..." src={a5} /></button>
-                </span>
-                <span className="thumb thumb-sm pull-right">
-                  <button className="btn-link"><img className="rounded-circle" alt="..." src={a3} /></button>
-                </span>
-              </div>
-              <ul className="post-comments mt-sm">
-                <li>
-                  <span className="thumb-xs avatar pull-left me-2">
-                    <img className="rounded-circle" src={a1} alt="..." />
-                  </span>
-                  <div className="comment-body">
-                    <h6 className="author fs-sm fw-semi-bold">Ignacio Abad <small>6 mins ago</small></h6>
-                    <p>Hey, have you heard anything about that?</p>
-                  </div>
-                </li>
-                <li>
-                  <span className="thumb-xs avatar pull-left me-2">
-                    <img className="rounded-circle" src={avatar} alt="..." />
-                  </span>
-                  <div className="comment-body">
-                    <input className="form-control form-control-sm" type="text" placeholder="Write your comment..." />
-                  </div>
-                </li>
-              </ul>
-            </footer>
-          </section>
-          <Form className="mt mb-4" action="#">
-            <FormGroup className="mb-2">
-              <Label className="sr-only" for="new-event">New event</Label>
-              <Input type="textarea" id="new-event" placeholder="Post something..." rows="3" />
-            </FormGroup>
-            <div className="btn-toolbar">
-
-                <button className="btn btn-sm btn-gray-default">
-                  <i className="fa fa-camera fa-lg" />
-                </button>
-                <button className="btn btn-sm btn-gray-default">
-                  <i className="fa fa-map-marker fa-lg" />
-                </button>
-
-              <button type="submit" className="btn btn-success btn-sm ms-auto">Post</button>
-            </div>
-          </Form>
-        </section>
+        <Nav tabs>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '1' })}
+              onClick={() => { toggle('1'); }}
+            >
+              Skills
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '2' })}
+              onClick={() => { toggle('2'); }}
+            >
+              Education
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '3' })}
+              onClick={() => { toggle('3'); }}
+            >
+              Publications
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '4' })}
+              onClick={() => { toggle('4'); }}
+            >
+              Documents
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '5' })}
+              onClick={() => { toggle('5'); }}
+            >
+              Payments
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '6' })}
+              onClick={() => { toggle('6'); }}
+            >
+              Agreements
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink
+              className={cx({ active: activeTab === '7' })}
+              onClick={() => { toggle('7'); }}
+            >
+              Transactions
+            </NavLink>
+          </NavItem>
+        </Nav>
+        <TabContent activeTab={activeTab}>
+          <TabPane tabId="1">
+            <Skills />
+          </TabPane>
+          <TabPane tabId="2">
+            <Education />
+          </TabPane>
+          <TabPane tabId="3">
+            <Publications />
+          </TabPane>
+          <TabPane tabId="4">
+            <Documents />
+          </TabPane>
+          <TabPane tabId="5">
+            <Payments />
+          </TabPane>
+          <TabPane tabId="6">
+            <Agreements />
+          </TabPane>
+          <TabPane tabId="7">
+            <Transactions />
+          </TabPane>
+        </TabContent>
       </Col>
     </Row>
   </div>
-);
+  );
+};
 
 export default Profile;

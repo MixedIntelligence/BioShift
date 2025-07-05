@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS applications (
+    id SERIAL PRIMARY KEY,
+    gig_id INTEGER NOT NULL REFERENCES gigs(id),
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(gig_id, user_id)
+);

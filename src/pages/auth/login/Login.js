@@ -5,7 +5,7 @@ import config from '../../../config';
 import { connect } from 'react-redux';
 import { Container, Alert, Button } from 'reactstrap';
 import Widget from '../../../components/Widget';
-import { loginUser, receiveToken, doInit } from '../../../actions/auth';
+import { receiveToken, doInit, loginUser } from '../../../actions/auth';
 import jwt from "jsonwebtoken";
 import microsoft from '../../../images/microsoft.png';
 import { push } from 'connected-react-router';
@@ -51,7 +51,10 @@ class Login extends React.Component {
 
     doLogin(e) {
         e.preventDefault();
-        this.props.dispatch(loginUser({ email: this.state.email, password: this.state.password }));
+        this.props.dispatch(loginUser({
+            email: this.state.email,
+            password: this.state.password,
+        }));
     }
 
     googleLogin() {

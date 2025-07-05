@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Switch, Route, withRouter, Redirect } from 'react-router';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Hammer from 'rc-hammerjs';
-import { ToastContainer, CloseButton } from 'react-toastify';
 
 import Profile from '../../pages/profile';
 import Login from '../../pages/login';
@@ -51,7 +50,6 @@ import ApexCharts from '../../pages/charts/apex';
 import Echarts from '../../pages/charts/echarts';
 import HighCharts from '../../pages/charts/highcharts';
 import DashboardAnalytics from '../../pages/analytics';
-import Dashboard from '../../pages/dashboard';
 import UserFormPage from '../Users/form/UsersFormPage';
 import UserListPage from '../Users/list/UsersListPage';
 import UserViewPage from '../Users/view/UsersViewPage';
@@ -80,6 +78,11 @@ import Publications from '../../pages/profile/publications/Publications';
 import Patents from '../../pages/profile/patents/Patents';
 import Bionics from '../../pages/profile/bionics/Bionics';
 import Connect from '../../pages/connect/Connect';
+import MyApplicants from '../../pages/gigs/MyApplicants';
+import Offerings from '../../pages/offerings/Offerings';
+import Offering from '../../pages/offerings/Offering';
+import PostOfferingPage from '../../pages/offerings/PostOfferingPage';
+import PublicProfilePage from '../../pages/profile/PublicProfilePage';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -223,6 +226,7 @@ class Layout extends React.Component {
                     <Route path="/app/core/colors" exact component={CoreColors} />
                     <Route path="/app/core/grid" exact component={CoreGrid} />
                     <Route path="/app/gigs" exact component={GigsListPage} />
+                    <Route path="/app/gigs/:id/applicants" exact component={MyApplicants} />
                     <Route path="/app/gigs/:id" exact component={GigDetailsPage} />
                     <Route path="/app/my-gigs" exact component={MyGigsPage} />
                     <Route path="/app/suggested" exact component={SuggestedPage} />
@@ -239,6 +243,10 @@ class Layout extends React.Component {
                     <Route path="/app/patents" exact component={Patents} />
                     <Route path="/app/bionics" exact component={Bionics} />
                     <Route path="/app/connect" exact component={Connect} />
+                    <Route path="/app/offerings" exact component={Offerings} />
+                    <Route path="/app/offerings/:id" exact component={Offering} />
+                    <Route path="/app/post-offering" exact component={PostOfferingPage} />
+                    <Route path="/app/profile/:userId" exact component={PublicProfilePage} />
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>

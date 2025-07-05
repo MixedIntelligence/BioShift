@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
 import { Card, CardBody, CardTitle, Form, FormGroup, Label, Input, Button, Alert } from 'reactstrap';
+import api from '../../services/api';
 
 const initialState = {
   title: '',
@@ -11,26 +13,43 @@ const initialState = {
   payRate: '',
 };
 
-const PostGigPage = () => {
+const PostGigPage = ({ currentUser }) => {
   const [form, setForm] = useState(initialState);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
-    setSubmitted(true);
-    // In a real app, this would save to backend or update local state
+    try {
+      await api.createGig(form);
+      setSubmitted(true);
+      setError(null);
+      setForm(initialState);
+    } catch (err) {
+      setError('Failed to post gig. Please try again.');
+      console.error(err);
+    }
   };
+
+  if (!currentUser || currentUser.role !== 'Lab') {
+    return (
+      <div className="container mt-4">
+        <Alert color="danger">You must be logged in as a Lab to post a gig.</Alert>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4">
       <Card>
         <CardBody>
           <CardTitle tag="h3">Post a New Gig / Project</CardTitle>
-          {submitted && <Alert color="success">Demo: Gig submitted! (No backend, not persisted)</Alert>}
+          {submitted && <Alert color="success">Gig submitted successfully!</Alert>}
+          {error && <Alert color="danger">{error}</Alert>}
           <Form onSubmit={handleSubmit}>
             <FormGroup>
               <Label for="title">Title</Label>
@@ -68,4 +87,8 @@ const PostGigPage = () => {
   );
 };
 
-export default PostGigPage;
+const mapStateToProps = (state) => ({
+  currentUser: state.auth.currentUser,
+});
+
+export default connect(mapStateToProps)(PostGigPage);

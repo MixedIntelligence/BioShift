@@ -138,9 +138,22 @@ class Sidebar extends React.Component {
                     ? { header: 'Suggested Talent', link: '/app/suggested' }
                     : (role === 'provider')
                     ? { header: 'Suggested Labs', link: '/app/suggested' }
-                    : { header: 'Suggested', link: '/app/suggested' }
-                ]}
+                    : { header: 'Suggested', link: '/app/suggested' },
+                  (role === 'lab') && { header: 'Post a Gig', link: '/app/post-gig' }
+                ].filter(Boolean)}
                 onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('gigs'))}
+                activeItem={this.props.activeItem}
+              />
+              <LinksGroup
+                header="Offerings"
+                iconElement={<Asana />}
+                isHeader
+                index="offerings"
+                childrenLinks={[
+                  { header: 'Browse Offerings', link: '/app/offerings' },
+                  (role === 'provider') && { header: 'Post an Offering', link: '/app/post-offering' }
+                ].filter(Boolean)}
+                onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('offerings'))}
                 activeItem={this.props.activeItem}
               />
               <LinksGroup

@@ -1,0 +1,15 @@
+.documentsContainer {
+  padding: 20px;
+}
+
+.documentItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.documentActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}

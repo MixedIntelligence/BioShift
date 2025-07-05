@@ -35,9 +35,10 @@ class Email extends Component {
     this.setState({ isNotificationOpen: false });
   }
 
-  openMessage = (id) => {
+  openMessage = (id, data) => {
     this.setState(pvState => ({
       openedMessage: id,
+      openedMessageData: data,
       compose: id === null ? false : pvState.compose,
       composeData: id === null ? null : pvState.composeData,
     }));
@@ -56,6 +57,7 @@ class Email extends Component {
       isNotificationOpen,
       filter,
       openedMessage,
+      openedMessageData,
       alertAfter,
       compose,
       composeData,
@@ -83,6 +85,7 @@ class Email extends Component {
           <MessageTable
             filter={filter}
             openedMessage={openedMessage}
+            openedMessageData={openedMessageData}
             openMessage={this.openMessage}
             compose={compose}
             changeCompose={this.changeCompose}

@@ -9,6 +9,7 @@ export default function auth(state = {
   errorMessage: '',
   currentUser: null,
   loadingInit: true,
+  isAuthenticated: false,
 }, {type, payload}) {
   switch (type) {
       case LOGIN_REQUEST:
@@ -20,33 +21,44 @@ export default function auth(state = {
               errorMessage: '',
           });
       case LOGIN_SUCCESS:
-      case LOGOUT_SUCCESS:
-      case RESET_SUCCESS:
-      case PASSWORD_RESET_EMAIL_SUCCESS:
       case REGISTER_SUCCESS:
           return Object.assign({}, state, {
               isFetching: false,
               errorMessage: '',
+              isAuthenticated: true,
+          });
+      case LOGOUT_SUCCESS:
+      case RESET_SUCCESS:
+      case PASSWORD_RESET_EMAIL_SUCCESS:
+          return Object.assign({}, state, {
+              isFetching: false,
+              errorMessage: '',
+              isAuthenticated: false,
           });
       case AUTH_FAILURE:
           return Object.assign({}, state, {
               isFetching: false,
-              errorMessage: payload,
+              errorMessage: payload.error || payload,
+              isAuthenticated: false,
           });
       case AUTH_INIT_SUCCESS:
           return Object.assign({}, state, {
               currentUser: payload.currentUser || null,
               loadingInit: false,
+              isAuthenticated: !!(payload.currentUser),
           });
       case AUTH_INIT_ERROR:
           return Object.assign({}, state, {
               currentUser: null,
               loadingInit: false,
+              isAuthenticated: false,
           });
       case 'AUTH_SET_USER':
           return {
             ...state,
             currentUser: payload.currentUser,
+            isAuthenticated: !!(payload.currentUser),
+            loadingInit: false,
           };
       default:
           return state;

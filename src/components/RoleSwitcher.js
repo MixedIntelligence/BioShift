@@ -9,6 +9,10 @@ const roleLabels = {
 };
 
 const RoleSwitcher = ({ currentUser, onSwitch }) => {
+  if (currentUser?.role !== 'admin') {
+    return null;
+  }
+
   return (
     <div style={{ padding: '1rem', borderBottom: '1px solid #eee', background: '#f8f9fa' }}>
       <label htmlFor="role-switcher" style={{ fontWeight: 'bold', marginRight: 8 }}>Switch User Role:</label>

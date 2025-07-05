@@ -1,52 +1,25 @@
-# BioShift LabLeap – Clickable MVP Demo
+# LabLeap v9
 
 ## Overview
-LabLeap is a modern, agentic gig marketplace for science, built by BioShift. This clickable MVP demonstrates the core user flows, agentic AI (Bionics) layer, and integrations dashboard, all using mock data and a modern, eCommerce-inspired UI/UX. The project is fully dockerized for easy local and cloud deployment.
 
-## Features
-- Two-sided gig marketplace (labs & professionals)
-- Profile, dashboard, and gig management flows
-- Payments, history, upskill, and document management
-- BioShift Connect integrations (cloud, chat, productivity, LLMs)
-- LabLeap Bionics agentic AI layer (recommendations, chat, compliance, upskilling)
-- Modern, responsive UI/UX
+This repository contains the source code for the LabLeap v9 project, a marketplace platform designed to connect labs, scientists, and service providers in the biotech industry.
 
-## Quick Start
+## Current Status
 
-### Local Development
-```sh
-yarn install
-yarn start
-```
+The project is currently in a **pre-beta** stage. The core "Connect" workflow, which allows labs and scientists to connect, is feature-complete. However, there is a critical bug preventing user registration and login.
 
-### Docker
-```sh
-docker build -t biolab-leap .
-docker run -p 3000:3000 biolab-leap
-```
+For a complete and detailed overview of the project's status, roadmap, and technical architecture, please see the [**Comprehensive Status & Roadmap**](COMPREHENSIVE_STATUS_AND_ROADMAP.md) and the [**Handoff Document**](Handoff-July5-2025-1247.md) for the latest updates on the authentication bug.
 
-Then open [http://localhost:3000](http://localhost:3000) in your browser.
+## Getting Started
 
-## Project Structure
-- `src/pages/profile/` – Profile subpages (Payments, History, Upskill, etc.)
-- `src/pages/connect/` – Integrations dashboard
-- `src/components/Layout/` – Main layout, sidebar, and routing
-- `src/mockUsers.js` – Example mock data
-- `Dockerfile`, `.dockerignore` – Containerization support
-- `docs/` – PRD, Roadmap, Developer Brief, Handoff, Savepoint
+To run the application locally, follow these steps:
 
-## Next Steps
-- Finalize UI/UX polish for clickable demo
-- Begin backend/API development (see PRD and Roadmap)
-
-## Documentation
-- PRD: `docs/PRD_2025.md`
-- Roadmap: `docs/ROADMAP_2025-07-02.md`
-- Developer Brief: `docs/DEVELOPER_BRIEF_2025.md`
-- Handoff: `docs/HANDOFF_UPDATED_2025-07-02.md`
-- Savepoint: `docs/SAVEPOINT_2025-07-02.md`
-
----
-
-© 2025 BioShift. LabLeap™ is a trademark of BioShift.
-
+1.  **Install Dependencies:**
+    *   `cd backend && npm install`
+    *   `npm install` (for the root `package.json` which contains `concurrently`)
+2.  **Configure Environment:**
+    *   Create a `.env` file in the `backend` directory and populate it with the necessary environment variables (see `.env.example`).
+3.  **Run Migrations:**
+    *   `cd backend && npm run migrate`
+4.  **Start the Application:**
+    *   In the root directory, run `npm run dev` to start both the frontend and backend servers concurrently.

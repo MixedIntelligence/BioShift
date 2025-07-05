@@ -1,109 +1,154 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
-import gigs from './mock';
-import { Card, CardBody, CardTitle, CardText, Button, Row, Col, Badge, Alert, Nav, NavItem, NavLink, TabContent, TabPane, Progress } from 'reactstrap';
+import api from '../../services/api';
+import { Card, CardBody, CardTitle, CardText, Button, Row, Col, Badge, Alert, Nav, NavItem, NavLink, TabContent, TabPane, Progress, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
-// Mock applicants for demo (could be expanded or moved to mock.js)
-const mockApplicants = [
-  {
-    id: 'user-001',
-    name: 'Elena Vance',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-    skills: ['Chromatography', 'Protein Purification'],
-    certifications: ['GLP'],
-    status: 'Applied',
-    bio: '5+ years in protein analytics. Detail-oriented and reliable.',
-    rating: 4.8,
-  },
-  {
-    id: 'user-002',
-    name: 'Samir Patel',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-    skills: ['Cell Culture', 'Bioreactors'],
-    certifications: ['Biosafety Level 2'],
-    status: 'Applied',
-    bio: 'Cell culture specialist with a passion for bioprocessing.',
-    rating: 4.6,
-  },
-];
-
-const mockLabProfile = {
-  logo: 'https://randomuser.me/api/portraits/lego/6.jpg',
-  name: 'Genomic Solutions Lab',
-  rating: 4.9,
-  verified: true,
-  about: 'Leading biotech lab specializing in genomics and proteomics.',
-  website: 'https://genomicslab.example.com',
-  industry: 'Biotechnology',
-};
-
-const mockFAQ = [
-  { q: 'What is the expected turnaround time?', a: 'Most gigs are expected to be completed within 2-4 weeks.' },
-  { q: 'Is remote work allowed?', a: 'Yes, this gig is fully remote.' },
-  { q: 'What tools are provided?', a: 'Access to lab data, cloud storage, and collaboration tools.' },
-];
 
 const GigDetailsPage = ({ currentUser }) => {
   const { id } = useParams();
   const history = useHistory();
-  const gig = gigs.find(g => g.id === id);
+  const [gig, setGig] = useState(null);
   const role = currentUser?.role;
   const [applied, setApplied] = useState(false);
-  const [awardedId, setAwardedId] = useState(null);
   const [messageSent, setMessageSent] = useState(false);
   const [showCredentialUpload, setShowCredentialUpload] = useState(false);
   const [credentialUploaded, setCredentialUploaded] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [paymentReleased, setPaymentReleased] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
+  const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [loadingApplicants, setLoadingApplicants] = useState(false);
+  const [applicantsError, setApplicantsError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  if (!gig) {
-    return <div className="container mt-4"><h4>Gig not found.</h4></div>;
-  }
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+
+  const isLab = role === 'lab';
+
+  const handleApplicationStatusUpdate = (applicationId, status) => {
+    setApplicants(prevApplicants =>
+      prevApplicants.map(app =>
+        app.id === applicationId ? { ...app, status } : app
+      )
+    );
+  };
+
+  const handleAccept = (applicationId) => {
+    api.acceptApplication(applicationId)
+      .then(response => {
+        handleApplicationStatusUpdate(applicationId, response.data.status);
+      })
+      .catch(error => {
+        console.error("Error accepting application:", error);
+        // Optionally, show an error message to the user
+      });
+  };
+
+  const handleReject = (applicationId) => {
+    api.rejectApplication(applicationId)
+      .then(response => {
+        handleApplicationStatusUpdate(applicationId, response.data.status);
+      })
+      .catch(error => {
+        console.error("Error rejecting application:", error);
+        // Optionally, show an error message to the user
+      });
+  };
+
+  useEffect(() => {
+    setLoading(true);
+    api.getGigById(id)
+      .then(response => {
+        setGig(response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error("Error fetching gig details:", error);
+        setError(error);
+        setLoading(false);
+      });
+  }, [id]);
+
+  useEffect(() => {
+    if (activeTab === '2' && isLab && gig) {
+      setLoadingApplicants(true);
+      api.getGigApplications(gig.id)
+        .then(response => {
+          setApplicants(response.data);
+          setLoadingApplicants(false);
+        })
+        .catch(error => {
+          setApplicantsError(error);
+          setLoadingApplicants(false);
+        });
+    }
+  }, [activeTab, isLab, gig]);
 
   // Helper: Render Lab Profile Card
-  const LabProfileCard = () => (
+  const LabProfileCard = ({ labProfile }) => (
     <Card className="mb-3">
       <CardBody>
-        <Row>
-          <Col xs="3">
-            <img src={mockLabProfile.logo} alt="Lab Logo" className="img-fluid rounded-circle" style={{ width: 64, height: 64 }} />
-          </Col>
-          <Col xs="9">
-            <CardTitle tag="h5">{mockLabProfile.name} {mockLabProfile.verified && <Badge color="primary">Verified</Badge>}</CardTitle>
-            <CardText>
-              <b>Rating:</b> {mockLabProfile.rating} / 5<br/>
-              <b>Industry:</b> {mockLabProfile.industry}<br/>
-              <b>About:</b> {mockLabProfile.about}<br/>
-              <a href={mockLabProfile.website} target="_blank" rel="noopener noreferrer">Website</a>
-            </CardText>
-          </Col>
-        </Row>
+        {labProfile ? (
+          <Row>
+            <Col xs="3">
+              <img src={labProfile.logo} alt="Lab Logo" className="img-fluid rounded-circle" style={{ width: 64, height: 64 }} />
+            </Col>
+            <Col xs="9">
+              <CardTitle tag="h5">{labProfile.name} {labProfile.verified && <Badge color="primary">Verified</Badge>}</CardTitle>
+              <CardText>
+                <b>Rating:</b> {labProfile.rating} / 5<br/>
+                <b>Industry:</b> {labProfile.industry}<br/>
+                <b>About:</b> {labProfile.about}<br/>
+                <a href={labProfile.website} target="_blank" rel="noopener noreferrer">Website</a>
+              </CardText>
+            </Col>
+          </Row>
+        ) : (
+          <p>Lab profile not available.</p>
+        )}
       </CardBody>
     </Card>
   );
 
   // Helper: Render FAQ
-  const FAQSection = () => (
+  const FAQSection = ({ faq }) => (
     <Card className="mb-3">
       <CardBody>
         <CardTitle tag="h5">FAQ & Expectations</CardTitle>
-        {mockFAQ.map((item, idx) => (
-          <div key={idx} className="mb-2">
-            <b>Q:</b> {item.q}<br/>
-            <b>A:</b> {item.a}
-          </div>
-        ))}
+        {faq && faq.length > 0 ? (
+          faq.map((item, idx) => (
+            <div key={idx} className="mb-2">
+              <b>Q:</b> {item.q}<br/>
+              <b>A:</b> {item.a}
+            </div>
+          ))
+        ) : (
+          <p>No FAQ available.</p>
+        )}
       </CardBody>
     </Card>
   );
 
   // Worker/Professional and Lab Manager view (tabbed, info-rich layout)
   const isWorker = role === 'worker';
-  const isLab = role === 'lab';
+
+  if (loading) {
+    return <div className="container mt-4"><h4>Loading gig...</h4></div>;
+  }
+
+  if (error) {
+    return <div className="container mt-4"><Alert color="danger">Error loading gig details.</Alert></div>;
+  }
+
+  if (!gig) {
+    return <div className="container mt-4"><h4>Gig not found.</h4></div>;
+  }
 
   return (
     <div className="container mt-4">
@@ -112,9 +157,9 @@ const GigDetailsPage = ({ currentUser }) => {
         <CardBody>
           <Row>
             <Col md="8">
-              <CardTitle tag="h3">{gig.title} <Badge color="success">{gig.status || 'Open'}</Badge> {gig.urgent && <Badge color="danger">Urgent</Badge>} {gig.remote && <Badge color="info">Remote</Badge>}</CardTitle>
-              <CardText><strong>Compensation:</strong> {gig.payRate} <span className="ms-3"><strong>Duration:</strong> {gig.duration}</span></CardText>
-              <Progress value={gig.status === 'Open' ? 33 : gig.status === 'In Progress' ? 66 : 100} className="mb-2" />
+              <CardTitle tag="h3">{gig?.title} <Badge color="success">{gig?.status || 'Open'}</Badge> {gig?.urgent && <Badge color="danger">Urgent</Badge>} {gig?.remote && <Badge color="info">Remote</Badge>}</CardTitle>
+              <CardText><strong>Compensation:</strong> {gig?.pay_rate} <span className="ms-3"><strong>Duration:</strong> {gig?.duration}</span></CardText>
+              <Progress value={gig?.status === 'Open' ? 33 : gig?.status === 'In Progress' ? 66 : 100} className="mb-2" />
               <Nav tabs>
                 <NavItem>
                   <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => setActiveTab('1')}>Details</NavLink>
@@ -131,11 +176,18 @@ const GigDetailsPage = ({ currentUser }) => {
               </Nav>
               <TabContent activeTab={activeTab} className="mt-3">
                 <TabPane tabId="1">
-                  <CardText><strong>Description:</strong> {gig.description}</CardText>
-                  <CardText><strong>Required Skills:</strong> {gig.requiredSkills.join(', ')}</CardText>
-                  <CardText><strong>Required Certifications:</strong> {gig.requiredCertifications.join(', ')}</CardText>
-                  <CardText><strong>Location:</strong> {gig.location}</CardText>
-                  {isWorker && !applied && <Button color="primary" onClick={() => setApplied(true)}>Apply</Button>}
+                  <CardText><strong>Description:</strong> {gig?.description}</CardText>
+                  <CardText><strong>Required Skills:</strong> {Array.isArray(gig?.required_skills) ? gig.required_skills.join(', ') : gig?.required_skills}</CardText>
+                  <CardText><strong>Required Certifications:</strong> {Array.isArray(gig?.required_certifications) ? gig.required_certifications.join(', ') : gig?.required_certifications}</CardText>
+                  <CardText><strong>Location:</strong> {gig?.location}</CardText>
+                  {isWorker && !applied && <Button color="primary" onClick={() => {
+                    const isProfileComplete = currentUser?.headline && currentUser?.bio;
+                    if (isProfileComplete) {
+                      api.applyToGig(gig?.id).then(() => setApplied(true));
+                    } else {
+                      toggleModal();
+                    }
+                  }}>Apply</Button>}
                   {isWorker && applied && <Button color="success" disabled>Application Submitted</Button>}
                   {isWorker && <Button color="secondary" className="ms-2" onClick={() => setMessageSent(true)}>Message Lab</Button>}
                   {isWorker && <Button color="info" className="ms-2" onClick={() => setShowCredentialUpload(true)}>Upload Credential</Button>}
@@ -150,10 +202,10 @@ const GigDetailsPage = ({ currentUser }) => {
                 </TabPane>
                 <TabPane tabId="2">
                   {isLab ? (
+                    loadingApplicants ? <p>Loading applicants...</p> :
+                    applicantsError ? <Alert color="danger">Error loading applicants.</Alert> :
                     <Row>
-                      {mockApplicants.map(app => {
-                        const isAwarded = awardedId === app.id;
-                        return (
+                      {applicants.map(app => (
                           <Col md={6} key={app.id} className="mb-3">
                             <Card>
                               <CardBody>
@@ -162,58 +214,70 @@ const GigDetailsPage = ({ currentUser }) => {
                                     <img src={app.avatar} alt={app.name} className="img-fluid rounded-circle" style={{ width: 48, height: 48 }} />
                                   </Col>
                                   <Col xs="9">
-                                    <CardTitle tag="h5">{app.name} <Badge color={isAwarded ? 'success' : 'info'}>{isAwarded ? 'Awarded' : app.status}</Badge></CardTitle>
+                                    <CardTitle tag="h5"><Link to={`/app/profile/${app.user_id}`}>{app.name}</Link> <Badge color={app.status === 'accepted' ? 'success' : 'info'}>{app.status}</Badge></CardTitle>
                                     <CardText>
-                                      <b>Skills:</b> {app.skills.join(', ')}<br/>
-                                      <b>Certifications:</b> {app.certifications.join(', ')}<br/>
+                                      <b>Skills:</b> {Array.isArray(app.skills) ? app.skills.join(', ') : app.skills}<br/>
+                                      <b>Certifications:</b> {Array.isArray(app.certifications) ? app.certifications.join(', ') : app.certifications}<br/>
                                       <b>Bio:</b> {app.bio}<br/>
                                       <b>Rating:</b> {app.rating} / 5
                                     </CardText>
-                                    <Button color="success" disabled={awardedId !== null} onClick={() => setAwardedId(app.id)}>{isAwarded ? 'Awarded' : 'Award Gig'}</Button>{' '}
-                                    <Button color="secondary" onClick={() => setMessageSent(true)}>Message</Button>{' '}
-                                    {isAwarded && (
+                                    {app.status === 'pending' && (
                                       <>
-                                        <Button color="info" onClick={() => setShowCredentialUpload(true)}>Request Credential</Button>
-                                        {showCredentialUpload && !credentialUploaded && (
-                                          <Alert color="warning" className="mt-2">Demo: Credential request sent to applicant!</Alert>
-                                        )}
-                                        {credentialUploaded && <Alert color="success" className="mt-2">Demo: Credential received!</Alert>}
-                                        <Button color="primary" className="mt-2" onClick={() => setShowPayment(true)}>Release Payment</Button>
-                                        {showPayment && !paymentReleased && (
-                                          <div className="mt-2">
-                                            <Button color="primary" onClick={() => setPaymentReleased(true)}>Confirm Release</Button>
-                                          </div>
-                                        )}
-                                        {paymentReleased && <Alert color="success" className="mt-2">Demo: Payment released to applicant!</Alert>}
+                                        <Button color="success" onClick={() => handleAccept(app.id)}>Accept</Button>{' '}
+                                        <Button color="danger" onClick={() => handleReject(app.id)}>Reject</Button>
                                       </>
                                     )}
-                                    {messageSent && <Alert color="info" className="mt-2">Demo: Message sent to applicant!</Alert>}
+                                    {app.status === 'accepted' && (
+                                      <Alert color="success">
+                                        Application accepted! <br />
+                                        Contact: {app.email}
+                                      </Alert>
+                                    )}
+                                    {app.status === 'rejected' && (
+                                      <Alert color="danger">Application Rejected</Alert>
+                                    )}
                                   </Col>
                                 </Row>
                               </CardBody>
                             </Card>
                           </Col>
-                        );
-                      })}
+                        ))}
                     </Row>
                   ) : (
                     <Alert color="info">Only labs can view applicants.</Alert>
                   )}
                 </TabPane>
                 <TabPane tabId="3">
-                  <LabProfileCard />
+                  <LabProfileCard labProfile={gig?.lab_profile} />
                 </TabPane>
                 <TabPane tabId="4">
-                  <FAQSection />
+                  <FAQSection faq={gig?.faq} />
                 </TabPane>
               </TabContent>
             </Col>
             <Col md="4">
-              <LabProfileCard />
+              <LabProfileCard labProfile={gig?.lab_profile} />
             </Col>
           </Row>
         </CardBody>
       </Card>
+      <Modal isOpen={isModalOpen} toggle={toggleModal}>
+        <ModalHeader toggle={toggleModal}>Incomplete Profile</ModalHeader>
+        <ModalBody>
+          To ensure labs can properly evaluate candidates, please complete your profile by adding a headline and a bio before applying for gigs.
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => {
+            history.push('/app/profile');
+            toggleModal();
+          }}>
+            Go to Profile
+          </Button>{' '}
+          <Button color="secondary" onClick={toggleModal}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 };

@@ -24,6 +24,16 @@ export const UserRoute = ({dispatch, component, ...rest}) => {
   }
 };
 
+export const ProviderRoute = ({currentUser, dispatch, component, ...rest}) => {
+  if (!currentUser || currentUser.role !== 'Provider' || !Login.isAuthenticated(localStorage.getItem('token'))) {
+    return (<Redirect to="/login"/>)
+  } else if (currentUser && currentUser.role === 'Provider') {
+    return (
+      <Route {...rest} render={props => (React.createElement(component, props))}/>
+    );
+  }
+};
+
 export const AuthRoute = ({dispatch, component, ...rest}) => {
   const {from} = rest.location.state || {from: {pathname: '/app'}};
 

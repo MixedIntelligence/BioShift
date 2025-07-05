@@ -18,8 +18,9 @@ import {
 } from 'reactstrap';
 import cx from 'classnames';
 import { NavbarTypes } from '../../reducers/layout';
-import Notifications from '../Notifications';
+import Notifications from '../Notifications/Notifications';
 import { logoutUser } from '../../actions/auth';
+import api from '../../services/api';
 // import Joyride, { STATUS } from 'react-joyride';
 import { toggleSidebar, openSidebar, closeSidebar, changeActiveSidebarItem } from '../../actions/navigation';
 
@@ -53,10 +54,13 @@ class Header extends React.Component {
     this.toggleNotifications = this.toggleNotifications.bind(this);
     this.toggleSidebar = this.toggleSidebar.bind(this);
     this.doLogout = this.doLogout.bind(this);
+    this.fetchNotifications = this.fetchNotifications.bind(this);
+    this.markAsRead = this.markAsRead.bind(this);
 
     this.state = {
       menuOpen: false,
       notificationsOpen: false,
+      notifications: [],
       notificationsTabSelected: 1,
       focus: false,
       showNewMessage: false,
@@ -92,6 +96,30 @@ class Header extends React.Component {
   componentDidMount() {
     if (window.location.href.includes('main')) {
       this.setState({ run: true })
+    }
+    this.fetchNotifications();
+    this.notificationInterval = setInterval(this.fetchNotifications, 30000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.notificationInterval);
+  }
+
+  async fetchNotifications() {
+    try {
+      const res = await api.getNotifications();
+      this.setState({ notifications: res.data });
+    } catch (error) {
+      console.error('Error fetching notifications:', error);
+    }
+  }
+
+  async markAsRead(notificationId) {
+    try {
+      await api.markAsRead(notificationId);
+      this.fetchNotifications(); // Refresh notifications after marking one as read
+    } catch (error) {
+      console.error('Error marking notification as read:', error);
     }
   }
 
@@ -255,6 +283,12 @@ class Header extends React.Component {
             </FormGroup>
           </Form>
 
+          <Nav className="my-auto">
+            <NavItem className="d-sm-down-none">
+              <NavLink href="#/provider/register">For Providers</NavLink>
+            </NavItem>
+          </Nav>
+
           <NavLink className={`${s.navbarBrand} d-md-none ${s.headerSvgFlipColor}`}>
             <i className="fa fa-circle text-primary me-n-sm" />
             <i className="fa fa-circle text-danger" />
@@ -279,10 +313,15 @@ class Header extends React.Component {
               }
             </span>
                 <span className={`small m-2 d-sm-down-none ${s.headerTitle} ${this.props.sidebarStatic ? s.adminEmail : ''}`}>{user ? (user.firstName || user.email) : "Philip smith"}</span>
-                <span className="m-1 circle bg-light-red text-white fw-semi-bold d-sm-down-none">13</span>
+                {this.state.notifications.length > 0 &&
+                  <span className="m-1 circle bg-light-red text-white fw-semi-bold d-sm-down-none">{this.state.notifications.length}</span>
+                }
               </DropdownToggle>
               <DropdownMenu end className={`${s.notificationsWrapper} py-0 animated animated-fast fadeInUp`}>
-                <Notifications />
+                <Notifications
+                  notifications={this.state.notifications}
+                  markAsRead={this.markAsRead}
+                />
               </DropdownMenu>
             </Dropdown>
             <Dropdown nav isOpen={this.state.menuOpen} toggle={this.toggleMenu} className="tutorial-dropdown pr-4">

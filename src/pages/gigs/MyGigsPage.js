@@ -1,22 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-import gigs from './mock';
 import { Card, CardBody, CardTitle, CardText, Button, Row, Col, Badge, Nav, NavItem, NavLink, Progress, Table } from 'reactstrap';
 import classnames from 'classnames';
+import api from '../../services/api';
 
 const MyGigsPage = ({ currentUser }) => {
   const [activeTab, setActiveTab] = useState('active');
-  if (!currentUser) return null;
-  const role = currentUser.role;
-  let myGigs = [];
+  const [myGigs, setMyGigs] = useState([]);
 
-  if (role === 'lab') {
-    myGigs = gigs;
-  } else if (role === 'worker') {
-    myGigs = gigs.filter(g => g.applicants && g.applicants.includes(currentUser.id));
-  } else {
-    myGigs = [];
-  }
+  useEffect(() => {
+    const fetchGigs = async () => {
+      try {
+        const response = await api.getGigs();
+        setMyGigs(response.data);
+      } catch (error) {
+        console.error("Error fetching gigs", error);
+      }
+    };
+    fetchGigs();
+  }, []);
+
+  if (!currentUser) return null;
 
   const activeGigs = myGigs.filter(g => g.status === 'Open' || g.status === 'Awarded' || g.status === 'Applied');
   const completedGigs = myGigs.filter(g => g.status === 'Completed');

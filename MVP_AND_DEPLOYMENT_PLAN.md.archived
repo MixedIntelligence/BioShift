@@ -1,0 +1,104 @@
+# LabLeap: MVP and Deployment Plan
+
+This document provides a comprehensive overview of the LabLeap project's current status, a tactical roadmap to achieve a Minimum Viable Product (MVP), and a strategic plan for deployment.
+
+## 1. Current Status: A Code-Level Analysis
+
+Our deep-dive analysis of the codebase confirms that the LabLeap project is a **partially implemented prototype that is not ready for customers**. While significant progress has been made in connecting the frontend to a live backend, the core user workflow remains broken at critical points, preventing the platform from fulfilling its primary function.
+
+The development team has made a concerted effort to follow the `TECHNICAL_REVIVAL_PLAN.md`, but key features are either missing or incomplete.
+
+### Key Findings:
+
+*   **Frontend:** The API service layer and the gig listing/details pages are **complete** and functional. However, the application workflow is only **partially complete**. A lab cannot view an applicant's full profile, and the "Minimum Viable Profile" gate has not been implemented.
+*   **Backend:** The API endpoints and database models for gigs and applications are **mostly complete**. However, the "Connect" workflow is **incomplete**. The system does not currently notify both parties with contact information upon acceptance, creating a dead end for the user.
+
+## 2. Path to a True MVP: A Tactical Roadmap
+
+To get the LabLeap project to a state where it is ready for a true beta test with early customers, we must prioritize the completion of the core "Connect" workflow. The following epics and user stories represent the critical path to achieving a viable MVP.
+
+### Epic 1: Complete the Core "Connect" Workflow
+
+*This is the highest priority. The goal is to create a seamless, end-to-end experience for a lab to connect with a scientist.*
+
+*   **User Story: Implement Applicant Profile View**
+    *   **Task:** When a lab clicks on an applicant in the `GigDetailsPage.js` component, they should be navigated to a public profile page for that user.
+    *   **Implementation:**
+        *   Create a new route and component (e.g., `src/pages/profile/PublicProfilePage.js`).
+        *   This component will fetch user data from the `GET /api/users/:userId` endpoint.
+        *   The link to this page should be added to the applicant's name in the applicant list on the `GigDetailsPage.js`.
+
+*   **User Story: Complete the Two-Way "Connect" Notification**
+    *   **Task:** When a lab accepts an application, the system must send the lab's contact email to the scientist.
+    *   **Implementation:**
+        *   Modify the `POST /api/applications/:applicationId/accept` endpoint in `backend/routes/applications.js`.
+        *   In addition to notifying the scientist of their acceptance, the notification must include the email address of the lab user who owns the gig.
+
+### Epic 2: Ensure Marketplace Quality
+
+*This is essential for preventing a poor user experience and ensuring that labs can properly evaluate candidates.*
+
+*   **User Story: Implement the "Minimum Viable Profile" Gate**
+    *   **Task:** Prevent a `Worker` from applying to a gig if their profile is incomplete.
+    *   **Implementation:**
+        *   Before triggering the `POST /api/gigs/:id/apply` API call in `GigDetailsPage.js`, check the `currentUser` object from the Redux store.
+        *   If essential profile fields (e.g., `summary`, `skills`) are empty, prevent the API call and display a modal or alert, redirecting the user to their profile page to complete it.
+
+### Mermaid Diagram: Proposed MVP Workflow
+
+```mermaid
+sequenceDiagram
+    participant Scientist
+    participant Frontend
+    participant Backend
+
+    Scientist->>Frontend: Clicks "Apply" on a gig
+    Frontend->>Frontend: Check if profile is complete
+    alt Profile Incomplete
+        Frontend->>Scientist: Show "Complete Profile" modal
+    else Profile Complete
+        Frontend->>Backend: POST /api/gigs/:id/apply
+        Backend-->>Frontend: Application successful
+        Frontend->>Scientist: Show "Application Submitted"
+    end
+
+    participant Lab
+    Lab->>Frontend: Views applicants for a gig
+    Frontend->>Backend: GET /api/gigs/:id/applications
+    Backend-->>Frontend: Return list of applicants
+
+    Lab->>Frontend: Clicks on an applicant
+    Frontend->>Backend: GET /api/users/:userId
+    Backend-->>Frontend: Return applicant profile data
+    Frontend->>Lab: Display applicant's profile
+
+    Lab->>Frontend: Clicks "Accept"
+    Frontend->>Backend: POST /api/applications/:appId/accept
+    Backend->>Backend: Update application status
+    Backend->>Scientist: Send "Accepted" notification with Lab's email
+    Backend->>Lab: Send "Connected" notification with Scientist's email
+    Backend-->>Frontend: Return success confirmation
+    Frontend->>Lab: Display "Connection Made!"
+```
+
+## 3. Path to Deployment: A Strategic Overview
+
+The project is not ready for a production deployment. The following steps outline a high-level path to get there *after* the MVP is complete.
+
+1.  **Stabilize the MVP:**
+    *   Complete the critical path features outlined above.
+    *   Conduct thorough internal testing of the end-to-end "Connect" workflow.
+    *   Refine the UI/UX based on internal feedback.
+
+2.  **Prepare for Beta:**
+    *   Set up a staging environment that mirrors the production architecture as closely as possible.
+    *   Deploy the application to the staging environment for final testing.
+    *   Recruit a small, closed group of beta testers (both labs and scientists).
+
+3.  **Production Deployment:**
+    *   Based on the `PRODUCTION_ARCHITECTURE.md`, the target is a containerized deployment with PostgreSQL.
+    *   **Backend:** The Node.js application should be containerized using Docker.
+    *   **Database:** A managed PostgreSQL service (e.g., Amazon RDS, Google Cloud SQL) is recommended to simplify maintenance.
+    *   **Frontend:** The React application can be built as a static asset and served via a CDN (e.g., AWS S3/CloudFront, Netlify, Vercel) for optimal performance.
+
+By following this roadmap, we can systematically address the current gaps in the application and move confidently toward a successful beta launch and, eventually, a full production deployment.
