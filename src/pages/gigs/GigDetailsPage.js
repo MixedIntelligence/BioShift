@@ -3,7 +3,7 @@ import { useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import api from '../../services/api';
-import { Card, CardBody, CardTitle, CardText, Button, Row, Col, Badge, Alert, Nav, NavItem, NavLink, TabContent, TabPane, Progress, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Card, CardBody, CardTitle, CardText, Button, Row, Col, Badge, Alert, Nav, NavItem, NavLink, TabContent, TabPane, Progress } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 
@@ -17,17 +17,12 @@ const GigDetailsPage = ({ currentUser }) => {
   const [messageSent, setMessageSent] = useState(false);
   const [showCredentialUpload, setShowCredentialUpload] = useState(false);
   const [credentialUploaded, setCredentialUploaded] = useState(false);
-  const [showPayment, setShowPayment] = useState(false);
-  const [paymentReleased, setPaymentReleased] = useState(false);
   const [activeTab, setActiveTab] = useState('1');
   const [applicants, setApplicants] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [loadingApplicants, setLoadingApplicants] = useState(false);
   const [applicantsError, setApplicantsError] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const toggleModal = () => setIsModalOpen(!isModalOpen);
 
   const isLab = role === 'Lab';
 
@@ -181,12 +176,7 @@ const GigDetailsPage = ({ currentUser }) => {
                   <CardText><strong>Required Certifications:</strong> {Array.isArray(gig?.required_certifications) ? gig.required_certifications.join(', ') : gig?.required_certifications}</CardText>
                   <CardText><strong>Location:</strong> {gig?.location}</CardText>
                   {isWorker && !applied && <Button color="primary" onClick={() => {
-                    const isProfileComplete = currentUser?.headline && currentUser?.bio;
-                    if (isProfileComplete) {
-                      api.applyToGig(gig?.id).then(() => setApplied(true));
-                    } else {
-                      toggleModal();
-                    }
+                    api.applyToGig(gig?.id).then(() => setApplied(true));
                   }}>Apply</Button>}
                   {isWorker && applied && <Button color="success" disabled>Application Submitted</Button>}
                   {isWorker && <Button color="secondary" className="ms-2" onClick={() => setMessageSent(true)}>Message Lab</Button>}
@@ -261,23 +251,6 @@ const GigDetailsPage = ({ currentUser }) => {
           </Row>
         </CardBody>
       </Card>
-      <Modal isOpen={isModalOpen} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>Incomplete Profile</ModalHeader>
-        <ModalBody>
-          To ensure labs can properly evaluate candidates, please complete your profile by adding a headline and a bio before applying for gigs.
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={() => {
-            history.push('/app/profile');
-            toggleModal();
-          }}>
-            Go to Profile
-          </Button>{' '}
-          <Button color="secondary" onClick={toggleModal}>
-            Cancel
-          </Button>
-        </ModalFooter>
-      </Modal>
     </div>
   );
 };
