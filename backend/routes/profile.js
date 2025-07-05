@@ -11,6 +11,10 @@ const {
   addUserDocument,
   findUserById,
   getApplicationStatus,
+  updateUserProfile,
+  markProfileCompleted,
+  markOnboardingCompleted,
+  getUserProfile,
 } = require('../models/user');
 const auth = require('../middleware/auth');
 const multer = require('multer');
@@ -154,6 +158,92 @@ router.post('/publications', auth, async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server Error');
+  }
+});
+
+// Get complete user profile
+router.get('/complete/:userId', auth, async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    
+    // Users can only access their own complete profile
+    if (req.user.id !== parseInt(userId)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
+    const profile = getUserProfile(userId);
+    if (!profile) {
+      return res.status(404).json({ error: 'Profile not found' });
+    }
+    
+    res.json(profile);
+  } catch (err) {
+    console.error('Get profile error:', err);
+    res.status(500).json({ error: 'Failed to get profile' });
+  }
+});
+
+// Update user profile
+router.put('/update', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const profileData = req.body;
+    
+    updateUserProfile(userId, profileData);
+    
+    // Get updated profile
+    const updatedProfile = getUserProfile(userId);
+    res.json(updatedProfile);
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
+// Mark profile as completed
+router.post('/complete', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    markProfileCompleted(userId);
+    res.json({ success: true, message: 'Profile marked as completed' });
+  } catch (err) {
+    console.error('Mark profile complete error:', err);
+    res.status(500).json({ error: 'Failed to mark profile as completed' });
+  }
+});
+
+// Mark onboarding as completed
+router.post('/onboarding/complete', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    markOnboardingCompleted(userId);
+    res.json({ success: true, message: 'Onboarding marked as completed' });
+  } catch (err) {
+    console.error('Mark onboarding complete error:', err);
+    res.status(500).json({ error: 'Failed to mark onboarding as completed' });
+  }
+});
+
+// Update user profile with new fields
+router.put('/update', auth, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const profileData = req.body;
+    
+    // Update the profile
+    updateUserProfile(userId, profileData);
+    
+    // Get the updated profile
+    const updatedProfile = await getUserProfile(userId);
+    
+    res.json({ 
+      success: true, 
+      message: 'Profile updated successfully',
+      profile: updatedProfile 
+    });
+  } catch (err) {
+    console.error('Update profile error:', err);
+    res.status(500).json({ error: 'Failed to update profile' });
   }
 });
 

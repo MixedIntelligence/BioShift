@@ -1,4 +1,4 @@
-import Login from '../pages/auth/login';
+import Login from '../pages/login/Login';
 import { logoutUser } from '../actions/auth';
 import { Redirect, Route } from 'react-router';
 import React from 'react';
@@ -14,7 +14,7 @@ export const AdminRoute = ({currentUser, dispatch, component, ...rest}) => {
 };
 
 export const UserRoute = ({dispatch, component, ...rest}) => {
-  if (!Login.isAuthenticated()) {
+  if (!Login.isAuthenticated(localStorage.getItem('token'))) {
     dispatch(logoutUser());
     return (<Redirect to="/login"/>)
   } else {
@@ -37,7 +37,7 @@ export const ProviderRoute = ({currentUser, dispatch, component, ...rest}) => {
 export const AuthRoute = ({dispatch, component, ...rest}) => {
   const {from} = rest.location.state || {from: {pathname: '/app'}};
 
-  if (Login.isAuthenticated()) {
+  if (Login.isAuthenticated(localStorage.getItem('token'))) {
     return (
       <Redirect to={from}/>
     );

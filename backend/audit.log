@@ -104,3 +104,12 @@
 {"timestamp":"2025-07-05T15:28:33.286Z","user":{"id":5,"role":"Worker"},"action":"register","details":{"ip":"::1"}}
 {"timestamp":"2025-07-05T15:36:33.712Z","user":{"id":6,"role":"Worker"},"action":"register","details":{"ip":"::1"}}
 {"timestamp":"2025-07-05T15:39:19.666Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T18:44:43.907Z","user":{"id":7,"role":"Worker"},"action":"register","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T18:45:27.931Z","user":{"id":8,"role":"Worker"},"action":"register","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T18:45:40.112Z","user":{"id":8,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T18:45:55.584Z","user":{"id":9,"role":"Lab"},"action":"register","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T18:46:02.418Z","user":{"id":10,"role":"Provider"},"action":"register","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T19:00:58.740Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T19:01:09.521Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T19:24:01.691Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T19:26:41.377Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}

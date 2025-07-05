@@ -123,6 +123,46 @@ const getApplicationStatus = (userId, labId) => {
   return result ? result.status : null;
 };
 
+const updateUserProfile = (userId, profileData) => {
+  const {
+    first_name, last_name, phone, bio, location, years_experience,
+    current_position, company_name, website, linkedin_url, github_url
+  } = profileData;
+  
+  const stmt = db.prepare(`
+    UPDATE users SET 
+      first_name = ?, last_name = ?, phone = ?, bio = ?, location = ?,
+      years_experience = ?, current_position = ?, company_name = ?, 
+      website = ?, linkedin_url = ?, github_url = ?
+    WHERE id = ?
+  `);
+  
+  return stmt.run(
+    first_name, last_name, phone, bio, location, years_experience,
+    current_position, company_name, website, linkedin_url, github_url, userId
+  );
+};
+
+const markProfileCompleted = (userId) => {
+  const stmt = db.prepare('UPDATE users SET profile_completed = 1 WHERE id = ?');
+  return stmt.run(userId);
+};
+
+const markOnboardingCompleted = (userId) => {
+  const stmt = db.prepare('UPDATE users SET onboarding_completed = 1 WHERE id = ?');
+  return stmt.run(userId);
+};
+
+const getUserProfile = (userId) => {
+  return db.prepare(`
+    SELECT id, email, role, first_name, last_name, phone, bio, location,
+           years_experience, current_position, company_name, website,
+           linkedin_url, github_url, profile_completed, onboarding_completed,
+           created_at
+    FROM users WHERE id = ?
+  `).get(userId);
+};
+
 module.exports = {
   findUserByEmail,
   findUserById,
@@ -144,4 +184,12 @@ module.exports = {
   addUserStartup,
   changePassword,
   getApplicationStatus,
+  updateUserProfile,
+  markProfileCompleted,
+  markOnboardingCompleted,
+  getUserProfile,
+  updateUserProfile,
+  markProfileCompleted,
+  markOnboardingCompleted,
+  getUserProfile,
 };

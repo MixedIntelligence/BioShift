@@ -20,6 +20,7 @@ import WorkerRegister from '../pages/auth/register/WorkerRegister';
 import LabRegister from '../pages/auth/register/LabRegister';
 import ProviderRegister from '../pages/auth/register/ProviderRegister';
 import Register from '../pages/auth/register/Register';
+import Onboarding from '../pages/auth/onboarding/Onboarding';
 import ProviderDashboard from '../pages/dashboard/ProviderDashboard';
 import Reset from '../pages/auth/reset';
 import Forgot from '../pages/auth/forgot';
@@ -55,6 +56,7 @@ class App extends React.PureComponent {
                       <AuthRoute path="/register/worker" exact component={WorkerRegister} />
                       <AuthRoute path="/register/lab" exact component={LabRegister} />
                       <AuthRoute path="/register/provider" exact component={ProviderRegister} />
+                      <UserRoute path="/onboarding" exact dispatch={this.props.dispatch} component={Onboarding} />
                       <AuthRoute path="/login" exact component={Login}/>
                       <AuthRoute path="/verify-email" exact component={Verify}/>
                       <AuthRoute path="/password-reset" exact component={Reset}/>

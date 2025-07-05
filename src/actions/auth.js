@@ -133,7 +133,8 @@ export function loginUser(creds) {
             dispatch(doInit());
             dispatch(push('/app'));
           }).catch(err => {
-            dispatch(authError(err.response.data));
+            const errorMessage = err.response?.data?.error || err.response?.data || 'Login failed';
+            dispatch(authError(errorMessage));
           })
         } else {
           dispatch(authError('Something was wrong. Try again'));
@@ -230,10 +231,11 @@ export function registerUser(creds) {
             });
           }
           
-          toast.success("Registration successful! Welcome to BioMVP.");
-          dispatch(push('/app'));
+          toast.success("Registration successful! Welcome to LabLeap.");
+          dispatch(push('/onboarding'));
         }).catch(err => {
-          dispatch(authError(err.response.data));
+          const errorMessage = err.response?.data?.error || err.response?.data || 'Registration failed';
+          dispatch(authError(errorMessage));
         })
 
       } else {

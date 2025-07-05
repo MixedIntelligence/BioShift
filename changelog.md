@@ -1,5 +1,54 @@
 # Changelog
 
+## [9.1.0] - 05/07/2025
+
+### Profile System & Onboarding - COMPLETED ✅
+- ✅ Database migration applied successfully - added new profile fields
+- ✅ Enhanced user model with `getUserProfile()` and `updateUserProfile()` functions
+- ✅ Created `PUT /api/profile/update` endpoint - tested and working
+- ✅ Updated `GET /api/users/me` endpoint to return complete profile data
+- ✅ Added profile completion and onboarding status tracking
+- ✅ Created React onboarding component with role-based flows
+- ✅ Integrated onboarding with registration flow and app router
+- ✅ Added new profile fields: first_name, last_name, headline, bio, location
+- ✅ Added onboarding_completed and profile_completed status flags
+- ✅ Added role-specific fields: company_description, lab_description
+- ✅ Comprehensive testing with PowerShell - profile updates working
+
+### New Database Fields Added:
+- first_name, last_name, username, headline, bio, location
+- onboarding_completed, profile_completed (status flags)
+- company_description, lab_description (role-specific)
+
+### New API Endpoints:
+- `PUT /api/profile/update` - Update user profile
+- `POST /api/profile/complete` - Mark profile as completed
+- `POST /api/profile/onboarding/complete` - Mark onboarding as completed
+
+### Next Phase: Complete Frontend Integration Testing
+- 🔧 Test onboarding form with backend integration
+- 🔧 Verify completion status and redirect logic
+- 🔧 Polish onboarding UI/UX
+
+## [9.0.0] - 05/07/2025
+
+### Backend Authentication System - COMPLETED ✅
+- ✅ Fixed and verified all authentication endpoints
+- ✅ User registration working for all roles (Lab, Worker, Provider)
+- ✅ Login system working with JWT token generation
+- ✅ Database operations and validation working correctly
+- ✅ Comprehensive error handling implemented
+- ✅ Provider role validation with company requirements
+- ✅ Duplicate email prevention working
+- ✅ Password security with bcrypt hashing
+- ✅ JWT middleware authentication working
+- ✅ All endpoints tested and verified via PowerShell commands
+
+### Next Phase: Frontend Integration
+- ✅ Frontend connection to authentication system completed
+- ✅ User interface improvements completed
+- ✅ JWT handling in React components working
+
 ## [8.4.1] - 22/11/2024
 
 - Updated dependencies

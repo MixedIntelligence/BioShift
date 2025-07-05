@@ -1,0 +1,13 @@
+This is a new file created by GitHub Copilot.
+
+Created on: July 5, 2025
+
+This file demonstrates that I can create and edit files directly in VS Code.
+
+You can ask me to:
+- Create new files
+- Edit existing files
+- Replace content in files
+- Insert code into files
+
+Just let me know what you'd like me to do!

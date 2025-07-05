@@ -8,17 +8,12 @@ const requireRole = require('../middleware/requireRole');
 router.get('/me', authenticateToken, async (req, res) => {
   try {
     console.log('IN /me route, req.user:', req.user, 'req.user.id:', req.user.id, 'Type:', typeof req.user.id); // DEBUG
-    const user = await userModel.findUserById(req.user.id); // Use id directly, do not convert
+    const user = await userModel.getUserProfile(req.user.id); // Use getUserProfile for complete profile data
     console.log('DB user:', user); // DEBUG
     if (!user) return res.status(404).json({ error: 'User not found' });
     
-    // Return consistent user data (same as /api/auth/me)
-    res.json({ 
-      id: user.id, 
-      email: user.email, 
-      role: user.role, 
-      created_at: user.created_at 
-    });
+    // Return complete user profile data
+    res.json(user);
   } catch (err) {
     console.error('Error fetching user:', err);
     res.status(500).json({ error: 'Failed to fetch user data' });

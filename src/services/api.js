@@ -104,7 +104,12 @@ const getUserProfile = (userId) => {
   return apiClient.get(`/users/${userId}/profile`);
 };
 
-// Skills/Upskill endpoints
+// Profile management
+const updateUserProfile = (profileData) => {
+  return apiClient.put('/users/me', profileData);
+};
+
+// Skills endpoints
 const getSkills = () => {
   return apiClient.get('/users/me/upskill');
 };
@@ -113,22 +118,22 @@ const addSkill = (skillData) => {
   return apiClient.post('/users/me/upskill', skillData);
 };
 
-// Education endpoints
+// Education endpoints  
 const getEducation = () => {
-  return apiClient.get('/users/me/education');
+  return apiClient.get('/profile/education');
 };
 
 const addEducation = (educationData) => {
-  return apiClient.post('/users/me/education', educationData);
+  return apiClient.post('/profile/education', educationData);
 };
 
 // Publications endpoints
 const getPublications = () => {
-  return apiClient.get('/users/me/publications');
+  return apiClient.get('/profile/publications');
 };
 
 const addPublication = (publicationData) => {
-  return apiClient.post('/users/me/publications', publicationData);
+  return apiClient.post('/profile/publications', publicationData);
 };
 
 // Payments endpoints
@@ -175,6 +180,7 @@ const api = {
   markAsRead,
   requestDocumentVerification,
   getUserProfile,
+  updateUserProfile,
   // Skills/Upskill
   getSkills,
   addSkill,
