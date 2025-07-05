@@ -37,9 +37,12 @@ export function authError(payload) {
 }
 
 export function doInit() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    console.log('🚀 doInit() called');
+    
     let currentUser = null;
     if (!config.isBackend) {
+      console.log('🔧 Using mock user (frontend mode)');
       currentUser = mockUser;
       dispatch({
         type: AUTH_INIT_SUCCESS,
@@ -47,25 +50,65 @@ export function doInit() {
           currentUser,
         },
       });
+      console.log('✅ doInit() completed successfully with mock user');
     } else {
+      console.log('🌐 Using backend authentication');
       try {
         let token = localStorage.getItem('token');
+        console.log('🔑 Token from localStorage:', token ? 'exists' : 'none');
+        
         if (token) {
-          currentUser = await findMe();
+          // Quick token validation before making API call
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+            
+            if (payload.exp && payload.exp < currentTime) {
+              console.log('⏰ Token expired, clearing and proceeding without user');
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              delete axios.defaults.headers.common['Authorization'];
+              token = null;
+            } else {
+              console.log('✅ Token is valid, fetching user info...');
+              try {
+                console.log('📡 Calling findMe() API...');
+                currentUser = await findMe();
+                console.log('👤 User found:', currentUser?.email);
+              } catch (apiError) {
+                console.log('❌ findMe() API failed:', apiError.response?.status, apiError.message);
+                // Clear invalid token
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                delete axios.defaults.headers.common['Authorization'];
+                currentUser = null;
+              }
+            }
+          } catch (tokenError) {
+            console.log('❌ Invalid token format, clearing...', tokenError);
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            delete axios.defaults.headers.common['Authorization'];
+            token = null;
+          }
         }
+        
+        console.log('🎯 Dispatching AUTH_INIT_SUCCESS with user:', currentUser?.email || 'none');
         dispatch({
           type: AUTH_INIT_SUCCESS,
           payload: {
             currentUser,
           },
         });
+        console.log('✅ doInit() completed successfully');
       } catch (error) {
-        Errors.handle(error);
-
+        console.log('❌ Unexpected error during doInit:', error);
+        
         dispatch({
           type: AUTH_INIT_ERROR,
           payload: error,
         });
+        console.log('❌ doInit() completed with error');
       }
     }
   }

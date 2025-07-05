@@ -2,6 +2,7 @@
   "name": "sing-app-react",
   "version": "8.4.1",
   "private": true,
+  "proxy": "http://localhost:8080",
   "scripts": {
     "build": "cross-env REACT_APP_BACKEND=true cross-env PUBLIC_URL='/sing-app-react' react-app-rewired --openssl-legacy-provider build",
     "start:frontend": "cross-env NODE_ENV=development react-app-rewired --openssl-legacy-provider start",

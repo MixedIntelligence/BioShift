@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { toast } from 'react-toastify';
+import config from '../config';
 
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: config.baseURLApi,
 });
 
 apiClient.interceptors.request.use(config => {
@@ -54,6 +55,14 @@ const createGig = (gigData) => {
 
 const getGigs = () => {
   return apiClient.get('/gigs');
+};
+
+const getGigById = (gigId) => {
+  return apiClient.get(`/gigs/${gigId}`);
+};
+
+const searchGigs = (query) => {
+  return apiClient.get(`/gigs/search?q=${encodeURIComponent(query)}`);
 };
 
 const applyToGig = (gigId) => {
@@ -186,6 +195,8 @@ const api = {
   uploadDocument,
   createGig,
   getGigs,
+  getGigById,
+  searchGigs,
   applyToGig,
   createOffering,
   getOfferings,

@@ -122,3 +122,12 @@
 {"timestamp":"2025-07-05T20:07:08.659Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
 {"timestamp":"2025-07-05T20:10:51.780Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
 {"timestamp":"2025-07-05T20:11:52.881Z","user":{"id":14,"role":"Worker"},"action":"register","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T20:38:09.412Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T20:40:02.205Z","user":{"id":1,"role":"Lab"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T21:48:13.351Z","user":{"id":15,"role":"Lab"},"action":"register","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T21:56:16.840Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T22:03:09.741Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T22:05:47.492Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::ffff:127.0.0.1"}}
+{"timestamp":"2025-07-05T22:08:49.123Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T22:11:04.701Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-05T22:15:15.114Z","user":{"id":14,"role":"Worker"},"action":"login","details":{"ip":"::1"}}

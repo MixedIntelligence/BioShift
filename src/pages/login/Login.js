@@ -27,16 +27,36 @@ class Login extends React.Component {
   };
 
   static isAuthenticated(token) {
-    // Check if token is valid
-    return !!token;
+    // Check if token exists and is not expired
+    if (!token) return false;
+    
+    try {
+      // Decode JWT to check expiration
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      
+      // If token is expired, remove it and return false
+      if (payload.exp && payload.exp < currentTime) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return false;
+      }
+      
+      return true;
+    } catch (error) {
+      // If token is malformed, remove it and return false
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      return false;
+    }
   }
 
   constructor(props) {
     super(props);
 
     this.state = {
-      email: 'test@example.com',
-      password: 'testpass123',
+      email: '',
+      password: '',
     };
 
     this.doLogin = this.doLogin.bind(this);

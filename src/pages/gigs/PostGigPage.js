@@ -11,6 +11,7 @@ const initialState = {
   duration: '',
   location: '',
   payRate: '',
+  status: 'open',
 };
 
 const PostGigPage = ({ currentUser }) => {
@@ -38,7 +39,9 @@ const PostGigPage = ({ currentUser }) => {
   if (!currentUser || currentUser.role !== 'Lab') {
     return (
       <div className="container mt-4">
-        <Alert color="danger">You must be logged in as a Lab to post a gig.</Alert>
+        <Alert color="danger">
+          Only Labs can post gigs. Please contact your administrator if you believe this is an error.
+        </Alert>
       </div>
     );
   }
@@ -52,12 +55,12 @@ const PostGigPage = ({ currentUser }) => {
           {error && <Alert color="danger">{error}</Alert>}
           <Form onSubmit={handleSubmit}>
             <FormGroup>
-              <Label for="title">Title</Label>
+              <Label for="title">Title *</Label>
               <Input name="title" id="title" value={form.title} onChange={handleChange} required />
             </FormGroup>
             <FormGroup>
               <Label for="description">Description</Label>
-              <Input type="textarea" name="description" id="description" value={form.description} onChange={handleChange} required />
+              <Input type="textarea" name="description" id="description" value={form.description} onChange={handleChange} rows={4} />
             </FormGroup>
             <FormGroup>
               <Label for="requiredSkills">Required Skills (comma separated)</Label>
@@ -73,11 +76,19 @@ const PostGigPage = ({ currentUser }) => {
             </FormGroup>
             <FormGroup>
               <Label for="location">Location</Label>
-              <Input name="location" id="location" value={form.location} onChange={handleChange} />
+              <Input name="location" id="location" value={form.location} onChange={handleChange} placeholder="e.g., Boston, MA or Remote" />
             </FormGroup>
             <FormGroup>
               <Label for="payRate">Pay Rate</Label>
               <Input name="payRate" id="payRate" value={form.payRate} onChange={handleChange} />
+            </FormGroup>
+            <FormGroup>
+              <Label for="status">Status</Label>
+              <Input type="select" name="status" id="status" value={form.status} onChange={handleChange}>
+                <option value="open">Open</option>
+                <option value="closed">Closed</option>
+                <option value="in_progress">In Progress</option>
+              </Input>
             </FormGroup>
             <Button color="primary" type="submit">Submit</Button>
           </Form>

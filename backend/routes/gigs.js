@@ -12,6 +12,10 @@ const gigSchema = Joi.object({
   description: Joi.string().allow('').max(1000),
   location: Joi.string().allow('').max(100),
   status: Joi.string().valid('open', 'closed', 'in_progress'),
+  requiredSkills: Joi.string().allow('').max(500),
+  requiredCertifications: Joi.string().allow('').max(500),
+  duration: Joi.string().allow('').max(100),
+  payRate: Joi.string().allow('').max(100),
 });
 
 // GET /api/gigs/search - Search for gigs
@@ -53,13 +57,18 @@ router.post(
   async (req, res) => {
     const { error, value } = gigSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
-    const { title, description, location } = value;
+    const { title, description, location, status, requiredSkills, requiredCertifications, duration, payRate } = value;
     try {
       const gig = await gigModel.createGig({
         title,
         description,
         userId: req.user.id,
         location,
+        status,
+        requiredSkills,
+        requiredCertifications,
+        duration,
+        payRate,
       });
       res.status(201).json(gig);
     } catch (err) {
@@ -84,11 +93,11 @@ router.get(
   }
 );
 
-// POST /api/gigs/:id/apply - Apply to gig (Worker, Provider)
+// POST /api/gigs/:id/apply - Apply to gig (Worker only)
 router.post(
   '/:id/apply',
   authenticateToken,
-  requireRole('Worker', 'Provider'),
+  requireRole('Worker'),
   async (req, res) => {
     // Save application to DB
     const applied = await gigModel.applyToGig(req.params.id, req.user.id);
@@ -114,11 +123,11 @@ router.put(
   async (req, res) => {
     const { error, value } = gigSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
-    const { title, description, status, location } = value;
+    const { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate } = value;
     const updated = await gigModel.updateGig(
       req.params.id,
       req.user,
-      { title, description, status, location }
+      { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate }
     );
     auditLog('edit_gig', req.user, { gigId: req.params.id });
     if (!updated)

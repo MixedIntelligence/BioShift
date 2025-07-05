@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
+import { Alert } from 'reactstrap';
 import ProductCard from '../products/components/ProductCard/ProductCard';
 import api from '../../services/api';
 import s from '../products/Products.module.scss';
@@ -35,6 +36,19 @@ class Offerings extends Component {
 
   render() {
     const { offerings } = this.state;
+    const { currentUser } = this.props;
+    
+    // Labs and Workers can browse offerings, Providers can manage them
+    if (!currentUser || !['Lab', 'Worker', 'Provider'].includes(currentUser.role)) {
+      return (
+        <div className="container mt-4">
+          <Alert color="danger">
+            Access denied. Please contact your administrator if you believe this is an error.
+          </Alert>
+        </div>
+      );
+    }
+    
     const proSubscriptionUrl = "https://buy.stripe.com/test_5kQ5kCgKo37QdyibQc1sQ01";
     return (
       <div>
@@ -55,6 +69,7 @@ class Offerings extends Component {
 function mapStateToProps(state) {
     return {
         offerings: state.offerings.data,
+        currentUser: state.auth.currentUser,
     };
 }
 

@@ -70,7 +70,8 @@ class Login extends React.Component {
         const token = params.get('token');
         if (token) {
             this.props.dispatch(receiveToken(token));
-            this.props.dispatch(doInit());
+            // Temporarily disabled to prevent potential infinite loops
+            // this.props.dispatch(doInit());
         }
     }
 

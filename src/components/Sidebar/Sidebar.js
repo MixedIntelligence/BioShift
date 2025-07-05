@@ -120,7 +120,7 @@ class Sidebar extends React.Component {
             activeItem={this.props.activeItem}
           />
           {/* LabLeap section for all except admin */}
-          {role !== 'admin' && (
+          {role !== 'Admin' && (
             <>
               <h5 className={s.navTitle}>LabLeap</h5>
               <LinksGroup
@@ -129,17 +129,21 @@ class Sidebar extends React.Component {
                 isHeader
                 index="gigs"
                 childrenLinks={[
-                  { header: 'My Gigs', link: '/app/my-gigs' },
-                  { header: 'View Gig Marketplace', link: '/app/gigs' },
+                  // Labs can see their gigs and post new ones
+                  (role === 'Lab') && { header: 'My Gigs', link: '/app/my-gigs' },
+                  (role === 'Lab') && { header: 'Post a Gig', link: '/app/post-gig' },
+                  // Workers can see all gigs and their applications
+                  (role === 'Worker') && { header: 'My Applications', link: '/app/my-applications' },
+                  // Everyone can browse gigs (Workers apply, Labs manage, Providers browse)
+                  { header: 'Browse Gigs', link: '/app/gigs' },
                   // Role-dependent Suggested item
-                  (role === 'worker')
+                  (role === 'Worker')
                     ? { header: 'Suggested Gigs', link: '/app/suggested' }
-                    : (role === 'lab')
+                    : (role === 'Lab')
                     ? { header: 'Suggested Talent', link: '/app/suggested' }
-                    : (role === 'provider')
+                    : (role === 'Provider')
                     ? { header: 'Suggested Labs', link: '/app/suggested' }
                     : { header: 'Suggested', link: '/app/suggested' },
-                  (role === 'lab') && { header: 'Post a Gig', link: '/app/post-gig' }
                 ].filter(Boolean)}
                 onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('gigs'))}
                 activeItem={this.props.activeItem}
@@ -150,8 +154,11 @@ class Sidebar extends React.Component {
                 isHeader
                 index="offerings"
                 childrenLinks={[
-                  { header: 'Browse Offerings', link: '/app/offerings' },
-                  (role === 'provider') && { header: 'Post an Offering', link: '/app/post-offering' }
+                  // Only Labs and Workers should browse offerings
+                  (role === 'Lab' || role === 'Worker') && { header: 'Browse Offerings', link: '/app/offerings' },
+                  // Only Providers can post offerings
+                  (role === 'Provider') && { header: 'My Offerings', link: '/app/offerings' },
+                  (role === 'Provider') && { header: 'Post an Offering', link: '/app/post-offering' }
                 ].filter(Boolean)}
                 onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('offerings'))}
                 activeItem={this.props.activeItem}
@@ -183,7 +190,7 @@ class Sidebar extends React.Component {
             </>
           )}
           {/* Admin Dashboard only for admin */}
-          {role === 'admin' && (
+          {role === 'Admin' && (
             <>
               <h5 className={s.navTitle}>Admin Dashboard</h5>
               <LinksGroup
@@ -504,7 +511,7 @@ class Sidebar extends React.Component {
             </>
           )}
           {/* Projects for Lab, Worker, Provider */}
-          {(role === 'lab' || role === 'worker' || role === 'provider') && (
+          {(role === 'Lab' || role === 'Worker' || role === 'Provider') && (
             <>
               <h5 className={s.navTitle}>BioShift Gigs & Projects</h5>
               <div className={s.sidebarAlerts}>

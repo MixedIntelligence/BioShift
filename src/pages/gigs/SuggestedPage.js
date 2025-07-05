@@ -17,14 +17,14 @@ const SuggestedPage = ({ currentUser }) => {
   let items = [];
   let title = '';
 
-  if (role === 'worker') {
+  if (role === 'Worker') {
     items = gigs;
     title = 'Suggested Gigs';
-  } else if (role === 'lab') {
-    items = users.filter(u => u.role === 'worker');
+  } else if (role === 'Lab') {
+    items = users.filter(u => u.role === 'Worker');
     title = 'Suggested Talent';
-  } else if (role === 'provider') {
-    items = users.filter(u => u.role === 'lab');
+  } else if (role === 'Provider') {
+    items = users.filter(u => u.role === 'Lab');
     title = 'Suggested Labs';
   } else {
     items = [];
@@ -41,15 +41,15 @@ const SuggestedPage = ({ currentUser }) => {
             <thead>
               <tr>
                 <th></th>
-                <th>{role === 'worker' ? 'Gig' : role === 'lab' ? 'Talent' : 'Lab'}</th>
-                {role === 'lab' && <th>Skill Match</th>}
-                {role === 'lab' && <th>Experience</th>}
-                {role === 'lab' && <th>Publications</th>}
-                {role === 'provider' && <th>Product Fit</th>}
-                {role === 'provider' && <th>Skill Gaps</th>}
-                {role === 'provider' && <th>Actionable Suggestion</th>}
-                {role === 'worker' && <th>Status</th>}
-                {role === 'worker' && <th>Lab</th>}
+                <th>{role === 'Worker' ? 'Gig' : role === 'Lab' ? 'Talent' : 'Lab'}</th>
+                {role === 'Lab' && <th>Skill Match</th>}
+                {role === 'Lab' && <th>Experience</th>}
+                {role === 'Lab' && <th>Publications</th>}
+                {role === 'Provider' && <th>Product Fit</th>}
+                {role === 'Provider' && <th>Skill Gaps</th>}
+                {role === 'Provider' && <th>Actionable Suggestion</th>}
+                {role === 'Worker' && <th>Status</th>}
+                {role === 'Worker' && <th>Lab</th>}
                 <th>Skills</th>
                 <th></th>
               </tr>
@@ -63,9 +63,9 @@ const SuggestedPage = ({ currentUser }) => {
                     </span>
                   </td>
                   <td>
-                    {role === 'worker' ? item.title : `${item.firstName} ${item.lastName}`}
+                    {role === 'Worker' ? item.title : `${item.firstName} ${item.lastName}`}
                   </td>
-                  {role === 'lab' && (
+                  {role === 'Lab' && (
                     <>
                       <td style={{minWidth:120}}>
                         <Progress value={item.skillMatch || 0} color="success" className="mb-1" style={{height:8}} />
@@ -75,7 +75,7 @@ const SuggestedPage = ({ currentUser }) => {
                       <td><Badge color="info">{item.publications || 0}</Badge></td>
                     </>
                   )}
-                  {role === 'provider' && (
+                  {role === 'Provider' && (
                     <>
                       <td style={{minWidth:120}}>
                         <Progress value={item.productFit || 0} color="primary" className="mb-1" style={{height:8}} />
@@ -95,19 +95,19 @@ const SuggestedPage = ({ currentUser }) => {
                       </td>
                     </>
                   )}
-                  {role === 'worker' && (
+                  {role === 'Worker' && (
                     <>
                       <td><Badge color={item.status === 'Completed' ? 'secondary' : item.status === 'Awarded' ? 'success' : item.status === 'Applied' ? 'info' : 'primary'}>{item.status}</Badge></td>
                       <td>{item.lab.name}</td>
                     </>
                   )}
                   <td>
-                    {(role === 'worker' ? item.requiredSkills : item.skills).map((skill, idx) => (
+                    {(role === 'Worker' ? item.requiredSkills : item.skills).map((skill, idx) => (
                       <Badge key={idx} color="secondary" className="me-1">{skill}</Badge>
                     ))}
                   </td>
                   <td>
-                    {role === 'worker' && <Button color="primary" size="sm" href={`#/app/gigs/${item.id}`}>View</Button>}
+                    {role === 'Worker' && <Button color="primary" size="sm" href={`#/app/gigs/${item.id}`}>View</Button>}
                   </td>
                 </tr>
               ))}

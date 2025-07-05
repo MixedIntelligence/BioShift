@@ -1,10 +1,24 @@
 // Gig/Project model
 const db = require('./db');
 
-async function createGig({ title, description, userId, location }) {
-  const stmt = db.prepare('INSERT INTO gigs (title, description, user_id, location) VALUES (?, ?, ?, ?)');
-  const info = stmt.run(title, description, userId, location);
-  return { id: info.lastInsertRowid, title, description, user_id: userId, location };
+async function createGig({ title, description, userId, location, status = 'open', requiredSkills, requiredCertifications, duration, payRate }) {
+  const stmt = db.prepare(`
+    INSERT INTO gigs (title, description, user_id, location, status, required_skills, required_certifications, duration, pay_rate) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
+  const info = stmt.run(title, description, userId, location, status, requiredSkills, requiredCertifications, duration, payRate);
+  return { 
+    id: info.lastInsertRowid, 
+    title, 
+    description, 
+    user_id: userId, 
+    location, 
+    status,
+    required_skills: requiredSkills,
+    required_certifications: requiredCertifications,
+    duration,
+    pay_rate: payRate
+  };
 }
 
 async function listGigs() {
@@ -17,7 +31,7 @@ async function getGigById(id) {
   return stmt.get(id);
 }
 
-async function updateGig(id, user, { title, description, status, location }) {
+async function updateGig(id, user, { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate }) {
   // Only allow update if Admin or gig owner (Lab)
   const gig = getGigById(id);
   if (!gig) return false;
@@ -41,6 +55,22 @@ async function updateGig(id, user, { title, description, status, location }) {
   if (location) {
     fields.push('location = ?');
     params.push(location);
+  }
+  if (requiredSkills !== undefined) {
+    fields.push('required_skills = ?');
+    params.push(requiredSkills);
+  }
+  if (requiredCertifications !== undefined) {
+    fields.push('required_certifications = ?');
+    params.push(requiredCertifications);
+  }
+  if (duration !== undefined) {
+    fields.push('duration = ?');
+    params.push(duration);
+  }
+  if (payRate !== undefined) {
+    fields.push('pay_rate = ?');
+    params.push(payRate);
   }
 
   if (fields.length === 0) {

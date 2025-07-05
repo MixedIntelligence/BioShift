@@ -29,7 +29,7 @@ const GigDetailsPage = ({ currentUser }) => {
 
   const toggleModal = () => setIsModalOpen(!isModalOpen);
 
-  const isLab = role === 'lab';
+  const isLab = role === 'Lab';
 
   const handleApplicationStatusUpdate = (applicationId, status) => {
     setApplicants(prevApplicants =>
@@ -135,8 +135,8 @@ const GigDetailsPage = ({ currentUser }) => {
     </Card>
   );
 
-  // Worker/Professional and Lab Manager view (tabbed, info-rich layout)
-  const isWorker = role === 'worker';
+  // Worker view - can apply to gigs
+  const isWorker = role === 'Worker';
 
   if (loading) {
     return <div className="container mt-4"><h4>Loading gig...</h4></div>;

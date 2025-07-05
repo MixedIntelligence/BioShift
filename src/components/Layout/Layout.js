@@ -68,7 +68,7 @@ import PostGigPage from '../../pages/gigs/PostGigPage';
 import LabDashboardPage from '../../pages/dashboard/LabDashboardPage';
 import WorkerDashboardPage from '../../pages/dashboard/WorkerDashboardPage';
 import LabsListPage from '../../pages/labs/LabsListPage';
-import RoleSwitcher from '../RoleSwitcher';
+
 import PaymentsBanking from '../../pages/profile/payments/PaymentsBanking';
 import Upskill from '../../pages/profile/upskill/Upskill';
 import History from '../../pages/profile/history/History';
@@ -151,7 +151,6 @@ class Layout extends React.Component {
           
           <Hammer onSwipe={this.handleSwipe}>
             <main className={s.content}>
-            <RoleSwitcher currentUser={this.props.currentUser} onSwitch={user => this.props.dispatch({ type: 'AUTH_SET_USER', payload: { currentUser: user } })} />
             <BreadcrumbHistory url={this.props.location.pathname} />
               <TransitionGroup>
                 <CSSTransition

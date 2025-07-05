@@ -97,8 +97,9 @@ class Header extends React.Component {
     if (window.location.href.includes('main')) {
       this.setState({ run: true })
     }
-    this.fetchNotifications();
-    this.notificationInterval = setInterval(this.fetchNotifications, 30000);
+    // Temporarily disable notifications polling to debug infinite loop
+    // this.fetchNotifications();
+    // this.notificationInterval = setInterval(this.fetchNotifications, 30000);
   }
 
   componentWillUnmount() {
@@ -106,11 +107,38 @@ class Header extends React.Component {
   }
 
   async fetchNotifications() {
+    // Check if token exists and is valid before making API call
+    const token = localStorage.getItem('token');
+    if (!token) {
+      console.log('No token available for notifications');
+      return;
+    }
+    
     try {
+      // Quick token validation to prevent expired token errors
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const currentTime = Date.now() / 1000;
+      
+      if (payload.exp && payload.exp < currentTime) {
+        console.log('Token expired, skipping notifications fetch');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        return;
+      }
+      
       const res = await api.getNotifications();
-      this.setState({ notifications: res.data });
+      // Only update state if component is still mounted
+      if (this.notificationInterval) {
+        this.setState({ notifications: res.data });
+      }
     } catch (error) {
       console.error('Error fetching notifications:', error);
+      // If authentication error, clear token to prevent repeated failures
+      if (error.response?.status === 401 || error.response?.status === 403) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+      }
+      // Don't update state on error to prevent infinite loops
     }
   }
 

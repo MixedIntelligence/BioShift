@@ -37,7 +37,12 @@ export const store = createStore(
   )
 );
 
-store.dispatch(doInit());
+// Initialize auth state - wrapped in try-catch to prevent app crashes
+try {
+  store.dispatch(doInit());
+} catch (error) {
+  console.error('Error during app initialization:', error);
+}
 
 const container = document.getElementById('root');
 const root = createRoot(container);
