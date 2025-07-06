@@ -10,7 +10,7 @@
     "start:backend": "node backend/index.js",
     "dev": "concurrently \"npm run start:frontend\" \"npm run start:backend\"",
     "test": "react-app-rewired --openssl-legacy-provider test",
-    "vercel-build": "cross-env NODE_OPTIONS='--max-old-space-size=4096' REACT_APP_BACKEND=true react-app-rewired --openssl-legacy-provider build"
+    "vercel-build": "cross-env CI=false NODE_OPTIONS='--max-old-space-size=4096' REACT_APP_BACKEND=true react-app-rewired --openssl-legacy-provider build"
   },
   "browserslist": [
     ">0.2%",

@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
-import { Alert, Spinner } from 'reactstrap';
 import OfferingDetail from './components/OfferingDetail';
 import api from '../../services/api';
 

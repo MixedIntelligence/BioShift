@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardBody, CardTitle, Alert, Button, Input, InputGroup, InputGroupText } from 'reactstrap';
 import { connect } from 'react-redux';
-import { FaSearch, FaFilter } from 'react-icons/fa';
+import { FaSearch } from 'react-icons/fa';
 import api from '../../services/api';
 import OfferingCard from './components/OfferingCard';
 
@@ -21,7 +21,7 @@ const BrowseOfferings = ({ currentUser }) => {
 
   useEffect(() => {
     applyFilters();
-  }, [offerings, searchTerm, selectedCategory, selectedType, selectedPricingModel]);
+  }, [offerings, searchTerm, selectedCategory, selectedType, selectedPricingModel, applyFilters]);
 
   const fetchOfferings = async () => {
     try {

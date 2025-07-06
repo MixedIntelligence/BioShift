@@ -1,5 +1,4 @@
 import Login from '../pages/login/Login';
-import { logoutUser } from '../actions/auth';
 import { Redirect, Route } from 'react-router';
 import React from 'react';
 

@@ -3,7 +3,7 @@ const portApi = process.env.NODE_ENV === "development" ? 8080 : "";
 const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
 const redirectUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000/sing-app-react" : "https://demo.flatlogic.com/sing-app-react";
 
-export default {
+const config = {
   redirectUrl,
   hostApi,
   portApi,
@@ -56,3 +56,5 @@ export default {
     },
   }
 };
+
+export default config;

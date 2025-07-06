@@ -81,8 +81,6 @@ import Connect from '../../pages/connect/Connect';
 import MyApplicants from '../../pages/gigs/MyApplicants';
 import MyApplications from '../../pages/applications/MyApplications';
 import Offerings from '../../pages/offerings/Offerings';
-import BrowseOfferings from '../../pages/offerings/BrowseOfferings';
-import ManageOfferings from '../../pages/offerings/ManageOfferings';
 import Offering from '../../pages/offerings/Offering';
 import PostOfferingPage from '../../pages/offerings/PostOfferingPageNew';
 import PublicProfilePage from '../../pages/profile/PublicProfilePage';
