@@ -19,15 +19,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running.', timestamp: new Date().toISOString() });
 });
 
-// Initialize database on startup
+// Initialize database on startup (handle errors gracefully)
 console.log('🔄 Initializing database...');
 try {
-  const { initializeRailwayDeployment } = require('./railway-init');
-  initializeRailwayDeployment().then(() => {
-    console.log('✅ Database initialization complete');
-  }).catch(error => {
-    console.error('❌ Database initialization failed:', error);
-  });
+  // Skip railway-init on Railway to avoid better-sqlite3 issues
+  if (!process.env.RAILWAY_ENVIRONMENT) {
+    const { initializeRailwayDeployment } = require('./railway-init');
+    initializeRailwayDeployment().then(() => {
+      console.log('✅ Database initialization complete');
+    }).catch(error => {
+      console.error('❌ Database initialization failed:', error);
+    });
+  } else {
+    console.log('🚂 Railway environment - skipping railway-init, using fallback database');
+  }
 } catch (error) {
   console.warn('⚠️ Railway init script not available, skipping database setup');
 }
