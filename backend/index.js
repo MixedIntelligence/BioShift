@@ -36,6 +36,42 @@ if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
   app.get('/api/users/test', (req, res) => {
     res.json({ message: 'Users endpoint operational', count: 2 });
   });
+
+  // Mock authentication endpoints for Railway demo
+  app.post('/api/auth/signin_local', (req, res) => {
+    const { email, password } = req.body;
+    console.log('Mock login attempt:', email);
+    
+    // Simple mock authentication
+    if (email && password) {
+      const mockToken = 'mock-jwt-token-for-demo';
+      const mockUser = {
+        id: 1,
+        email: email,
+        role: email.includes('lab') ? 'Lab' : 'Worker',
+        firstName: 'Demo',
+        lastName: 'User'
+      };
+      
+      res.json({ 
+        token: mockToken,
+        user: mockUser
+      });
+    } else {
+      res.status(400).json({ error: 'Email and password required' });
+    }
+  });
+
+  // Mock user profile endpoint
+  app.get('/api/users/me', (req, res) => {
+    res.json({
+      id: 1,
+      email: 'demo@bioshift.com',
+      role: 'Worker',
+      firstName: 'Demo',
+      lastName: 'User'
+    });
+  });
 }
 
 const authRoutes = require('./routes/auth');

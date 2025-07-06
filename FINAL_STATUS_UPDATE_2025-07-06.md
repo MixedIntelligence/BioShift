@@ -17,8 +17,9 @@
 ## 🚀 **LIVE PLATFORM LINKS**
 
 ### **Production URLs:**
+
 - **Frontend**: https://bioshift-seven.vercel.app ✅ **LIVE**
-- **Backend**: https://bioshift-production.up.railway.app ✅ **LIVE**
+- **Backend**: https://bioshift-production.up.railway.app ✅ **LIVE & OPERATIONAL**
 - **GitHub**: https://github.com/MixedIntelligence/BioShift ✅ **UPDATED**
 
 ---

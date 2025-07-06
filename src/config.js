@@ -7,6 +7,13 @@ const hostApi = backendUrl;
 const baseURLApi = `${backendUrl}/api`;
 const redirectUrl = isDevelopment ? "http://localhost:3000" : window.location.origin;
 
+console.log('🔧 Config loaded:', { 
+  NODE_ENV: process.env.NODE_ENV, 
+  isDevelopment, 
+  backendUrl, 
+  REACT_APP_BACKEND_URL: process.env.REACT_APP_BACKEND_URL 
+});
+
 const config = {
   redirectUrl,
   hostApi,
