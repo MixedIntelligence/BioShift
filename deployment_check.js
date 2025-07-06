@@ -33,6 +33,27 @@ async function checkDeployment() {
         { name: 'Users Endpoint', url: `${BACKEND_URL}/api/users/test` }
     ];
     
+    // Test authentication endpoint
+    console.log('🔐 AUTHENTICATION TEST:');
+    try {
+        const authResponse = await axios.post(`${BACKEND_URL}/api/auth/login`, {
+            email: 'test@bioshift.com',
+            password: 'test123'
+        }, {
+            timeout: 10000,
+            validateStatus: function (status) {
+                return status < 500;
+            }
+        });
+        console.log(`✅ Login Test: ${authResponse.status} - ${authResponse.statusText}`);
+        if (authResponse.data && authResponse.data.token) {
+            console.log(`✅ Token received: ${authResponse.data.token.substring(0, 20)}...`);
+        }
+    } catch (error) {
+        console.log(`❌ Login Test: ${error.message}`);
+    }
+    console.log('');
+    
     for (const check of checks) {
         try {
             console.log(`Testing ${check.name}...`);

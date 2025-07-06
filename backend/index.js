@@ -38,17 +38,17 @@ if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
   });
 
   // Mock authentication endpoints for Railway demo
-  app.post('/api/auth/signin_local', (req, res) => {
+  app.post('/api/auth/login', (req, res) => {
     const { email, password } = req.body;
     console.log('Mock login attempt:', email);
     
-    // Simple mock authentication
+    // Simple mock authentication - accept any credentials
     if (email && password) {
-      const mockToken = 'mock-jwt-token-for-demo';
+      const mockToken = 'mock-jwt-token-for-demo-' + Date.now();
       const mockUser = {
         id: 1,
         email: email,
-        role: email.includes('lab') ? 'Lab' : 'Worker',
+        role: email.includes('lab') ? 'Lab' : email.includes('provider') ? 'Provider' : 'Worker',
         firstName: 'Demo',
         lastName: 'User'
       };
@@ -62,15 +62,57 @@ if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
     }
   });
 
+  // Mock registration endpoint
+  app.post('/api/auth/register', (req, res) => {
+    const { email, password, role = 'Worker' } = req.body;
+    console.log('Mock registration attempt:', email, role);
+    
+    if (email && password) {
+      const mockToken = 'mock-jwt-token-for-demo-' + Date.now();
+      const mockUser = {
+        id: Math.floor(Math.random() * 1000),
+        email: email,
+        role: role,
+        firstName: 'New',
+        lastName: 'User'
+      };
+      
+      res.status(201).json({ 
+        token: mockToken,
+        user: mockUser
+      });
+    } else {
+      res.status(400).json({ error: 'Email and password required' });
+    }
+  });
+
   // Mock user profile endpoint
   app.get('/api/users/me', (req, res) => {
-    res.json({
-      id: 1,
-      email: 'demo@bioshift.com',
-      role: 'Worker',
-      firstName: 'Demo',
-      lastName: 'User'
-    });
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      res.json({
+        id: 1,
+        email: 'demo@bioshift.com',
+        role: 'Worker',
+        firstName: 'Demo',
+        lastName: 'User'
+      });
+    } else {
+      res.status(401).json({ error: 'Authorization required' });
+    }
+  });
+
+  // Mock password reset endpoints
+  app.post('/api/auth/send-password-reset-email', (req, res) => {
+    res.json({ message: 'Password reset email sent (mock)' });
+  });
+
+  app.put('/api/auth/password-reset', (req, res) => {
+    res.json({ message: 'Password reset successful (mock)' });
+  });
+
+  app.put('/api/auth/verify-email', (req, res) => {
+    res.json({ message: 'Email verified (mock)' });
   });
 }
 
