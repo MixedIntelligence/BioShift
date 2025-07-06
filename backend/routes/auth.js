@@ -88,15 +88,28 @@ router.get('/me', authenticateToken, async (req, res) => {
     const user = await userModel.findUserById(req.user.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
     
-    res.json({ 
-      id: user.id, 
-      email: user.email, 
-      role: user.role, 
-      created_at: user.created_at 
+    res.json({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at
     });
   } catch (err) {
     console.error('Error fetching user:', err);
     res.status(500).json({ error: 'Failed to fetch user data' });
+  }
+});
+
+// GET /api/auth/debug/users
+router.get('/debug/users', async (req, res) => {
+  try {
+    console.log('[AUTH_DEBUG] Fetching all users from the database...');
+    const users = await userModel.findAllUsers();
+    console.log(`[AUTH_DEBUG] Found ${users.length} users.`);
+    res.json(users);
+  } catch (err) {
+    console.error('[AUTH_DEBUG] Error fetching all users:', err);
+    res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
 
