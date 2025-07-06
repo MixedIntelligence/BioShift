@@ -1,4 +1,7 @@
 node_modules
+backend/node_modules
+backend/audit.log
+backend/biomvp.sqlite
 build
 dist
 docker-compose.yml
@@ -8,3 +11,4 @@ Dockerfile
 npm-debug.log
 yarn-error.log
 .env
+backend/.env
