@@ -164,12 +164,7 @@ const getUserProfile = (userId) => {
   `).get(userId);
 };
 
-const findAllUsers = () => {
-  return db.prepare('SELECT id, email, role, password_hash FROM users').all();
-};
-
 module.exports = {
-  findAllUsers,
   findUserByEmail,
   findUserById,
   createUser,

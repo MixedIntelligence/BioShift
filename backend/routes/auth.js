@@ -100,17 +100,4 @@ router.get('/me', authenticateToken, async (req, res) => {
   }
 });
 
-// GET /api/auth/debug/users
-router.get('/debug/users', async (req, res) => {
-  try {
-    console.log('[AUTH_DEBUG] Fetching all users from the database...');
-    const users = await userModel.findAllUsers();
-    console.log(`[AUTH_DEBUG] Found ${users.length} users.`);
-    res.json(users);
-  } catch (err) {
-    console.error('[AUTH_DEBUG] Error fetching all users:', err);
-    res.status(500).json({ error: 'Failed to fetch users' });
-  }
-});
-
 module.exports = router;
