@@ -1,36 +1,42 @@
-# Stage 1: Build the React frontend
-FROM node:18-alpine AS builder
+# Railway Backend Deployment - Node.js with better-sqlite3 compatibility
+FROM node:20-bullseye
+
+# Install system dependencies needed for better-sqlite3
+RUN apt-get update && apt-get install -y \
+    python3 \
+    python3-pip \
+    make \
+    g++ \
+    sqlite3 \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
 WORKDIR /app
 
-# Copy package configuration and install all dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+# Copy package files first for better Docker layer caching
+COPY backend/package*.json ./
 
-# Copy the rest of the application source code
-COPY . .
+# Set environment variables for compilation
+ENV NPM_CONFIG_BUILD_FROM_SOURCE=true
+ENV PYTHON=python3
 
-# Build the frontend
-RUN npm run build
+# Install dependencies with build from source
+RUN npm ci --build-from-source
 
-# Stage 2: Create the lightweight production image
-FROM node:18-alpine
-WORKDIR /app
+# Copy application code
+COPY backend/ ./
 
-# Set the environment to production
-ENV NODE_ENV=production
+# Rebuild better-sqlite3 to ensure binary compatibility
+RUN npm rebuild better-sqlite3 --build-from-source
 
-# Copy package configuration and install only production dependencies
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile --production
+# Expose port (Railway will assign the PORT environment variable)
+EXPOSE $PORT
 
-# Copy backend code
-COPY backend/ ./backend/
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-3000}/api/health || exit 1
 
-# Copy built frontend assets from the builder stage
-COPY --from=builder /app/build ./build
-
-# Expose the port the backend runs on
-EXPOSE 8080
-
-# Command to start the backend server
-CMD ["node", "backend/index.js"]
+# Start the application
+CMD ["npm", "start"]
