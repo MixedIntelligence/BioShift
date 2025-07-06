@@ -9,8 +9,34 @@ app.use(express.json());
 
 // Example route for health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', message: 'Backend is running.' });
+  res.json({ status: 'ok', message: 'Backend is running.', timestamp: new Date().toISOString() });
 });
+
+// Railway-specific mock data endpoints
+if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+  console.log('🚂 Railway deployment - adding mock endpoints');
+  
+  // Mock labs endpoint
+  app.get('/api/labs', (req, res) => {
+    res.json([
+      { id: 1, name: 'BioTech Labs Inc.', location: 'San Francisco, CA', type: 'Research' },
+      { id: 2, name: 'Genomics Research Center', location: 'Boston, MA', type: 'Genomics' }
+    ]);
+  });
+
+  // Mock gigs endpoint  
+  app.get('/api/gigs', (req, res) => {
+    res.json([
+      { id: 1, title: 'Research Technician', lab: 'BioTech Labs Inc.', status: 'Open' },
+      { id: 2, title: 'Lab Assistant', lab: 'Genomics Research Center', status: 'Open' }
+    ]);
+  });
+
+  // Mock users test endpoint
+  app.get('/api/users/test', (req, res) => {
+    res.json({ message: 'Users endpoint operational', count: 2 });
+  });
+}
 
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
