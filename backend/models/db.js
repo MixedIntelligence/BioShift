@@ -14,21 +14,28 @@ if (process.env.DATABASE_URL) {
     });
     
     // Wrapper to make PostgreSQL work like SQLite
+    // Wrapper to make PostgreSQL work like SQLite, with parameter replacement
     db = {
-        prepare: (query) => ({
-            run: async (...args) => {
-                const result = await pool.query(query, args);
-                return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id };
-            },
-            get: async (...args) => {
-                const result = await pool.query(query, args);
-                return result.rows[0] || null;
-            },
-            all: async (...args) => {
-                const result = await pool.query(query, args);
-                return result.rows;
-            }
-        }),
+        prepare: (originalQuery) => {
+            // Replace '?' with $1, $2, etc. for PostgreSQL
+            let i = 0;
+            const pgQuery = originalQuery.replace(/\?/g, () => `$${++i}`);
+            
+            return {
+                run: async (...args) => {
+                    const result = await pool.query(pgQuery, args);
+                    return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id };
+                },
+                get: async (...args) => {
+                    const result = await pool.query(pgQuery, args);
+                    return result.rows[0] || null;
+                },
+                all: async (...args) => {
+                    const result = await pool.query(pgQuery, args);
+                    return result.rows;
+                }
+            };
+        },
         exec: async (query) => {
             await pool.query(query);
             return true;
