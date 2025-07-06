@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-LabLeap is a modern, agentic gig marketplace for science, built as a React clickable MVP demo. The current phase is frontend-only, using mock data and focusing on UI/UX polish and agentic AI (Bionics) flows. Backend/API development will begin in the next phase.
+LabLeap is a full-stack, agentic gig marketplace for science. The platform features a React frontend, a Node.js backend, and a PostgreSQL database. The application is deployed with the frontend on Vercel and the backend on Railway.
 
 ## Onboarding Steps
 
@@ -11,10 +11,10 @@ LabLeap is a modern, agentic gig marketplace for science, built as a React click
    - `cd sing-app-react`
 
 2. **Install Dependencies:**
-   - `yarn install`
+   - `npm install`
 
 3. **Run the App Locally:**
-   - `yarn start` (for development)
+   - `npm run dev` (for development)
    - Or use Docker:
      - `docker build -t biolab-leap .`
      - `docker run -p 3000:3000 biolab-leap`

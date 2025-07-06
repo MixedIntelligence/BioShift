@@ -17,7 +17,7 @@ The "Invalid token format received from server" error was caused by several issu
 - **ADDED**: Request logging for debugging
 
 ### 2. Fixed Database Configuration (models/db.js)
-- **REPLACED**: Mock database with real SQLite database
+- **REPLACED**: Mock database with PostgreSQL for production
 - **ADDED**: Automatic schema initialization
 - **ADDED**: Test data seeding for Railway deployment
 - **ADDED**: Pre-seeded test users with proper password hashing
@@ -72,7 +72,7 @@ git push origin BioShiftv9
 
 ### 3. Railway Deployment
 Railway will automatically detect the changes and redeploy. The new deployment will:
-- Use real SQLite database with proper schema
+- Use PostgreSQL database with proper schema
 - Generate valid JWT tokens
 - Seed test data automatically
 - Provide proper authentication endpoints

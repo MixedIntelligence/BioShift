@@ -20,7 +20,7 @@
 ### 🎯 **DEPLOYMENT STRATEGY:**
 - **Pragmatic Solution**: Overcame SQLite binary compatibility issues
 - **Immediate Functionality**: Platform deployed and ready for user testing
-- **Future Enhancement**: PostgreSQL integration planned for production scaling
+- **PostgreSQL Database**: Successfully migrated to a robust production database
 
 ---
 
@@ -135,16 +135,16 @@ To run the application locally using PowerShell:
 The application is configured for deployment on Vercel with the following setup:
 
 - **Frontend**: React app deployed to Vercel edge network
-- **Backend**: Node.js API deployed as Vercel serverless functions
-- **Database**: SQLite with automatic backup and migration system
+- **Backend**: Node.js API deployed on Railway
+- **Database**: PostgreSQL for production-grade performance and reliability
 
 ## 🏗️ Architecture
 
 - **Frontend**: React with Redux state management
 - **Backend**: Node.js with Express.js REST API
-- **Database**: SQLite with Better-SQLite3 for development
+- **Database**: PostgreSQL (production) / SQLite (local development)
 - **Authentication**: JWT tokens with role-based access control
-- **Deployment**: Vercel with automatic CI/CD from GitHub
+- **Deployment**: Vercel (frontend) and Railway (backend) with CI/CD
 
 ## 📱 Features
 
@@ -167,7 +167,7 @@ The application is configured for deployment on Vercel with the following setup:
 
 ## 🔗 Live Demo
 
-Visit the live application: [Coming Soon - Vercel Deployment]
+Visit the live application: [https://bioshift-seven.vercel.app](https://bioshift-seven.vercel.app)
 
 ---
 

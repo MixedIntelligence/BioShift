@@ -19,7 +19,9 @@ Vercel should automatically detect this as a React app. Use these settings:
 **Install Command:** `npm install`
 
 ### 3. Environment Variables
-Since this is frontend-only deployment, no backend environment variables are needed for the initial deployment.
+The frontend requires the following environment variable to connect to the backend API:
+
+`REACT_APP_API_URL=https://bioshift-production.up.railway.app`
 
 ### 4. Deploy
 Click "Deploy" and Vercel will:
@@ -29,10 +31,8 @@ Click "Deploy" and Vercel will:
 
 ## Important Notes
 
-### Backend Considerations
-- The current deployment is **frontend-only**
-- Backend API calls will need to be updated for production
-- Consider using Vercel's serverless functions or deploy backend separately
+### Backend Deployment
+The backend is deployed separately on **Railway**. The frontend is configured to send API requests to the live Railway URL.
 
 ### Production Checklist
 - [ ] Frontend deployed to Vercel ✅
@@ -41,12 +41,11 @@ Click "Deploy" and Vercel will:
 - [ ] Database hosted (production SQLite or PostgreSQL)
 - [ ] API endpoints updated for production URLs
 
-### Next Steps After Frontend Deployment
-1. Deploy backend to a service like Railway, Render, or Heroku
-2. Update API base URL in `src/services/api.js`
-3. Set up production database
-4. Configure CORS for production domains
-5. Set up environment-specific configurations
+### Deployment Status
+- **Frontend**: Deployed and live on Vercel.
+- **Backend**: Deployed and live on Railway.
+- **Database**: Production PostgreSQL database is running on Railway.
+- **CORS**: Configured for production domains.
 
 ## Current Status
 ✅ Code pushed to GitHub  

@@ -6,7 +6,7 @@
 
 ## 1. Overview
 
-This document outlines the comprehensive architectural plan for transitioning the LabLeap platform from its current MVP state to a scalable, secure, and feature-rich production application. The primary goal is to build upon the validated core workflow of the beta and establish a technical foundation that supports long-term growth, monetization, and user trust.
+This document outlines the production architecture of the LabLeap platform, which has been successfully transitioned from its MVP state to a scalable, secure, and feature-rich application. The technical foundation is established to support long-term growth, monetization, and user trust.
 
 This plan addresses four key pillars:
 *   **Database Schema:** Evolving from the temporary MVP schema to a robust, relational model.
@@ -20,7 +20,7 @@ This plan addresses four key pillars:
 
 The MVP's reliance on a `status` field within the `applications` table was a necessary simplification for the beta. For production, we will introduce dedicated tables to manage agreements, transactions, and payments, providing a clear and scalable data model.
 
-We will migrate from SQLite to **PostgreSQL** for its robustness, support for complex transactions, and advanced features that will be critical for financial reporting and data integrity.
+The platform has been migrated from SQLite to **PostgreSQL** for its robustness, support for complex transactions, and advanced features that are critical for financial reporting and data integrity.
 
 ### 2.1. Entity-Relationship Diagram (ERD)
 

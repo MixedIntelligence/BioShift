@@ -74,9 +74,8 @@ git push origin main
 3. Deploy with automatic build detection
 
 ### 3. Database Setup
-- SQLite database will be created automatically
-- Migrations will run on first deployment
-- Seed data will populate test accounts
+- Connect to the production PostgreSQL database on Railway
+- Run database migrations and seeding scripts as needed
 
 ## 🧪 Post-Deployment Testing
 
@@ -97,8 +96,8 @@ git push origin main
 
 ## 🌐 Production URLs
 
-**Frontend**: `https://lableap-v9.vercel.app` (pending deployment)  
-**API Base**: `https://lableap-v9.vercel.app/api`
+**Frontend**: `https://bioshift-seven.vercel.app` (Live)
+**API Base**: `https://bioshift-production.up.railway.app/api` (Live)
 
 ## 📊 Performance Expectations
 
