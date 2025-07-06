@@ -1,4 +1,7 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Development environment: Loading .env file');
+  require('dotenv').config();
+}
 const express = require('express');
 const cors = require('cors');
 

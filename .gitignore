@@ -21,3 +21,7 @@ yarn-debug.log*
 yarn-error.log*
 
 .idea/
+
+# Environment variables
+.env
+backend/.env
