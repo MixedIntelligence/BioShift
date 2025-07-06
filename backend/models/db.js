@@ -17,9 +17,14 @@ if (process.env.DATABASE_URL) {
     // Wrapper to make PostgreSQL work like SQLite, with parameter replacement
     db = {
         prepare: (originalQuery) => {
-            // Replace '?' with $1, $2, etc. for PostgreSQL
             let i = 0;
-            const pgQuery = originalQuery.replace(/\?/g, () => `$${++i}`);
+            // Replace '?' with $1, $2, etc. for PostgreSQL
+            let pgQuery = originalQuery.replace(/\?/g, () => `$${++i}`);
+
+            // Add 'RETURNING id' to INSERT statements for PostgreSQL
+            if (pgQuery.trim().toUpperCase().startsWith('INSERT')) {
+                pgQuery += ' RETURNING id';
+            }
             
             return {
                 run: async (...args) => {
