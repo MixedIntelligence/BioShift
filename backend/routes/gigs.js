@@ -121,7 +121,7 @@ router.post(
     
     const gig = await gigModel.getGigById(req.params.id);
     if (gig) {
-      const message = `User ${req.user.username} has applied to your gig: ${gig.title}`;
+      const message = `User ${req.user.email} has applied to your gig: ${gig.title}`;
       await createNotification(gig.user_id, message);
     }
 
@@ -171,8 +171,13 @@ router.get(
   authenticateToken,
   requireRole('Lab', 'Admin'),
   async (req, res) => {
-    const applications = await gigModel.listApplications(req.params.id);
-    res.json(applications);
+    try {
+      const applications = await gigModel.listApplications(req.params.id);
+      res.json(applications);
+    } catch (err) {
+      console.error('Error fetching applications:', err);
+      res.status(500).json({ error: 'Failed to fetch applications' });
+    }
   }
 );
 
