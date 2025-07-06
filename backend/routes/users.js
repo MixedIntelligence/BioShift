@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userModel = require('../models/user');
+const gigModel = require('../models/gig');
 const authenticateToken = require('../middleware/auth');
 const requireRole = require('../middleware/requireRole');
 
@@ -65,6 +66,17 @@ router.put('/me/payments', authenticateToken, async (req, res) => {
   const updated = await userModel.updateUserPayments(req.user.id, paymentInfo);
   if (!updated) return res.status(400).json({ error: 'Payment info not updated' });
   res.json({ message: 'Payment info updated' });
+});
+
+// GET /api/users/me/applications - List gigs the current user has applied to
+router.get('/me/applications', authenticateToken, async (req, res) => {
+  try {
+    const applications = await gigModel.listUserApplications(req.user.id);
+    res.json(applications);
+  } catch (error) {
+    console.error('Error fetching user applications:', error);
+    res.status(500).json({ error: 'Failed to fetch applications' });
+  }
 });
 
 // GET /api/users/me/history - Get user activity/history
@@ -164,7 +176,7 @@ router.get('/:id/applications', authenticateToken, requireRole('Admin', 'Lab', '
   if (req.user.role !== 'Admin' && req.user.id !== Number(req.params.id)) {
     return res.status(403).json({ error: 'Forbidden: can only view your own applications' });
   }
-  const applications = await userModel.listUserApplications(req.params.id);
+  const applications = await gigModel.listUserApplications(req.params.id);
   res.json(applications);
 });
 

@@ -138,6 +138,34 @@ async function searchGigs(query) {
   return stmt.all(`%${query}%`, `%${query}%`, `%${query}%`);
 }
 
+async function listUserApplications(userId) {
+  const stmt = db.prepare(`
+    SELECT 
+      a.id as application_id,
+      a.status,
+      a.applied_at,
+      a.accepted_at,
+      g.id as gig_id,
+      g.title,
+      g.description,
+      g.location,
+      g.pay_rate,
+      g.duration,
+      g.status as gig_status,
+      g.created_at as gig_created,
+      u.email as lab_email,
+      u.first_name as lab_first_name,
+      u.last_name as lab_last_name,
+      (u.first_name || ' ' || u.last_name) as lab_name
+    FROM applications a
+    JOIN gigs g ON a.gig_id = g.id
+    JOIN users u ON g.user_id = u.id
+    WHERE a.user_id = ?
+    ORDER BY a.applied_at DESC
+  `);
+  return stmt.all(userId);
+}
+
 module.exports = {
   createGig,
   listGigs,
@@ -147,4 +175,5 @@ module.exports = {
   listApplications,
   applyToGig,
   searchGigs,
+  listUserApplications,
 };

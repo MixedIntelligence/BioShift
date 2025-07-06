@@ -79,9 +79,12 @@ import Patents from '../../pages/profile/patents/Patents';
 import Bionics from '../../pages/profile/bionics/Bionics';
 import Connect from '../../pages/connect/Connect';
 import MyApplicants from '../../pages/gigs/MyApplicants';
+import MyApplications from '../../pages/applications/MyApplications';
 import Offerings from '../../pages/offerings/Offerings';
+import BrowseOfferings from '../../pages/offerings/BrowseOfferings';
+import ManageOfferings from '../../pages/offerings/ManageOfferings';
 import Offering from '../../pages/offerings/Offering';
-import PostOfferingPage from '../../pages/offerings/PostOfferingPage';
+import PostOfferingPage from '../../pages/offerings/PostOfferingPageNew';
 import PublicProfilePage from '../../pages/profile/PublicProfilePage';
 
 class Layout extends React.Component {
@@ -228,6 +231,7 @@ class Layout extends React.Component {
                     <Route path="/app/gigs/:id/applicants" exact component={MyApplicants} />
                     <Route path="/app/gigs/:id" exact component={GigDetailsPage} />
                     <Route path="/app/my-gigs" exact component={MyGigsPage} />
+                    <Route path="/app/my-applications" exact component={MyApplications} />
                     <Route path="/app/suggested" exact component={SuggestedPage} />
                     <Route path="/app/post-gig" exact component={PostGigPage} />
                     <Route path="/app/dashboard/lab" exact component={LabDashboardPage} />
@@ -242,9 +246,9 @@ class Layout extends React.Component {
                     <Route path="/app/patents" exact component={Patents} />
                     <Route path="/app/bionics" exact component={Bionics} />
                     <Route path="/app/connect" exact component={Connect} />
-                    <Route path="/app/offerings" exact component={Offerings} />
+                    <Route path="/app/offerings/create" exact component={PostOfferingPage} />
                     <Route path="/app/offerings/:id" exact component={Offering} />
-                    <Route path="/app/post-offering" exact component={PostOfferingPage} />
+                    <Route path="/app/offerings" exact component={Offerings} />
                     <Route path="/app/profile/:userId" exact component={PublicProfilePage} />
                   </Switch>
                 </CSSTransition>

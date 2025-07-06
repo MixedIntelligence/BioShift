@@ -20,23 +20,13 @@ const offeringSchema = Joi.object({
 });
 
 // GET /api/offerings - List all offerings
-router.get('/', authenticateToken, async (req, res) => {
+// GET /api/offerings - List all offerings (public)
+router.get('/', async (req, res) => {
   try {
     const offerings = await offeringModel.listOfferings();
     res.json(offerings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch offerings' });
-  }
-});
-
-// GET /api/offerings/:id - Get a single offering
-router.get('/:id', authenticateToken, async (req, res) => {
-  try {
-    const offering = await offeringModel.getOfferingById(req.params.id);
-    if (!offering) return res.status(404).json({ error: 'Offering not found' });
-    res.json(offering);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch offering' });
   }
 });
 
@@ -47,6 +37,18 @@ router.get('/my-offerings', [authenticateToken, requireRole('Provider', 'Admin')
     res.json(offerings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch offerings' });
+  }
+});
+
+// GET /api/offerings/:id - Get a single offering
+// GET /api/offerings/:id - Get a specific offering by ID (public)
+router.get('/:id', async (req, res) => {
+  try {
+    const offering = await offeringModel.getOfferingById(req.params.id);
+    if (!offering) return res.status(404).json({ error: 'Offering not found' });
+    res.json(offering);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch offering' });
   }
 });
 

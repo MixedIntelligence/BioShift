@@ -156,9 +156,9 @@ class Sidebar extends React.Component {
                 childrenLinks={[
                   // Only Labs and Workers should browse offerings
                   (role === 'Lab' || role === 'Worker') && { header: 'Browse Offerings', link: '/app/offerings' },
-                  // Only Providers can post offerings
+                  // Only Providers can manage offerings
                   (role === 'Provider') && { header: 'My Offerings', link: '/app/offerings' },
-                  (role === 'Provider') && { header: 'Post an Offering', link: '/app/post-offering' }
+                  (role === 'Provider') && { header: 'Create New Offering', link: '/app/offerings/create' }
                 ].filter(Boolean)}
                 onActiveSidebarItemChange={() => this.props.dispatch(changeActiveSidebarItem('offerings'))}
                 activeItem={this.props.activeItem}

@@ -158,3 +158,11 @@
 {"timestamp":"2025-07-06T02:19:37.383Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
 {"timestamp":"2025-07-06T02:19:49.209Z","user":{"id":7,"role":"Worker"},"action":"apply_gig","details":{"gigId":"7"}}
 {"timestamp":"2025-07-06T02:19:59.142Z","user":{"id":7,"role":"Worker"},"action":"apply_gig","details":{"gigId":"6"}}
+{"timestamp":"2025-07-06T02:55:47.929Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T03:04:14.134Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T03:04:50.045Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T03:05:57.108Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T03:06:45.358Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T03:06:45.383Z","user":{"id":2,"role":"Worker"},"action":"apply_gig","details":{"gigId":"7"}}
+{"timestamp":"2025-07-06T04:07:55.986Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T04:08:51.868Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}

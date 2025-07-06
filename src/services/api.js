@@ -77,8 +77,20 @@ const getOfferings = () => {
   return apiClient.get('/offerings');
 };
 
+const getOffering = (id) => {
+  return apiClient.get(`/offerings/${id}`);
+};
+
 const getMyOfferings = () => {
   return apiClient.get('/offerings/my-offerings');
+};
+
+const updateOffering = (id, offeringData) => {
+  return apiClient.put(`/offerings/${id}`, offeringData);
+};
+
+const deleteOffering = (id) => {
+  return apiClient.delete(`/offerings/${id}`);
 };
 
 const getConversations = () => {
@@ -116,6 +128,11 @@ const getUserProfile = (userId) => {
 // Get current user's profile
 const getCurrentUser = () => {
   return apiClient.get('/users/me');
+};
+
+// Get current user's applications
+const getUserApplications = () => {
+  return apiClient.get('/users/me/applications');
 };
 
 // Profile management
@@ -210,7 +227,10 @@ const api = {
   applyToGig,
   createOffering,
   getOfferings,
+  getOffering,
   getMyOfferings,
+  updateOffering,
+  deleteOffering,
   getConversations,
   getMessages,
   createConversation,
@@ -220,6 +240,7 @@ const api = {
   requestDocumentVerification,
   getUserProfile,
   getCurrentUser,
+  getUserApplications,
   updateUserProfile,
   updateProfile,
   completeOnboarding,
