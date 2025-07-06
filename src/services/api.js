@@ -242,10 +242,6 @@ const api = {
   getAgreements,
   // Transactions
   getTransactions,
-  // Check application status
-  checkApplicationStatus,
-  // Get my gigs
-  getMyGigs,
 };
 
 export default api;
