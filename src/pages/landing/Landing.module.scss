@@ -1,23 +1,40 @@
-// Modern Professional Landing Page
+// Modern BioShift Landing Page
 // Variables
-$primary-blue: #2563eb;
-$secondary-blue: #1e40af;
-$accent-green: #10b981;
-$text-primary: #1f2937;
-$text-secondary: #6b7280;
-$bg-light: #f8fafc;
-$bg-white: #ffffff;
-$border-light: #e5e7eb;
-$shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+$primary-green: #00ff99;      // BioShift signature green
+$secondary-green: #00cc7a;
+$accent-blue: #007bff;
+$dark-bg: #121212;            // Dark background
+$dark-secondary: #1a1a1a;
+$text-primary: #e0e0e0;       // Light text
+$text-secondary: #a0a0a0;
+$text-accent: #00ff99;
+$bg-dark: #121212;
+$bg-darker: #0a0a0a;
+$border-glow: rgba(0, 255, 153, 0.3);
+$shadow-glow: 0 0 20px rgba(0, 255, 153, 0.2);
+$shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+$shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
 
 // Root
 .root {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, #121212 0%, #1a1a1a 50%, #0a0a0a 100%);
   color: $text-primary;
   overflow-x: hidden;
+  
+  &::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 20% 50%, rgba(0, 255, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 123, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 80%, rgba(0, 255, 153, 0.05) 0%, transparent 50%);
+    z-index: -1;
+    pointer-events: none;
+  }
 }
 
 // Navigation
@@ -27,11 +44,12 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
   left: 0;
   right: 0;
   z-index: 1000;
-  background: rgba(248, 250, 252, 0.95);
+  background: rgba(18, 18, 18, 0.95);
+  -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
-  border-bottom: 1px solid $border-light;
+  border-bottom: 1px solid $border-glow;
   padding: 1rem 0;
-  box-shadow: $shadow-sm;
+  box-shadow: $shadow-glow;
 
   .navContent {
     display: flex;
@@ -45,7 +63,7 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.
     gap: 0.75rem;
     font-size: 1.5rem;
     font-weight: 700;
-    color: $primary-blue;
+    color: $primary-green;
 
     .logoImage {
       height: 32px;

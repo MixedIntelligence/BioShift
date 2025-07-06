@@ -17,19 +17,19 @@ const LandingPage = () => {
 
   const heroSlides = [
     {
-      title: "Find Your Next Biotech Opportunity",
-      subtitle: "Connect with labs, projects, and collaborators in life sciences",
-      accent: "FOR SCIENTISTS & RESEARCHERS"
+      title: "Connect. Collaborate. Accelerate Discovery.",
+      subtitle: "The premier marketplace connecting biotech talent with breakthrough research opportunities",
+      accent: "BIOTECH PROFESSIONALS"
     },
     {
-      title: "Post Projects & Find Talent",
-      subtitle: "Get your research projects staffed with qualified professionals",
-      accent: "FOR LABS & INSTITUTIONS"
+      title: "Find Top Talent for Your Research",
+      subtitle: "Access qualified scientists and researchers for your critical projects",
+      accent: "RESEARCH INSTITUTIONS"
     },
     {
-      title: "Grow Your Service Business",
-      subtitle: "Connect with labs and researchers who need your specialized services",
-      accent: "FOR SERVICE PROVIDERS"
+      title: "Showcase Your Expertise",
+      subtitle: "Offer specialized services to the biotech community and grow your business",
+      accent: "SERVICE PROVIDERS"
     }
   ];
 
@@ -40,8 +40,8 @@ const LandingPage = () => {
         <Container>
           <div className={s.navContent}>
             <div className={s.logo}>
-              <img src="/logo-header.png" alt="LabLeap" className={s.logoImage} />
-              <span className={s.logoText}>LabLeap</span>
+              <img src="/logo-header.png" alt="BioShift LabLeap" className={s.logoImage} />
+              <span className={s.logoText}>BioShift</span>
             </div>
             <div className={s.navLinks}>
               <Link to="/login" className={s.navLink}>Sign In</Link>
@@ -101,11 +101,10 @@ const LandingPage = () => {
       <section className={s.userPaths}>
         <Container>
           <Row className="justify-content-center mb-5">
-            <Col xs={12} lg={8}>
-              <div className={s.sectionHeader}>
-                <h2 className={s.sectionTitle}>Choose Your Role</h2>
+            <Col xs={12} lg={8}>                <div className={s.sectionHeader}>
+                <h2 className={s.sectionTitle}>Join the BioShift Community</h2>
                 <p className={s.sectionSubtitle}>
-                  Join the biotech community that fits your goals
+                  Choose your path in the biotech ecosystem
                 </p>
               </div>
             </Col>
@@ -117,21 +116,21 @@ const LandingPage = () => {
                   <div className={s.pathIcon}>
                     <div className={s.iconCore}></div>
                   </div>
-                  <h3>Scientists & Researchers</h3>
-                  <span className={s.pathSubtitle}>Find Your Next Project</span>
+                  <h3>Researchers & Scientists</h3>
+                  <span className={s.pathSubtitle}>Advance Your Career</span>
                 </div>
                 <div className={s.pathContent}>
-                  <p>Browse opportunities that match your expertise and career goals</p>
+                  <p>Find exciting research opportunities and advance your career in biotechnology</p>
                   <ul className={s.pathFeatures}>
-                    <li>• Find contract and full-time positions</li>
-                    <li>• Work with leading biotech companies</li>
-                    <li>• Build your professional network</li>
-                    <li>• Showcase your skills and experience</li>
+                    <li>• Discover contract and full-time positions</li>
+                    <li>• Connect with leading research institutions</li>
+                    <li>• Build valuable professional relationships</li>
+                    <li>• Showcase your expertise and achievements</li>
                   </ul>
                 </div>
                 <div className={s.pathAction}>
                   <Link to="/register/worker" className={s.pathButton}>
-                    <span>Find Opportunities</span>
+                    <span>Find Research Opportunities</span>
                     <div className={s.buttonAccent}></div>
                   </Link>
                 </div>
@@ -143,21 +142,21 @@ const LandingPage = () => {
                   <div className={s.pathIcon}>
                     <div className={s.iconCore}></div>
                   </div>
-                  <h3>Labs & Institutions</h3>
-                  <span className={s.pathSubtitle}>Staff Your Projects</span>
+                  <h3>Research Institutions</h3>
+                  <span className={s.pathSubtitle}>Find Top Talent</span>
                 </div>
                 <div className={s.pathContent}>
-                  <p>Connect with qualified professionals for your research needs</p>
+                  <p>Access a pool of qualified professionals for your research initiatives</p>
                   <ul className={s.pathFeatures}>
-                    <li>• Post projects and job openings</li>
-                    <li>• Review applications and profiles</li>
-                    <li>• Manage your hiring pipeline</li>
-                    <li>• Find specialized expertise</li>
+                    <li>• Post research positions and projects</li>
+                    <li>• Review qualified candidate profiles</li>
+                    <li>• Streamline your hiring process</li>
+                    <li>• Access specialized scientific expertise</li>
                   </ul>
                 </div>
                 <div className={s.pathAction}>
                   <Link to="/register/lab" className={s.pathButton}>
-                    <span>Post Projects</span>
+                    <span>Post Research Positions</span>
                     <div className={s.buttonAccent}></div>
                   </Link>
                 </div>
@@ -197,11 +196,10 @@ const LandingPage = () => {
       <section className={s.features}>
         <Container>
           <Row className="justify-content-center mb-5">
-            <Col xs={12} lg={8}>
-              <div className={s.sectionHeader}>
-                <h2 className={s.sectionTitle}>Platform Features</h2>
+            <Col xs={12} lg={8}>                <div className={s.sectionHeader}>
+                <h2 className={s.sectionTitle}>Powered by Innovation</h2>
                 <p className={s.sectionSubtitle}>
-                  Everything you need to succeed in biotech
+                  Advanced tools designed for the biotech industry
                 </p>
               </div>
             </Col>
@@ -212,8 +210,8 @@ const LandingPage = () => {
                 <div className={s.featureIcon}>
                   <div className={s.iconMatrix}></div>
                 </div>
-                <h4>Smart Matching</h4>
-                <p>Get matched with opportunities that fit your skills, experience, and career goals</p>
+                <h4>Smart Job Matching</h4>
+                <p>Discover opportunities that perfectly align with your skills, experience, and research interests</p>
               </div>
             </Col>
             <Col xs={12} md={6} lg={3} className="mb-4">
@@ -221,8 +219,8 @@ const LandingPage = () => {
                 <div className={s.featureIcon}>
                   <div className={s.iconMatrix}></div>
                 </div>
-                <h4>Bionics AI Assistant</h4>
-                <p>Get personalized career advice and project insights from our AI-powered assistant</p>
+                <h4>AI-Powered Insights</h4>
+                <p>Get personalized career guidance and project recommendations from our intelligent assistant</p>
               </div>
             </Col>
             <Col xs={12} md={6} lg={3} className="mb-4">
@@ -230,8 +228,8 @@ const LandingPage = () => {
                 <div className={s.featureIcon}>
                   <div className={s.iconMatrix}></div>
                 </div>
-                <h4>BioShift Connect</h4>
-                <p>Integrate with lab management systems, APIs, and third-party tools seamlessly</p>
+                <h4>Professional Networking</h4>
+                <p>Connect with industry leaders, collaborators, and peers in the biotech community</p>
               </div>
             </Col>
             <Col xs={12} md={6} lg={3} className="mb-4">
@@ -239,8 +237,8 @@ const LandingPage = () => {
                 <div className={s.featureIcon}>
                   <div className={s.iconMatrix}></div>
                 </div>
-                <h4>Secure Payments</h4>
-                <p>Safe, secure payment processing with transparent fee structure and timely payouts</p>
+                <h4>Secure Transactions</h4>
+                <p>Safe, reliable payment processing with transparent fees and timely compensation</p>
               </div>
             </Col>
           </Row>
@@ -255,10 +253,10 @@ const LandingPage = () => {
             <Col xs={12} lg={8}>
               <div className={s.ctaContent}>
                 <h2 className={s.ctaTitle}>
-                  Ready to Get Started?
+                  Ready to Transform Your Biotech Career?
                 </h2>
                 <p className={s.ctaSubtitle}>
-                  Join thousands of biotech professionals advancing their careers and projects on LabLeap
+                  Join the BioShift community and connect with opportunities that match your expertise
                 </p>
                 <div className={s.ctaActions}>
                   <Link to="/register" className={s.ctaPrimary}>
@@ -282,13 +280,13 @@ const LandingPage = () => {
             <Col xs={12}>
               <div className={s.footerContent}>
                 <div className={s.footerLogo}>
-                  <img src="/logo-header.png" alt="LabLeap" className={s.footerLogoImage} />
-                  <span>LabLeap</span>
+                  <img src="/logo-header.png" alt="BioShift" className={s.footerLogoImage} />
+                  <span>BioShift</span>
                 </div>
                 <div className={s.footerLinks}>
-                  <span>© 2025 LabLeap</span>
+                  <span>© 2025 BioShift</span>
                   <span>•</span>
-                  <span>Connecting Biotech Professionals</span>
+                  <span>Powered by LabLeap Technology</span>
                 </div>
               </div>
             </Col>
