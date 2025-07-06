@@ -8,13 +8,28 @@ const findUserById = (id) => {
   return db.prepare('SELECT * FROM users WHERE id = ?').get(id);
 };
 
-const createUser = (email, passwordHash, role) => {
+const createUser = async (email, passwordHash, role) => {
   try {
-    db.prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)')
-      .run(email, passwordHash, role);
-    return findUserByEmail(email);
+    console.log(`[DB_DEBUG] Attempting to create user: ${email}`);
+    const result = await db.prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)').run(email, passwordHash, role);
+    console.log('[DB_DEBUG] User insert result:', JSON.stringify(result, null, 2));
+    
+    if (!result || !result.lastInsertRowid) {
+        console.error('[DB_DEBUG] CRITICAL: Insert operation did not return a valid ID.');
+        // Attempt to find user by email as a fallback
+        const user = await findUserByEmail(email);
+        if (!user) {
+            throw new Error('User was not created and could not be found.');
+        }
+        return user;
+    }
+    
+    return findUserById(result.lastInsertRowid);
   } catch (err) {
-    console.error('Error creating user:', err);
+    console.error('[DB_DEBUG] Deep error creating user:', err);
+    console.error('[DB_DEBUG] Error Name:', err.name);
+    console.error('[DB_DEBUG] Error Message:', err.message);
+    console.error('[DB_DEBUG] Error Stack:', err.stack);
     throw err;
   }
 };

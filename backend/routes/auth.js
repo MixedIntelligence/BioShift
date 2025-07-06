@@ -38,16 +38,23 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     console.log('Password hash generated:', passwordHash);
     const user = await userModel.createUser(email, passwordHash, role);
+    
+    if (!user || !user.id) {
+        console.error('[AUTH_DEBUG] User creation failed or did not return a user with an ID.');
+        return res.status(500).json({ error: 'Registration failed: User ID not returned.' });
+    }
+
+    console.log(`[AUTH_DEBUG] User successfully created with ID: ${user.id}`);
+
     if (role === 'Provider') {
-    console.log('User created:', user);
       await providerModel.createProvider(user.id, companyName, website);
     }
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     auditLog('register', user, { ip: req.ip });
     res.status(201).json({ token });
   } catch (err) {
-    console.error('Registration error:', err);
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('[AUTH_DEBUG] Deep registration error:', err);
+    res.status(500).json({ error: 'Registration failed due to a server error.' });
   }
 });
 
