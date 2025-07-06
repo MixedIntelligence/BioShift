@@ -1,13 +1,31 @@
-// Railway Deployment Health Check Script
-// Run this to verify the backend is working after Railway rebuild
+// Railway and Vercel Deployment Health Check Script
+// Run this to verify both deployments are working
 
 const axios = require('axios');
 
 const BACKEND_URL = 'https://bioshift-production.up.railway.app';
+const FRONTEND_URL = 'https://bioshift-seven.vercel.app';
 
 async function checkDeployment() {
-    console.log('🔍 Checking Railway deployment status...\n');
+    console.log('🔍 Checking deployment status...\n');
     
+    // Check Frontend (Vercel)
+    console.log('🌐 FRONTEND (Vercel) CHECKS:');
+    try {
+        const frontendResponse = await axios.get(FRONTEND_URL, {
+            timeout: 10000,
+            validateStatus: function (status) {
+                return status < 500;
+            }
+        });
+        console.log(`✅ Frontend: ${frontendResponse.status} - ${frontendResponse.statusText}`);
+    } catch (error) {
+        console.log(`❌ Frontend: ${error.message}`);
+    }
+    console.log('');
+    
+    // Check Backend (Railway)
+    console.log('🚂 BACKEND (Railway) CHECKS:');
     const checks = [
         { name: 'Health Check', url: `${BACKEND_URL}/api/health` },
         { name: 'Database Connection', url: `${BACKEND_URL}/api/labs` },
@@ -39,6 +57,10 @@ async function checkDeployment() {
     console.log('1. If all green: Proceed with beta testing');
     console.log('2. If issues: Check Railway logs for details');
     console.log('3. Test frontend-backend integration');
+    console.log('');
+    console.log('🔗 Live URLs:');
+    console.log(`Frontend: ${FRONTEND_URL}`);
+    console.log(`Backend: ${BACKEND_URL}`);
 }
 
 checkDeployment().catch(console.error);

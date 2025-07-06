@@ -13,7 +13,7 @@
 - **✅ BETA TESTING READY** - Platform ready for real user testing
 
 ### 🚀 **LIVE PLATFORM LINKS:**
-- **Frontend**: https://bio-shift.vercel.app (Live ✅)
+- **Frontend**: https://bioshift-seven.vercel.app (Live ✅)
 - **Backend**: https://bioshift-production.up.railway.app (Live ✅)
 - **GitHub**: https://github.com/MixedIntelligence/BioShift (Updated ✅)
 

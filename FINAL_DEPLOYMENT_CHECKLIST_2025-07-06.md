@@ -4,7 +4,7 @@
 
 ### Frontend Deployment (Vercel)
 - **Status**: ✅ LIVE
-- **URL**: https://bio-shift.vercel.app
+- **URL**: https://bioshift-seven.vercel.app
 - **Build**: ✅ Success
 - **Performance**: ✅ Fast load times
 - **Responsive**: ✅ Mobile and desktop
