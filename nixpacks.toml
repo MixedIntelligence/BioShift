@@ -1,12 +1,14 @@
 [phases.setup]
-nixPkgs = ["nodejs_20", "python3", "gcc", "gnumake"]
+nixPkgs = ["nodejs_20", "python3", "gcc", "gnumake", "pkg-config"]
 
 [phases.build]
 cmds = [
   "cd backend",
   "rm -rf node_modules",
-  "npm ci",
-  "npm rebuild better-sqlite3"
+  "rm -rf package-lock.json",
+  "npm cache clean --force",
+  "npm install",
+  "npm rebuild better-sqlite3 --build-from-source"
 ]
 
 [phases.start]
@@ -14,3 +16,4 @@ cmd = "cd backend && npm start"
 
 [variables]
 NODE_VERSION = "20"
+NPM_CONFIG_BUILD_FROM_SOURCE = "true"
