@@ -37,6 +37,7 @@ export function authError(payload) {
 
 // Track if doInit is currently running to prevent infinite loops
 let isInitializing = false;
+let lastTokenError = null;
 
 export function doInit() {
   return async (dispatch, getState) => {
@@ -68,10 +69,35 @@ export function doInit() {
           let token = localStorage.getItem('token');
           console.log('🔑 Token from localStorage:', token ? 'exists' : 'none');
           
+          // If we just cleared a bad token, don't process it again
+          if (token && token === lastTokenError) {
+            console.log('🔄 Same bad token detected, force clearing and skipping...');
+            localStorage.clear();
+            token = null;
+          }
+          
           if (token) {
             // Quick token validation before making API call
             try {
-              const payload = JSON.parse(atob(token.split('.')[1]));
+              // Validate JWT token format (must have 3 parts separated by dots)
+              const tokenParts = token.split('.');
+              if (tokenParts.length !== 3) {
+                throw new Error('Invalid JWT format - must have 3 parts');
+              }
+              
+              // Safely decode the token payload
+              let payload;
+              try {
+                // Add padding if needed for base64 decoding
+                let base64 = tokenParts[1];
+                while (base64.length % 4) {
+                  base64 += '=';
+                }
+                payload = JSON.parse(atob(base64));
+              } catch (decodeError) {
+                throw new Error('Invalid token payload - cannot decode');
+              }
+              
               const currentTime = Date.now() / 1000;
               
               if (payload.exp && payload.exp < currentTime) {
@@ -82,6 +108,9 @@ export function doInit() {
                 token = null;
               } else {
                 console.log('✅ Token is valid, fetching user info...');
+                // Set axios auth header for API calls
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+                
                 try {
                   console.log('📡 Calling findMe() API...');
                   currentUser = await findMe();
@@ -97,10 +126,37 @@ export function doInit() {
               }
             } catch (tokenError) {
               console.log('❌ Invalid token format, clearing...', tokenError);
-              localStorage.removeItem('token');
-              localStorage.removeItem('user');
-              delete axios.defaults.headers.common['Authorization'];
+              
+              // Track this bad token to prevent loops
+              lastTokenError = token;
+              
+              // Aggressive cleanup - clear everything auth-related
+              try {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('dashboardTheme');
+                localStorage.removeItem('navbarColor');
+                localStorage.removeItem('navbarType');
+                delete axios.defaults.headers.common['Authorization'];
+                
+                // Force clear any session/cookie data
+                if (typeof sessionStorage !== 'undefined') {
+                  sessionStorage.removeItem('token');
+                  sessionStorage.removeItem('user');
+                }
+                
+                console.log('🧹 Aggressive cleanup completed');
+              } catch (cleanupError) {
+                console.error('Cleanup error:', cleanupError);
+              }
+              
               token = null;
+              
+              // Show user-friendly message only once per session
+              if (!window.authErrorShown) {
+                toast.error('Your session has expired. Please log in again.');
+                window.authErrorShown = true;
+              }
             }
           }
           
@@ -173,6 +229,7 @@ export function loginUser(creds) {
       localStorage.setItem("dashboardTheme", 'dark')
       localStorage.setItem('navbarColor', '#fff')
       localStorage.setItem('navbarType', 'static')
+      
       if (!config.isBackend) {
         dispatch(receiveToken('token'));
         dispatch(doInit());
@@ -181,20 +238,81 @@ export function loginUser(creds) {
         dispatch({
           type: LOGIN_REQUEST,
         });
+        
         if (creds.social) {
           window.location.href = config.baseURLApi + "/auth/signin/" + creds.social + '?app=' + config.redirectUrl;
         } else if (creds && creds.email && creds.password) {
-          axios.post("/auth/login", creds).then(res => {
-            const { token } = res.data;
-            dispatch(receiveToken(token));
-            dispatch(doInit());
-            dispatch(push('/app'));
-          }).catch(err => {
-            const errorMessage = err.response?.data?.error || err.response?.data || 'Login failed';
-            dispatch(authError(errorMessage));
-          })
+          console.log('🔐 Attempting login for:', creds.email);
+          console.log('🌐 Backend URL:', config.baseURLApi);
+          
+          // Clear any existing corrupted auth data before login
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          delete axios.defaults.headers.common['Authorization'];
+          
+          axios.post("/auth/login", creds)
+            .then(res => {
+              console.log('✅ Login successful:', res.data);
+              const { token } = res.data;
+              if (!token) {
+                throw new Error('No token received from server');
+              }
+              
+              // Validate token format before storing
+              try {
+                const tokenParts = token.split('.');
+                if (tokenParts.length !== 3) {
+                  throw new Error('Invalid JWT format received from server');
+                }
+                // Test decode to ensure it's valid
+                let base64 = tokenParts[1];
+                while (base64.length % 4) {
+                  base64 += '=';
+                }
+                JSON.parse(atob(base64));
+              } catch (tokenValidationError) {
+                console.error('❌ Invalid token format from server:', tokenValidationError);
+                throw new Error('Invalid token format received from server');
+              }
+              
+              dispatch(receiveToken(token));
+              dispatch(doInit());
+              dispatch(push('/app'));
+            })
+            .catch(err => {
+              console.log('❌ Login failed:', err);
+              console.log('Response data:', err.response?.data);
+              console.log('Response status:', err.response?.status);
+              
+              let errorMessage = 'Login failed';
+              if (err.response?.data?.error) {
+                errorMessage = err.response.data.error;
+              } else if (err.response?.data?.message) {
+                errorMessage = err.response.data.message;
+              } else if (err.response?.data) {
+                errorMessage = typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data);
+              } else if (err.message) {
+                errorMessage = err.message;
+              }
+              
+              // Add specific error messages for common issues
+              if (err.response?.status === 401) {
+                errorMessage = 'Invalid email or password';
+              } else if (err.response?.status === 404) {
+                errorMessage = 'Login service not found. Please check if the server is running.';
+              } else if (err.response?.status === 500) {
+                errorMessage = 'Server error. Please try again later.';
+              } else if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+                errorMessage = 'Cannot connect to server. Please check if the backend is running.';
+              }
+              
+              dispatch(authError(errorMessage));
+              toast.error(errorMessage);
+            });
         } else {
-          dispatch(authError('Something was wrong. Try again'));
+          const errorMessage = 'Please enter both email and password';
+          dispatch(authError(errorMessage));
+          toast.error(errorMessage);
         }
       }
     };

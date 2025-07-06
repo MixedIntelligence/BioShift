@@ -74,6 +74,15 @@ class Login extends React.Component {
 
   doLogin(e) {
     e.preventDefault();
+    console.log('🔐 Login form submitted');
+    console.log('📧 Email:', this.state.email);
+    console.log('🔑 Password length:', this.state.password.length);
+    
+    if (!this.state.email || !this.state.password) {
+      console.log('❌ Missing email or password');
+      return;
+    }
+    
     this.props.dispatch(
       loginUser({ email: this.state.email, password: this.state.password }),
     );
