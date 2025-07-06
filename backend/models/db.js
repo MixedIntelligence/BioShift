@@ -37,6 +37,10 @@ if (process.env.DATABASE_URL) {
     
 } else if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
     // Fallback mock database for Railway if PostgreSQL not available
+    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
+    console.error('!!! CRITICAL: DATABASE_URL NOT FOUND IN PRODUCTION !!!');
+    console.error('!!! FALLING BACK TO MOCK DATABASE !!!');
+    console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
     console.log('� Railway fallback - using mock database with test users');
     
     // Mock database with pre-seeded test users

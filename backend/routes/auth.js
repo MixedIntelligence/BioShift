@@ -60,14 +60,19 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Email and password are required' });
   }
   try {
+    console.log(`[AUTH] Attempting login for: ${email}`);
     const user = await userModel.findUserByEmail(email);
     if (!user) {
+      console.log(`[AUTH] User not found: ${email}`);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    console.log(`[AUTH] User found: ${user.email}. Comparing passwords...`);
     const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
+      console.log(`[AUTH] Password validation failed for user: ${email}`);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
+    console.log(`[AUTH] Login successful for user: ${email}`);
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     auditLog('login', user, { ip: req.ip });
     res.json({ token });
