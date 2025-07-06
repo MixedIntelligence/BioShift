@@ -7,6 +7,7 @@
     "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
     "migrate": "node migrate.js",
     "railway-init": "node railway-init.js",
+    "db:init-pg": "node init-postgres.js",
     "test-auth": "node test_auth_fix.js"
   },
   "keywords": [],
