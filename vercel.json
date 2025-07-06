@@ -5,19 +5,29 @@
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "build",
-        "nodeVersion": "20.x"
+        "distDir": "build"
       }
     }
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "headers": { 
+        "cache-control": "public, max-age=31536000, immutable"
+      },
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(favicon\\.ico|favicon\\.png|manifest\\.json|apple-touch-icon\\.png)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/images/(.*)",
+      "dest": "/images/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "NODE_ENV": "production",
-    "NODE_OPTIONS": "--max-old-space-size=4096"
-  }
+  ]
 }

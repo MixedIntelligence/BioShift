@@ -166,3 +166,4 @@
 {"timestamp":"2025-07-06T03:06:45.383Z","user":{"id":2,"role":"Worker"},"action":"apply_gig","details":{"gigId":"7"}}
 {"timestamp":"2025-07-06T04:07:55.986Z","user":{"id":2,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
 {"timestamp":"2025-07-06T04:08:51.868Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T05:27:05.846Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
