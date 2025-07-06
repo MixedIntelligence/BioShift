@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Card, CardBody, CardTitle, Alert, Button, Input, InputGroup, InputGroupText } from 'reactstrap';
 import { connect } from 'react-redux';
 import { FaSearch } from 'react-icons/fa';
@@ -15,29 +15,7 @@ const BrowseOfferings = ({ currentUser }) => {
   const [selectedType, setSelectedType] = useState('');
   const [selectedPricingModel, setSelectedPricingModel] = useState('');
 
-  useEffect(() => {
-    fetchOfferings();
-  }, []);
-
-  useEffect(() => {
-    applyFilters();
-  }, [offerings, searchTerm, selectedCategory, selectedType, selectedPricingModel, applyFilters]);
-
-  const fetchOfferings = async () => {
-    try {
-      setLoading(true);
-      const response = await api.getOfferings();
-      setOfferings(response.data);
-      setError(null);
-    } catch (err) {
-      setError('Failed to fetch offerings. Please try again.');
-      console.error('Error fetching offerings:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const applyFilters = () => {
+  const applyFilters = useCallback(() => {
     let filtered = offerings;
 
     if (searchTerm) {
@@ -61,6 +39,28 @@ const BrowseOfferings = ({ currentUser }) => {
     }
 
     setFilteredOfferings(filtered);
+  }, [offerings, searchTerm, selectedCategory, selectedType, selectedPricingModel]);
+
+  useEffect(() => {
+    fetchOfferings();
+  }, []);
+
+  useEffect(() => {
+    applyFilters();
+  }, [applyFilters]);
+
+  const fetchOfferings = async () => {
+    try {
+      setLoading(true);
+      const response = await api.getOfferings();
+      setOfferings(response.data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch offerings. Please try again.');
+      console.error('Error fetching offerings:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const getUniqueValues = (field) => {
