@@ -1,14 +1,17 @@
-const hostApi = process.env.NODE_ENV === "development" ? "http://localhost" : "https://sing-generator-node.herokuapp.com";
-const portApi = process.env.NODE_ENV === "development" ? 8080 : "";
-const baseURLApi = `${hostApi}${portApi ? `:${portApi}` : ``}/api`;
-const redirectUrl = process.env.NODE_ENV === "development" ? "http://localhost:3000/sing-app-react" : "https://demo.flatlogic.com/sing-app-react";
+// Backend API configuration
+const isDevelopment = process.env.NODE_ENV === "development";
+const backendUrl = process.env.REACT_APP_BACKEND_URL || 
+  (isDevelopment ? "http://localhost:8080" : "https://your-backend-app.railway.app");
+
+const hostApi = backendUrl;
+const baseURLApi = `${backendUrl}/api`;
+const redirectUrl = isDevelopment ? "http://localhost:3000" : window.location.origin;
 
 const config = {
   redirectUrl,
   hostApi,
-  portApi,
   baseURLApi,
-  remote: "https://sing-generator-node.herokuapp.com",
+  remote: backendUrl,
   isBackend: true,
   auth: {
     email: 'admin@flatlogic.com',
