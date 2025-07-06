@@ -7,24 +7,37 @@ import api from '../../services/api';
 const MyGigsPage = ({ currentUser }) => {
   const [activeTab, setActiveTab] = useState('active');
   const [myGigs, setMyGigs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchGigs = async () => {
       try {
-        const response = await api.getGigs();
+        let response;
+        if (currentUser?.role === 'Lab') {
+          // Use the new API endpoint for labs to get their own gigs
+          response = await api.getMyGigs();
+        } else {
+          // For workers, get all gigs and filter by applications later
+          response = await api.getGigs();
+        }
         setMyGigs(response.data);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching gigs", error);
+        setLoading(false);
       }
     };
-    fetchGigs();
-  }, []);
+    if (currentUser) {
+      fetchGigs();
+    }
+  }, [currentUser]);
 
   if (!currentUser) return null;
+  if (loading) return <div className="container mt-4"><h4>Loading...</h4></div>;
 
-  const activeGigs = myGigs.filter(g => g.status === 'Open' || g.status === 'Awarded' || g.status === 'Applied');
-  const completedGigs = myGigs.filter(g => g.status === 'Completed');
-  const paymentGigs = myGigs.filter(g => g.status === 'Awarded' || g.status === 'Completed');
+  const activeGigs = myGigs.filter(g => g.status === 'open' || g.status === 'in_progress');
+  const completedGigs = myGigs.filter(g => g.status === 'completed');
+  const paymentGigs = myGigs.filter(g => g.status === 'completed' || g.status === 'awarded');
 
   return (
     <div className="container mt-4">
@@ -50,16 +63,16 @@ const MyGigsPage = ({ currentUser }) => {
             <Col md={6} lg={4} key={gig.id} className="mb-4">
               <Card>
                 <CardBody>
-                  <CardTitle tag="h5">{gig.title} <Badge color={gig.status === 'Awarded' ? 'success' : gig.status === 'Applied' ? 'info' : 'primary'}>{gig.status}</Badge></CardTitle>
+                  <CardTitle tag="h5">{gig.title} <Badge color={gig.status === 'awarded' ? 'success' : gig.status === 'applied' ? 'info' : 'primary'}>{gig.status}</Badge></CardTitle>
                   <CardText>{gig.description}</CardText>
                   <CardText>
-                    <strong>Skills:</strong> {gig.requiredSkills.join(', ')}<br/>
-                    <strong>Duration:</strong> {gig.duration}<br/>
-                    <strong>Location:</strong> {gig.location}<br/>
-                    <strong>Pay Rate:</strong> {gig.payRate}<br/>
-                    <strong>Lab:</strong> {gig.lab.name}
+                    <strong>Skills:</strong> {gig.required_skills || 'Not specified'}<br/>
+                    <strong>Duration:</strong> {gig.duration || 'Not specified'}<br/>
+                    <strong>Location:</strong> {gig.location || 'Not specified'}<br/>
+                    <strong>Pay Rate:</strong> {gig.pay_rate || 'Not specified'}<br/>
+                    <strong>Status:</strong> {gig.status}
                   </CardText>
-                  <Progress value={gig.status === 'Awarded' ? 80 : gig.status === 'Applied' ? 40 : 20} className="mb-2" />
+                  <Progress value={gig.status === 'awarded' ? 80 : gig.status === 'applied' ? 40 : 20} className="mb-2" />
                   <Button color="primary" href={`#/app/gigs/${gig.id}`}>View Details</Button>{' '}
                   <Button color="secondary">Message</Button>
                 </CardBody>
@@ -78,11 +91,11 @@ const MyGigsPage = ({ currentUser }) => {
                   <CardTitle tag="h5">{gig.title} <Badge color="secondary">Completed</Badge></CardTitle>
                   <CardText>{gig.description}</CardText>
                   <CardText>
-                    <strong>Skills:</strong> {gig.requiredSkills.join(', ')}<br/>
-                    <strong>Duration:</strong> {gig.duration}<br/>
-                    <strong>Location:</strong> {gig.location}<br/>
-                    <strong>Pay Rate:</strong> {gig.payRate}<br/>
-                    <strong>Lab:</strong> {gig.lab.name}
+                    <strong>Skills:</strong> {gig.required_skills || 'Not specified'}<br/>
+                    <strong>Duration:</strong> {gig.duration || 'Not specified'}<br/>
+                    <strong>Location:</strong> {gig.location || 'Not specified'}<br/>
+                    <strong>Pay Rate:</strong> {gig.pay_rate || 'Not specified'}<br/>
+                    <strong>Status:</strong> {gig.status}
                   </CardText>
                   <Progress value={100} className="mb-2" color="success" />
                   <Button color="primary" href={`#/app/gigs/${gig.id}`}>View Details</Button>{' '}
@@ -110,11 +123,11 @@ const MyGigsPage = ({ currentUser }) => {
             {myGigs.map(gig => (
               <tr key={gig.id}>
                 <td>{gig.title}</td>
-                <td><Badge color={gig.status === 'Completed' ? 'secondary' : gig.status === 'Awarded' ? 'success' : gig.status === 'Applied' ? 'info' : 'primary'}>{gig.status}</Badge></td>
-                <td>{gig.lab.name}</td>
-                <td>{gig.duration}</td>
-                <td>{gig.payRate}</td>
-                <td>{gig.status === 'Completed' ? 'Yes' : 'No'}</td>
+                <td><Badge color={gig.status === 'completed' ? 'secondary' : gig.status === 'awarded' ? 'success' : gig.status === 'applied' ? 'info' : 'primary'}>{gig.status}</Badge></td>
+                <td>{currentUser?.role === 'Lab' ? currentUser.first_name + ' ' + currentUser.last_name || currentUser.email : 'Lab'}</td>
+                <td>{gig.duration || 'Not specified'}</td>
+                <td>{gig.pay_rate || 'Not specified'}</td>
+                <td>{gig.status === 'completed' ? 'Yes' : 'No'}</td>
               </tr>
             ))}
           </tbody>
@@ -136,9 +149,9 @@ const MyGigsPage = ({ currentUser }) => {
             {paymentGigs.map(gig => (
               <tr key={gig.id}>
                 <td>{gig.title}</td>
-                <td><Badge color={gig.status === 'Completed' ? 'secondary' : gig.status === 'Awarded' ? 'success' : gig.status === 'Applied' ? 'info' : 'primary'}>{gig.status}</Badge></td>
-                <td>{gig.payRate}</td>
-                <td>{gig.status === 'Completed' ? 'Paid' : 'Pending'}</td>
+                <td><Badge color={gig.status === 'completed' ? 'secondary' : gig.status === 'awarded' ? 'success' : gig.status === 'applied' ? 'info' : 'primary'}>{gig.status}</Badge></td>
+                <td>{gig.pay_rate || 'Not specified'}</td>
+                <td>{gig.status === 'completed' ? 'Paid' : 'Pending'}</td>
                 <td><Button color="info" size="sm">Download Invoice</Button></td>
               </tr>
             ))}

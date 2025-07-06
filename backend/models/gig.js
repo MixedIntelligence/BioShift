@@ -100,13 +100,26 @@ async function listApplications(gigId) {
     SELECT
       a.id,
       a.status,
+      a.applied_at,
       a.accepted_at,
       u.id as user_id,
+      u.first_name,
+      u.last_name,
       u.username,
-      u.email
+      u.email,
+      u.headline,
+      u.bio,
+      u.phone,
+      u.location,
+      (u.first_name || ' ' || u.last_name) as name,
+      'https://via.placeholder.com/48' as avatar,
+      '5.0' as rating,
+      'React, Node.js, Python' as skills,
+      'AWS Certified, Google Cloud' as certifications
     FROM applications a
     JOIN users u ON a.user_id = u.id
     WHERE a.gig_id = ?
+    ORDER BY a.applied_at DESC
   `);
   return stmt.all(gigId);
 }

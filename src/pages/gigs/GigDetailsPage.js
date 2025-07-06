@@ -25,6 +25,7 @@ const GigDetailsPage = ({ currentUser }) => {
   const [applicantsError, setApplicantsError] = useState(null);
 
   const isLab = role === 'Lab';
+  const isWorker = role === 'Worker';
 
   const handleApplicationStatusUpdate = (applicationId, status) => {
     setApplicants(prevApplicants =>
@@ -62,13 +63,26 @@ const GigDetailsPage = ({ currentUser }) => {
       .then(response => {
         setGig(response.data);
         setLoading(false);
+        
+        // Check if current user has already applied to this gig
+        if (isWorker) {
+          api.checkApplicationStatus(id)
+            .then(statusResponse => {
+              if (statusResponse.data.hasApplied) {
+                setApplied(true);
+              }
+            })
+            .catch(error => {
+              console.error("Error checking application status:", error);
+            });
+        }
       })
       .catch(error => {
         console.error("Error fetching gig details:", error);
         setError(error);
         setLoading(false);
       });
-  }, [id]);
+  }, [id, isWorker]);
 
   useEffect(() => {
     if (activeTab === '2' && isLab && gig) {
@@ -129,9 +143,6 @@ const GigDetailsPage = ({ currentUser }) => {
       </CardBody>
     </Card>
   );
-
-  // Worker view - can apply to gigs
-  const isWorker = role === 'Worker';
 
   if (loading) {
     return <div className="container mt-4"><h4>Loading gig...</h4></div>;

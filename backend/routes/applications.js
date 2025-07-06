@@ -46,7 +46,7 @@ router.post('/:applicationId/accept', authenticateToken, async (req, res) => {
     const notificationStmt = db.prepare('INSERT INTO notifications (user_id, message) VALUES (?, ?)');
     notificationStmt.run(application.user_id, `Congratulations! Your application for "${gig.title}" has been accepted. You can contact the lab at: ${gig.lab_email}`);
 
-    res.json(application);
+    res.json({ ...application, status: 'accepted' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -72,8 +72,7 @@ router.post('/:applicationId/reject', authenticateToken, async (req, res) => {
     const notificationStmt = db.prepare('INSERT INTO notifications (user_id, message) VALUES (?, ?)');
     notificationStmt.run(application.user_id, `Regarding your application for "${gig.title}", the lab has decided to move forward with other candidates.`);
 
-
-    res.json({ message: 'Application rejected' });
+    res.json({ ...application, status: 'rejected' });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });

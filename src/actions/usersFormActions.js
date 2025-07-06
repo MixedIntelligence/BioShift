@@ -1,7 +1,6 @@
 import axios from 'axios';
 import Errors from 'components/FormItems/error/errors';
 import { push } from 'connected-react-router';
-import { doInit } from 'actions/auth';
 import { toast } from 'react-toastify';
 import config from '../config';
 import { mockUser } from '../actions/mock';
@@ -79,7 +78,8 @@ const actions = {
 
       await axios.put(`/users/${id}`, {id, data: values});
 
-      dispatch(doInit());
+      // Don't call doInit() here to avoid infinite loops
+      // The auth state will be updated when needed through other means
 
       dispatch({
         type: 'USERS_FORM_UPDATE_SUCCESS',

@@ -187,14 +187,24 @@ const getTransactions = () => {
   return apiClient.get('/users/me/transactions');
 };
 
+const checkApplicationStatus = (gigId) => {
+  return apiClient.get(`/gigs/${gigId}/application-status`);
+};
+
+const getMyGigs = () => {
+  return apiClient.get('/gigs/my-gigs');
+};
+
 const api = {
   getGigApplications,
   acceptApplication,
   rejectApplication,
+  checkApplicationStatus,
   getDocuments,
   uploadDocument,
   createGig,
   getGigs,
+  getMyGigs,
   getGigById,
   searchGigs,
   applyToGig,
@@ -232,6 +242,10 @@ const api = {
   getAgreements,
   // Transactions
   getTransactions,
+  // Check application status
+  checkApplicationStatus,
+  // Get my gigs
+  getMyGigs,
 };
 
 export default api;

@@ -6,6 +6,7 @@ const authenticateToken = require('../middleware/auth');
 const requireRole = require('../middleware/requireRole');
 const Joi = require('joi');
 const auditLog = require('../middleware/auditLog');
+const db = require('../models/db');
 
 const gigSchema = Joi.object({
   title: Joi.string().min(3).max(100).required(),
@@ -76,6 +77,20 @@ router.post(
     }
   }
 );
+
+// GET /api/gigs/my-gigs - Get gigs created by the current user (Lab)
+router.get('/my-gigs', authenticateToken, requireRole('Lab', 'Admin'), async (req, res) => {
+  try {
+    console.log('my-gigs endpoint called, user:', req.user);
+    const stmt = db.prepare('SELECT * FROM gigs WHERE user_id = ? ORDER BY created_at DESC');
+    const myGigs = stmt.all(req.user.id);
+    console.log('Found gigs:', myGigs);
+    res.json(myGigs);
+  } catch (err) {
+    console.error('Error in my-gigs endpoint:', err);
+    res.status(500).json({ error: 'Failed to fetch user gigs' });
+  }
+});
 
 // GET /api/gigs/:id - Gig/project details
 router.get(
@@ -158,6 +173,29 @@ router.get(
   async (req, res) => {
     const applications = await gigModel.listApplications(req.params.id);
     res.json(applications);
+  }
+);
+
+// GET /api/gigs/:id/application-status - Check if current user has applied to a gig
+router.get(
+  '/:id/application-status',
+  authenticateToken,
+  async (req, res) => {
+    const gigId = req.params.id;
+    const userId = req.user.id;
+    
+    try {
+      const stmt = db.prepare('SELECT id, status, applied_at FROM applications WHERE gig_id = ? AND user_id = ?');
+      const application = stmt.get(gigId, userId);
+      
+      if (application) {
+        res.json({ hasApplied: true, application });
+      } else {
+        res.json({ hasApplied: false, application: null });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
   }
 );
 
