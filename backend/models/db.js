@@ -1,47 +1,114 @@
 // Railway-compatible database setup
-// Uses SQLite locally, mock data on Railway for immediate deployment
+// Uses SQLite with proper initialization for both local and Railway deployment
 
 let db;
 
-if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
-    // Mock database for Railway deployment
-    console.log('🚂 Railway deployment detected - using mock database');
+try {
+    const Database = require('better-sqlite3');
+    const path = require('path');
+    const dbPath = path.resolve(__dirname, '..', 'biomvp.sqlite');
     
-    // Mock database implementation
-    db = {
-        prepare: (query) => ({
-            run: (...args) => ({ changes: 1, lastInsertRowid: 1 }),
-            get: (...args) => null,
-            all: (...args) => [],
-            bind: (...args) => ({ run: () => ({ changes: 1 }), get: () => null, all: () => [] })
-        }),
-        exec: (query) => true,
-        close: () => true,
-        transaction: (fn) => fn
-    };
-} else {
-    // Local development with SQLite
-    console.log('💻 Local development - using SQLite');
-    try {
-        const Database = require('better-sqlite3');
-        const path = require('path');
-        const dbPath = path.resolve(__dirname, '..', 'biomvp.sqlite');
-        db = new Database(dbPath, { verbose: console.log });
-    } catch (error) {
-        console.error('SQLite initialization failed:', error);
-        // Fallback to mock if SQLite fails
-        db = {
-            prepare: (query) => ({
-                run: (...args) => ({ changes: 1, lastInsertRowid: 1 }),
-                get: (...args) => null,
-                all: (...args) => [],
-                bind: (...args) => ({ run: () => ({ changes: 1 }), get: () => null, all: () => [] })
-            }),
-            exec: (query) => true,
-            close: () => true,
-            transaction: (fn) => fn
-        };
+    console.log('🗄️ Initializing SQLite database at:', dbPath);
+    db = new Database(dbPath, { verbose: console.log });
+    
+    // Initialize database schema if needed
+    initializeDatabase();
+    
+    // Seed test data for production/Railway
+    if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+        console.log('🚂 Railway deployment - seeding test data');
+        seedTestData();
     }
+    
+} catch (error) {
+    console.error('SQLite initialization failed:', error);
+    throw error;
+}
+
+function initializeDatabase() {
+    console.log('📋 Initializing database schema...');
+    
+    // Create users table
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            email TEXT UNIQUE NOT NULL,
+            password_hash TEXT NOT NULL,
+            role TEXT NOT NULL DEFAULT 'Worker',
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        );
+    `);
+    
+    // Create other essential tables
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS user_skills (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            skill TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+    `);
+    
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS user_education (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            institution TEXT NOT NULL,
+            degree TEXT NOT NULL,
+            field_of_study TEXT,
+            start_year INTEGER,
+            end_year INTEGER,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+    `);
+    
+    db.exec(`
+        CREATE TABLE IF NOT EXISTS user_publications (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            title TEXT NOT NULL,
+            journal TEXT,
+            year INTEGER,
+            url TEXT,
+            FOREIGN KEY (user_id) REFERENCES users(id)
+        );
+    `);
+    
+    console.log('✅ Database schema initialized');
+}
+
+function seedTestData() {
+    const bcrypt = require('bcryptjs');
+    
+    // Check if test users already exist
+    const existingUser = db.prepare('SELECT * FROM users WHERE email = ?').get('test@example.com');
+    if (existingUser) {
+        console.log('👤 Test users already exist, skipping seed');
+        return;
+    }
+    
+    console.log('🌱 Seeding test data...');
+    
+    // Create test users with hashed passwords
+    const testUsers = [
+        { email: 'test@example.com', password: 'password123', role: 'Worker' },
+        { email: 'lab@example.com', password: 'password123', role: 'Lab' },
+        { email: 'provider@example.com', password: 'password123', role: 'Provider' }
+    ];
+    
+    const insertUser = db.prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)');
+    
+    testUsers.forEach(user => {
+        try {
+            const hashedPassword = bcrypt.hashSync(user.password, 10);
+            insertUser.run(user.email, hashedPassword, user.role);
+            console.log(`✅ Created test user: ${user.email} (${user.role})`);
+        } catch (error) {
+            console.log(`⚠️ Test user ${user.email} already exists or error:`, error.message);
+        }
+    });
+    
+    console.log('🌱 Test data seeding completed');
 }
 
 module.exports = db;

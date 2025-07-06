@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Clear LocalStorage</title>
+</head>
+<body>
+    <h1>Clear LocalStorage</h1>
+    <button onclick="clearStorage()">Clear All Auth Data</button>
+    <div id="status"></div>
+    
+    <script>
+        function clearStorage() {
+            try {
+                // Clear all auth-related localStorage items
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                localStorage.removeItem('dashboardTheme');
+                localStorage.removeItem('navbarColor');
+                localStorage.removeItem('navbarType');
+                
+                // Clear all localStorage if needed
+                localStorage.clear();
+                
+                document.getElementById('status').innerHTML = 
+                    '<p style="color: green;">✅ LocalStorage cleared successfully!</p>' +
+                    '<p>You can now close this tab and try logging in again.</p>';
+                    
+                console.log('✅ All localStorage data cleared');
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    '<p style="color: red;">❌ Error clearing localStorage: ' + error.message + '</p>';
+                console.error('❌ Error clearing localStorage:', error);
+            }
+        }
+        
+        // Auto-run on page load
+        window.onload = function() {
+            clearStorage();
+        };
+    </script>
+</body>
+</html>
