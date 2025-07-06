@@ -13,6 +13,9 @@ LabLeap v9 is a comprehensive marketplace platform designed to connect labs, sci
 - **Gig Management**: Full CRUD operations for lab-posted opportunities  
 - **Application System**: Complete Worker application flow with Lab approval process
 - **My Applications**: Workers can view all gigs they've applied to with status tracking
+- **Offerings Platform**: Complete marketplace with 25 diverse offerings across categories
+- **Provider Tools**: Full CRUD management for Provider offerings
+- **Public Browsing**: Labs/Workers can browse offerings without authentication
 - **User Profiles**: Comprehensive profile system with onboarding flows
 - **Modern UI**: Updated landing page with responsive design
 - **API Integration**: RESTful backend with proper error handling
@@ -25,6 +28,14 @@ LabLeap v9 is a comprehensive marketplace platform designed to connect labs, sci
 - User registration with email validation
 - Profile completion and onboarding flows
 - Password management and security
+
+#### **Offerings Marketplace**
+- **25 Professional Offerings**: Equipment services, training, consulting, specialized services
+- **Provider Dashboard**: Complete CRUD interface with card/table views
+- **Public Browsing**: Search and filter offerings by category, type, price
+- **Advanced Search**: Keywords, location, duration filtering
+- **Professional UI**: Custom components with responsive design
+- **Categories**: PCR services, microscopy, bioinformatics, regulatory affairs, and more
 
 #### **Gig Lifecycle Management**
 - Labs can create, edit, and manage gigs
