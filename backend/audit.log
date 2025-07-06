@@ -171,3 +171,4 @@
 {"timestamp":"2025-07-06T15:55:18.910Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
 {"timestamp":"2025-07-06T15:59:44.905Z","user":{"id":7,"role":"Worker"},"action":"apply_gig","details":{"gigId":"3"}}
 {"timestamp":"2025-07-06T16:42:23.194Z","user":{"id":7,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-06T16:48:44.127Z","user":{"id":15,"role":"Lab"},"action":"login","details":{"ip":"::1"}}

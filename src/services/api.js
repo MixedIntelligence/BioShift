@@ -268,6 +268,9 @@ const api = {
   getAgreements,
   // Transactions
   getTransactions,
+  // Notifications  
+  getNotifications,
+  markAsRead,
 };
 
 export default api;
