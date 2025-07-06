@@ -52,12 +52,23 @@ const MyApplications = ({ currentUser }) => {
     });
   };
 
-  const formatPayment = (amount) => {
-    if (!amount) return 'Not specified';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+  const formatPayment = (payRate) => {
+    if (!payRate) return 'Not specified';
+    
+    // If it's already a formatted string, return as is
+    if (typeof payRate === 'string' && isNaN(payRate)) {
+      return payRate;
+    }
+    
+    // If it's a number, format as currency
+    if (typeof payRate === 'number' || !isNaN(payRate)) {
+      return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+      }).format(Number(payRate));
+    }
+    
+    return payRate;
   };
 
   if (loading) {
@@ -137,26 +148,26 @@ const MyApplications = ({ currentUser }) => {
                             to={`/app/gigs/${app.gig_id}`}
                             className="text-decoration-none"
                           >
-                            <strong>{app.gig_title}</strong>
+                            <strong>{app.title || 'Untitled Gig'}</strong>
                           </Link>
                           <div className="text-muted small">
-                            {app.gig_description && app.gig_description.length > 100 
-                              ? app.gig_description.substring(0, 100) + '...'
-                              : app.gig_description || 'No description available'
+                            {app.description && app.description.length > 100 
+                              ? app.description.substring(0, 100) + '...'
+                              : app.description || 'No description available'
                             }
                           </div>
                         </td>
                         <td>
-                          <div>{app.company_name || 'Not specified'}</div>
-                          <div className="text-muted small">{app.poster_email}</div>
+                          <div>{app.lab_name || (app.lab_first_name && app.lab_last_name ? app.lab_first_name + ' ' + app.lab_last_name : app.lab_email) || 'Not specified'}</div>
+                          <div className="text-muted small">{app.lab_email}</div>
                         </td>
                         <td>
                           <div>{app.location || 'Not specified'}</div>
-                          <div className="text-muted small">{app.work_type || 'Not specified'}</div>
+                          <div className="text-muted small">Remote/On-site</div>
                         </td>
                         <td>
-                          <div>{formatPayment(app.payment_amount)}</div>
-                          <div className="text-muted small">{app.payment_type || 'Not specified'}</div>
+                          <div>{formatPayment(app.pay_rate)}</div>
+                          <div className="text-muted small">Rate</div>
                         </td>
                         <td>
                           <div>{formatDate(app.applied_at)}</div>
