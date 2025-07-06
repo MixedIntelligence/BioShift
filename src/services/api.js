@@ -61,6 +61,10 @@ const getGigById = (gigId) => {
   return apiClient.get(`/gigs/${gigId}`);
 };
 
+const updateGig = (gigId, gigData) => {
+  return apiClient.put(`/gigs/${gigId}`, gigData);
+};
+
 const searchGigs = (query) => {
   return apiClient.get(`/gigs/search?q=${encodeURIComponent(query)}`);
 };
@@ -223,6 +227,7 @@ const api = {
   getGigs,
   getMyGigs,
   getGigById,
+  updateGig,
   searchGigs,
   applyToGig,
   createOffering,

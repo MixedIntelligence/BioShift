@@ -73,8 +73,13 @@ const MyGigsPage = ({ currentUser }) => {
                     <strong>Status:</strong> {gig.status}
                   </CardText>
                   <Progress value={gig.status === 'awarded' ? 80 : gig.status === 'applied' ? 40 : 20} className="mb-2" />
-                  <Button color="primary" href={`#/app/gigs/${gig.id}`}>View Details</Button>{' '}
-                  <Button color="secondary">Message</Button>
+                  <div className="d-flex flex-wrap gap-2">
+                    <Button color="primary" href={`#/app/gigs/${gig.id}`} size="sm">View Details</Button>
+                    {currentUser?.role === 'Lab' && (
+                      <Button color="info" href={`#/app/gigs/edit/${gig.id}`} size="sm">Edit</Button>
+                    )}
+                    <Button color="secondary" size="sm">Message</Button>
+                  </div>
                 </CardBody>
               </Card>
             </Col>
@@ -98,8 +103,13 @@ const MyGigsPage = ({ currentUser }) => {
                     <strong>Status:</strong> {gig.status}
                   </CardText>
                   <Progress value={100} className="mb-2" color="success" />
-                  <Button color="primary" href={`#/app/gigs/${gig.id}`}>View Details</Button>{' '}
-                  <Button color="info">Download Certificate</Button>
+                  <div className="d-flex flex-wrap gap-2">
+                    <Button color="primary" href={`#/app/gigs/${gig.id}`} size="sm">View Details</Button>
+                    {currentUser?.role === 'Lab' && (
+                      <Button color="info" href={`#/app/gigs/edit/${gig.id}`} size="sm">Edit</Button>
+                    )}
+                    <Button color="success" size="sm">Download Certificate</Button>
+                  </div>
                 </CardBody>
               </Card>
             </Col>
