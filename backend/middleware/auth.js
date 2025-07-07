@@ -1,24 +1,31 @@
 const jwt = require('jsonwebtoken');
+const userModel = require('../models/user');
 
-function authenticateToken(req, res, next) {
+async function authenticateToken(req, res, next) {
   const authHeader = req.headers['authorization'];
-  console.log('Authorization header:', authHeader); // DEBUG
   if (!authHeader) {
-    console.error('No Authorization header found');
     return res.status(401).json({ error: 'No token provided' });
   }
+  
   const token = authHeader.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'No token provided' });
+  if (!token) {
+    return res.status(401).json({ error: 'Malformed token' });
+  }
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      console.error('JWT verification failed:', err.message, 'Token:', token, 'Secret:', process.env.JWT_SECRET); // DEBUG
-      return res.status(403).json({ error: 'Invalid token' });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    
+    // Roo: Check if user exists in the database
+    const user = await userModel.findUserById(decoded.id);
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
     }
-    console.log('Decoded JWT in middleware:', user, 'Type of id:', typeof user.id); // DEBUG
-    req.user = user;
+    
+    req.user = user; // Roo: Attach full user object from DB
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ error: 'Invalid or expired token' });
+  }
 }
 
 module.exports = authenticateToken;
