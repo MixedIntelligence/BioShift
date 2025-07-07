@@ -19,18 +19,8 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running.', timestamp: new Date().toISOString() });
 });
 
-// Initialize database on startup
-console.log('🔄 Initializing database...');
-try {
-  const { initializeRailwayDeployment } = require('./railway-init');
-  initializeRailwayDeployment().then(() => {
-    console.log('✅ Database initialization complete');
-  }).catch(error => {
-    console.error('❌ Database initialization failed:', error);
-  });
-} catch (error) {
-  console.warn('⚠️ Railway init script not available, skipping database setup');
-}
+// Database connection is now handled by db.js
+console.log('🔄 Database module loaded.');
 
 // Railway-specific mock data endpoints (only non-auth endpoints)
 if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {

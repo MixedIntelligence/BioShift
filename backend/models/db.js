@@ -1,32 +1,53 @@
-// Railway-compatible database setup
-// Uses SQLite with proper initialization for both local and Railway deployment
+// Environment-aware database setup
+// Uses PostgreSQL in production (Railway) and SQLite for local development.
 
 let db;
 
-try {
-    const Database = require('better-sqlite3');
-    const path = require('path');
-    const dbPath = path.resolve(__dirname, '..', 'biomvp.sqlite');
-    
-    console.log('🗄️ Initializing SQLite database at:', dbPath);
-    db = new Database(dbPath, { verbose: console.log });
-    
-    // Initialize database schema if needed
-    initializeDatabase();
-    
-    // Seed test data for production/Railway
-    if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
-        console.log('🚂 Railway deployment - seeding test data');
-        seedTestData();
+if (process.env.NODE_ENV === 'production') {
+    // Production: Use PostgreSQL
+    console.log('🐘 Production environment detected. Using PostgreSQL.');
+    const { Pool } = require('pg');
+
+    const poolConfig = {
+        connectionString: process.env.DATABASE_URL,
+        ssl: {
+            rejectUnauthorized: false
+        }
+    };
+
+    db = new Pool(poolConfig);
+
+    // Test the connection
+    db.query('SELECT NOW()', (err, res) => {
+        if (err) {
+            console.error('❌ Error connecting to PostgreSQL:', err);
+        } else {
+            console.log('✅ Connected to PostgreSQL successfully at:', res.rows[0].now);
+        }
+    });
+
+} else {
+    // Development: Use SQLite
+    console.log('🐘 Development environment detected. Using SQLite.');
+    try {
+        const Database = require('better-sqlite3');
+        const path = require('path');
+        const dbPath = path.resolve(__dirname, '..', 'biomvp.sqlite');
+        
+        console.log('🗄️ Initializing SQLite database at:', dbPath);
+        db = new Database(dbPath, { verbose: console.log });
+        
+        // Initialize database schema if needed
+        initializeDatabase();
+        
+    } catch (error) {
+        console.error('SQLite initialization failed:', error);
+        throw error;
     }
-    
-} catch (error) {
-    console.error('SQLite initialization failed:', error);
-    throw error;
 }
 
 function initializeDatabase() {
-    console.log('📋 Initializing database schema...');
+    console.log('📋 Initializing SQLite database schema...');
     
     // Create users table
     db.exec(`
@@ -74,41 +95,7 @@ function initializeDatabase() {
         );
     `);
     
-    console.log('✅ Database schema initialized');
-}
-
-function seedTestData() {
-    const bcrypt = require('bcryptjs');
-    
-    // Check if test users already exist
-    const existingUser = db.prepare('SELECT * FROM users WHERE email = ?').get('test@example.com');
-    if (existingUser) {
-        console.log('👤 Test users already exist, skipping seed');
-        return;
-    }
-    
-    console.log('🌱 Seeding test data...');
-    
-    // Create test users with hashed passwords
-    const testUsers = [
-        { email: 'test@example.com', password: 'password123', role: 'Worker' },
-        { email: 'lab@example.com', password: 'password123', role: 'Lab' },
-        { email: 'provider@example.com', password: 'password123', role: 'Provider' }
-    ];
-    
-    const insertUser = db.prepare('INSERT INTO users (email, password_hash, role) VALUES (?, ?, ?)');
-    
-    testUsers.forEach(user => {
-        try {
-            const hashedPassword = bcrypt.hashSync(user.password, 10);
-            insertUser.run(user.email, hashedPassword, user.role);
-            console.log(`✅ Created test user: ${user.email} (${user.role})`);
-        } catch (error) {
-            console.log(`⚠️ Test user ${user.email} already exists or error:`, error.message);
-        }
-    });
-    
-    console.log('🌱 Test data seeding completed');
+    console.log('✅ SQLite database schema initialized');
 }
 
 module.exports = db;
