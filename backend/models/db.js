@@ -13,39 +13,7 @@ if (process.env.DATABASE_URL) {
         ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     });
     
-    // Wrapper to make PostgreSQL work like SQLite
-    // Wrapper to make PostgreSQL work like SQLite, with parameter replacement
-    db = {
-        prepare: (originalQuery) => {
-            let i = 0;
-            // Replace '?' with $1, $2, etc. for PostgreSQL
-            let pgQuery = originalQuery.replace(/\?/g, () => `$${++i}`);
-
-            // Add 'RETURNING id' to INSERT statements for PostgreSQL
-            if (pgQuery.trim().toUpperCase().startsWith('INSERT')) {
-                pgQuery += ' RETURNING id';
-            }
-            
-            return {
-                run: async (...args) => {
-                    const result = await pool.query(pgQuery, args);
-                    return { changes: result.rowCount, lastInsertRowid: result.rows[0]?.id };
-                },
-                get: async (...args) => {
-                    const result = await pool.query(pgQuery, args);
-                    return result.rows[0] || null;
-                },
-                all: async (...args) => {
-                    const result = await pool.query(pgQuery, args);
-                    return result.rows;
-                }
-            };
-        },
-        exec: async (query) => {
-            await pool.query(query);
-            return true;
-        }
-    };
+    db = pool;
     
 } else if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
     // Fallback mock database for Railway if PostgreSQL not available
@@ -53,7 +21,7 @@ if (process.env.DATABASE_URL) {
     console.error('!!! CRITICAL: DATABASE_URL NOT FOUND IN PRODUCTION !!!');
     console.error('!!! FALLING BACK TO MOCK DATABASE !!!');
     console.error('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-    console.log('� Railway fallback - using mock database with test users');
+    console.log('🚂 Railway fallback - using mock database with test users');
     
     // Mock database with pre-seeded test users
     const mockUsers = [
@@ -88,7 +56,7 @@ if (process.env.DATABASE_URL) {
     
 } else {
     // Local development with SQLite
-    console.log('� Local development - using SQLite');
+    console.log('🚂 Local development - using SQLite');
     try {
         const Database = require('better-sqlite3');
         const path = require('path');
