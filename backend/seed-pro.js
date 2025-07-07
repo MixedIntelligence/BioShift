@@ -1,14 +1,12 @@
 // Comprehensive, non-destructive seed script for PostgreSQL
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+require('dotenv').config();
 
 const { Pool } = require('pg');
 const bcrypt = require('bcryptjs');
 
 const getPoolConfig = () => {
-  if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
-    console.log('🐘 Production environment detected. Using DATABASE_URL for seeding.');
+  if (process.env.DATABASE_URL) {
+    console.log('🐘 Production environment detected (DATABASE_URL is set). Using DATABASE_URL for seeding.');
     return {
       connectionString: process.env.DATABASE_URL,
       ssl: {

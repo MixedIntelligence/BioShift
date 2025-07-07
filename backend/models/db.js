@@ -3,9 +3,9 @@
 
 let db;
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.DATABASE_URL) {
     // Production: Use PostgreSQL
-    console.log('🐘 Production environment detected. Using PostgreSQL.');
+    console.log('🐘 Production environment detected (DATABASE_URL is set). Using PostgreSQL.');
     const { Pool } = require('pg');
 
     const poolConfig = {
