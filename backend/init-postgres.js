@@ -12,12 +12,9 @@ const connectWithRetry = async (pool, retries = 5, delay = 5000) => {
   let lastError;
   for (let i = 0; i < retries; i++) {
     try {
-      // Check for required environment variables before attempting to connect
-      const requiredVars = ['PGUSER', 'POSTGRES_PASSWORD', 'RAILWAY_PRIVATE_DOMAIN', 'PGDATABASE'];
-      const missingVars = requiredVars.filter(v => !process.env[v]);
-
-      if (missingVars.length > 0) {
-        throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+      // Check for the DATABASE_URL environment variable
+      if (!process.env.DATABASE_URL) {
+        throw new Error('Missing required environment variable: DATABASE_URL');
       }
 
       const client = await pool.connect();
@@ -40,15 +37,12 @@ const connectWithRetry = async (pool, retries = 5, delay = 5000) => {
 const initializeDatabase = async () => {
     console.log('🐘 Attempting to connect to PostgreSQL database for initialization...');
     
-    // Construct the pool with individual parameters
+    // In production, Railway provides a DATABASE_URL.
+    // The pg library automatically uses it if it exists.
     const pool = new Pool({
-        user: process.env.PGUSER,
-        password: process.env.POSTGRES_PASSWORD,
-        host: process.env.RAILWAY_PRIVATE_DOMAIN,
-        port: 5432,
-        database: process.env.PGDATABASE,
-        // In production (like on Railway), SSL is required.
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+      connectionString: process.env.DATABASE_URL,
+      // In production (like on Railway), SSL is required.
+      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     });
 
     let client;
