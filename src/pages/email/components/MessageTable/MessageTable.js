@@ -26,9 +26,12 @@ class MessageTable extends Component {
   async fetchMessages() {
     try {
       const response = await api.getConversations();
-      this.setState({ messages: response.data });
+      // Defensive: ensure messages is always an array
+      const messages = Array.isArray(response.data) ? response.data : [];
+      this.setState({ messages });
     } catch (error) {
       console.error("Failed to fetch messages", error);
+      this.setState({ messages: [] }); // Defensive fallback
     }
   }
 
@@ -207,8 +210,10 @@ class MessageTable extends Component {
   render() {
     const { messages, checkedIds } = this.state;
     const { filter, openedMessage, openMessage, compose, composeData, changeCompose, openedMessageData } = this.props;
-    const filteredMessages = messages.filter(message => message[filter]);
-    const dataToDisplay = filter ? filteredMessages : messages;
+    // Defensive: ensure messages is always an array
+    const safeMessages = Array.isArray(messages) ? messages : [];
+    const filteredMessages = safeMessages.filter(message => message[filter]);
+    const dataToDisplay = filter ? filteredMessages : safeMessages;
     return (
       <div className={s.messages}>
         {openedMessage === null && !compose

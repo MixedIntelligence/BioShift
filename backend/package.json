@@ -5,10 +5,7 @@
   "scripts": {
     "start": "node index.js",
     "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
-    "migrate": "node migrate.js",
-    "postinstall": "node setup-production-db.js",
-    "db:seed": "node seed-postgres.js",
-    "test-auth": "node test_auth_fix.js"
+    "migrate": "node migrate.js"
   },
   "keywords": [],
   "author": "",
@@ -17,7 +14,6 @@
   "dependencies": {
     "axios": "^1.10.0",
     "bcryptjs": "^3.0.2",
-    "better-sqlite3": "^9.6.0",
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",

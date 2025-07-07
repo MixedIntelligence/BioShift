@@ -4,24 +4,117 @@ const cors = require('cors');
 
 const app = express();
 
-// Middleware
 app.use(cors());
 app.use(express.json());
-
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
-});
 
 // Example route for health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running.', timestamp: new Date().toISOString() });
 });
 
-// Database connection is now handled by db.js
-console.log('🔄 Database module loaded.');
+// Railway-specific mock data endpoints
+if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
+  console.log('🚂 Railway deployment - adding mock endpoints');
+  
+  // Mock labs endpoint
+  app.get('/api/labs', (req, res) => {
+    res.json([
+      { id: 1, name: 'BioTech Labs Inc.', location: 'San Francisco, CA', type: 'Research' },
+      { id: 2, name: 'Genomics Research Center', location: 'Boston, MA', type: 'Genomics' }
+    ]);
+  });
 
+  // Mock gigs endpoint  
+  app.get('/api/gigs', (req, res) => {
+    res.json([
+      { id: 1, title: 'Research Technician', lab: 'BioTech Labs Inc.', status: 'Open' },
+      { id: 2, title: 'Lab Assistant', lab: 'Genomics Research Center', status: 'Open' }
+    ]);
+  });
+
+  // Mock users test endpoint
+  app.get('/api/users/test', (req, res) => {
+    res.json({ message: 'Users endpoint operational', count: 2 });
+  });
+
+  // Mock authentication endpoints for Railway demo
+  app.post('/api/auth/login', (req, res) => {
+    const { email, password } = req.body;
+    console.log('Mock login attempt:', email);
+    
+    // Simple mock authentication - accept any credentials
+    if (email && password) {
+      const mockToken = 'mock-jwt-token-for-demo-' + Date.now();
+      const mockUser = {
+        id: 1,
+        email: email,
+        role: email.includes('lab') ? 'Lab' : email.includes('provider') ? 'Provider' : 'Worker',
+        firstName: 'Demo',
+        lastName: 'User'
+      };
+      
+      res.json({ 
+        token: mockToken,
+        user: mockUser
+      });
+    } else {
+      res.status(400).json({ error: 'Email and password required' });
+    }
+  });
+
+  // Mock registration endpoint
+  app.post('/api/auth/register', (req, res) => {
+    const { email, password, role = 'Worker' } = req.body;
+    console.log('Mock registration attempt:', email, role);
+    
+    if (email && password) {
+      const mockToken = 'mock-jwt-token-for-demo-' + Date.now();
+      const mockUser = {
+        id: Math.floor(Math.random() * 1000),
+        email: email,
+        role: role,
+        firstName: 'New',
+        lastName: 'User'
+      };
+      
+      res.status(201).json({ 
+        token: mockToken,
+        user: mockUser
+      });
+    } else {
+      res.status(400).json({ error: 'Email and password required' });
+    }
+  });
+
+  // Mock user profile endpoint
+  app.get('/api/users/me', (req, res) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      res.json({
+        id: 1,
+        email: 'demo@bioshift.com',
+        role: 'Worker',
+        firstName: 'Demo',
+        lastName: 'User'
+      });
+    } else {
+      res.status(401).json({ error: 'Authorization required' });
+    }
+  });
+
+  // Mock password reset endpoints
+  app.post('/api/auth/send-password-reset-email', (req, res) => {
+    res.json({ message: 'Password reset email sent (mock)' });
+  });
+
+  app.put('/api/auth/password-reset', (req, res) => {
+    res.json({ message: 'Password reset successful (mock)' });
+  });
+
+  app.put('/api/auth/verify-email', (req, res) => {
+    res.json({ message: 'Email verified (mock)' });
+  });
+}
 
 const authRoutes = require('./routes/auth');
 app.use('/api/auth', authRoutes);
@@ -69,12 +162,3 @@ const inboxRoutes = require('./routes/inbox');
 app.use('/api/inbox', inboxRoutes);
 
 // TODO: Add bionics and integration routes
-
-if (require.main === module) {
-  const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-}
-
-module.exports = app;
