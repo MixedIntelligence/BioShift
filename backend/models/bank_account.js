@@ -1,23 +1,24 @@
 const db = require('./db');
 
-function createBankAccount(userId, accountHolderName, accountNumber, routingNumber) {
-  const stmt = db.prepare(
-    'INSERT INTO bank_accounts (user_id, account_holder_name, account_number, routing_number, created_at) VALUES (?, ?, ?, ?, ?)'
-  );
-  const now = new Date().toISOString();
-  const info = stmt.run(userId, accountHolderName, accountNumber, routingNumber, now);
-  return { id: info.lastInsertRowid, userId, accountHolderName, accountNumber, routingNumber, createdAt: now };
+async function createBankAccount(userId, accountHolderName, accountNumber, routingNumber) {
+  const query = `
+    INSERT INTO bank_accounts (user_id, account_holder_name, account_number, routing_number, created_at)
+    VALUES ($1, $2, $3, $4, $5)
+    RETURNING *;
+  `;
+  const params = [userId, accountHolderName, accountNumber, routingNumber, new Date().toISOString()];
+  const result = await db.query(query, params);
+  return result.rows[0];
 }
 
-function getBankAccountsByUserId(userId) {
-  const stmt = db.prepare('SELECT * FROM bank_accounts WHERE user_id = ?');
-  return stmt.all(userId);
+async function getBankAccountsByUserId(userId) {
+  const result = await db.query('SELECT * FROM bank_accounts WHERE user_id = $1', [userId]);
+  return result.rows;
 }
 
-function deleteBankAccount(id) {
-  const stmt = db.prepare('DELETE FROM bank_accounts WHERE id = ?');
-  const info = stmt.run(id);
-  return info.changes > 0;
+async function deleteBankAccount(id) {
+  const result = await db.query('DELETE FROM bank_accounts WHERE id = $1', [id]);
+  return result.rowCount > 0;
 }
 
 module.exports = {

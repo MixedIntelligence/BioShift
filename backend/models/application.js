@@ -1,14 +1,15 @@
 const db = require('./db');
 
-function getApplicationById(id) {
-  const stmt = db.prepare('SELECT * FROM applications WHERE id = ?');
-  return stmt.get(id);
+async function getApplicationById(id) {
+  const result = await db.query('SELECT * FROM applications WHERE id = $1', [id]);
+  return result.rows[0];
 }
 
-function updateApplicationStatus(id, status) {
-  const stmt = db.prepare('UPDATE applications SET status = ?, accepted_at = ? WHERE id = ?');
-  const info = stmt.run(status, new Date().toISOString(), id);
-  return info.changes > 0;
+async function updateApplicationStatus(id, status) {
+  const query = 'UPDATE applications SET status = $1, accepted_at = $2 WHERE id = $3';
+  const params = [status, new Date().toISOString(), id];
+  const result = await db.query(query, params);
+  return result.rowCount > 0;
 }
 
 module.exports = {

@@ -1,50 +1,52 @@
 const db = require('./db');
 
 const providerModel = {
-  createProvider(userId, companyName, website) {
-    const stmt = db.prepare(`
+  async createProvider(userId, companyName, website) {
+    const query = `
       INSERT INTO providers (user_id, company_name, website)
-      VALUES (?, ?, ?)
-    `);
-    const info = stmt.run(userId, companyName, website);
-    return { id: info.lastInsertRowid, user_id: userId, company_name: companyName, website };
+      VALUES ($1, $2, $3)
+      RETURNING *;
+    `;
+    const result = await db.query(query, [userId, companyName, website]);
+    return result.rows[0];
   },
 
-  createApplication(appData) {
+  async createApplication(appData) {
     const { provider_id, name, description, api_key, client_secret, redirect_uri } = appData;
-    const stmt = db.prepare(`
+    const query = `
       INSERT INTO provider_applications (provider_id, name, description, api_key, client_secret, redirect_uri)
-      VALUES (?, ?, ?, ?, ?, ?)
-    `);
-    const info = stmt.run(provider_id, name, description, api_key, client_secret, redirect_uri);
-    return { id: info.lastInsertRowid, ...appData };
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING *;
+    `;
+    const params = [provider_id, name, description, api_key, client_secret, redirect_uri];
+    const result = await db.query(query, params);
+    return result.rows[0];
   },
 
-  getApplicationsByProvider(providerId) {
-    const stmt = db.prepare('SELECT * FROM provider_applications WHERE provider_id = ?');
-    return stmt.all(providerId);
+  async getApplicationsByProvider(providerId) {
+    const result = await db.query('SELECT * FROM provider_applications WHERE provider_id = $1', [providerId]);
+    return result.rows;
   },
 
-  getApplicationById(id) {
-    const stmt = db.prepare('SELECT * FROM provider_applications WHERE id = ?');
-    return stmt.get(id);
+  async getApplicationById(id) {
+    const result = await db.query('SELECT * FROM provider_applications WHERE id = $1', [id]);
+    return result.rows[0];
   },
 
-  updateApplication(id, appData) {
+  async updateApplication(id, appData) {
     const { name, description, redirect_uri } = appData;
-    const stmt = db.prepare(`
+    const query = `
       UPDATE provider_applications
-      SET name = ?, description = ?, redirect_uri = ?
-      WHERE id = ?
-    `);
-    const info = stmt.run(name, description, redirect_uri, id);
-    return info.changes > 0;
+      SET name = $1, description = $2, redirect_uri = $3
+      WHERE id = $4
+    `;
+    const result = await db.query(query, [name, description, redirect_uri, id]);
+    return result.rowCount > 0;
   },
 
-  deleteApplication(id) {
-    const stmt = db.prepare('DELETE FROM provider_applications WHERE id = ?');
-    const info = stmt.run(id);
-    return info.changes > 0;
+  async deleteApplication(id) {
+    const result = await db.query('DELETE FROM provider_applications WHERE id = $1', [id]);
+    return result.rowCount > 0;
   }
 };
 

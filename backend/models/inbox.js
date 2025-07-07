@@ -1,53 +1,65 @@
 const db = require('./db');
 
-function createConversation(subject, participantIds) {
-  const conversationStmt = db.prepare('INSERT INTO conversations (subject) VALUES (?)');
-  const conversationResult = conversationStmt.run(subject);
-  const conversationId = conversationResult.lastInsertRowid;
+async function createConversation(subject, participantIds) {
+  const client = await db.getClient();
+  try {
+    await client.query('BEGIN');
+    const convQuery = 'INSERT INTO conversations (subject) VALUES ($1) RETURNING id';
+    const convResult = await client.query(convQuery, [subject]);
+    const conversationId = convResult.rows[0].id;
 
-  const participantStmt = db.prepare('INSERT INTO conversation_participants (conversation_id, user_id) VALUES (?, ?)');
-  for (const userId of participantIds) {
-    participantStmt.run(conversationId, userId);
+    const partQuery = 'INSERT INTO conversation_participants (conversation_id, user_id) VALUES ($1, $2)';
+    for (const userId of participantIds) {
+      await client.query(partQuery, [conversationId, userId]);
+    }
+    
+    await client.query('COMMIT');
+    return { id: conversationId, subject, participants: participantIds };
+  } catch (e) {
+    await client.query('ROLLBACK');
+    throw e;
+  } finally {
+    client.release();
   }
-
-  return { id: conversationId, subject, participants: participantIds };
 }
 
-function sendMessage(conversationId, senderId, body) {
-  const messageStmt = db.prepare('INSERT INTO messages (conversation_id, sender_id, body) VALUES (?, ?, ?)');
-  const messageResult = messageStmt.run(conversationId, senderId, body);
-  return { id: messageResult.lastInsertRowid, conversationId, senderId, body };
+async function sendMessage(conversationId, senderId, body) {
+  const query = 'INSERT INTO messages (conversation_id, sender_id, body) VALUES ($1, $2, $3) RETURNING *';
+  const result = await db.query(query, [conversationId, senderId, body]);
+  return result.rows[0];
 }
 
-function getConversationsByUserId(userId) {
-  const stmt = db.prepare(`
+async function getConversationsByUserId(userId) {
+  const query = `
     SELECT
       c.id,
       c.subject,
-      (SELECT u.name FROM users u JOIN messages m ON u.id = m.sender_id WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_sender,
+      (SELECT (p.first_name || ' ' || p.last_name) FROM user_profiles p JOIN messages m ON p.user_id = m.sender_id WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_sender,
       (SELECT m.body FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
       c.created_at
     FROM conversations c
     JOIN conversation_participants cp ON c.id = cp.conversation_id
-    WHERE cp.user_id = ?
+    WHERE cp.user_id = $1
     ORDER BY c.created_at DESC
-  `);
-  return stmt.all(userId);
+  `;
+  const result = await db.query(query, [userId]);
+  return result.rows;
 }
 
-function getMessagesByConversationId(conversationId) {
-  const stmt = db.prepare(`
+async function getMessagesByConversationId(conversationId) {
+  const query = `
     SELECT
       m.id,
       m.body,
       m.created_at,
-      u.name as sender_name
+      (p.first_name || ' ' || p.last_name) as sender_name
     FROM messages m
-    JOIN users u ON m.sender_id = u.id
-    WHERE m.conversation_id = ?
+    JOIN user_profiles p ON m.sender_id = p.user_id
+    WHERE m.conversation_id = $1
     ORDER BY m.created_at ASC
-  `);
-  return stmt.all(conversationId);
+  `;
+  const result = await db.query(query, [conversationId]);
+  return result.rows;
 }
 
 module.exports = {
