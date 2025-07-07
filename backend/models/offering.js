@@ -1,42 +1,48 @@
 const db = require('./db');
 
-function createOffering(offeringData) {
+async function createOffering(offeringData) {
   const { provider_id, title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url } = offeringData;
-  const stmt = db.prepare(
-    'INSERT INTO provider_offerings (provider_id, title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
-  );
-  const info = stmt.run(provider_id, title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url);
-  return { id: info.lastInsertRowid, ...offeringData };
+  const query = `
+    INSERT INTO provider_offerings (provider_id, title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    RETURNING *;
+  `;
+  const params = [provider_id, title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url];
+  const result = await db.query(query, params);
+  return result.rows[0];
 }
 
-function listOfferings() {
-  const stmt = db.prepare('SELECT * FROM provider_offerings');
-  return stmt.all();
+async function listOfferings() {
+  const result = await db.query('SELECT * FROM provider_offerings');
+  return result.rows;
 }
 
-function getOfferingById(id) {
-  const stmt = db.prepare('SELECT * FROM provider_offerings WHERE id = ?');
-  return stmt.get(id);
+async function getOfferingById(id) {
+  const result = await db.query('SELECT * FROM provider_offerings WHERE id = $1', [id]);
+  return result.rows[0];
 }
 
-function updateOffering(id, offeringData) {
+async function updateOffering(id, offeringData) {
   const { title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url } = offeringData;
-  const stmt = db.prepare(
-    'UPDATE provider_offerings SET title = ?, subtitle = ?, description = ?, img = ?, offering_type = ?, category = ?, pricing_model = ?, price = ?, rating = ?, url = ? WHERE id = ?'
-  );
-  const info = stmt.run(title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url, id);
-  return info.changes > 0;
+  const query = `
+    UPDATE provider_offerings
+    SET title = $1, subtitle = $2, description = $3, img = $4, offering_type = $5, category = $6, pricing_model = $7, price = $8, rating = $9, url = $10
+    WHERE id = $11
+    RETURNING *;
+  `;
+  const params = [title, subtitle, description, img, offering_type, category, pricing_model, price, rating, url, id];
+  const result = await db.query(query, params);
+  return result.rowCount > 0;
 }
 
-function deleteOffering(id) {
-  const stmt = db.prepare('DELETE FROM provider_offerings WHERE id = ?');
-  const info = stmt.run(id);
-  return info.changes > 0;
+async function deleteOffering(id) {
+  const result = await db.query('DELETE FROM provider_offerings WHERE id = $1', [id]);
+  return result.rowCount > 0;
 }
 
-function listOfferingsByProvider(provider_id) {
-  const stmt = db.prepare('SELECT * FROM provider_offerings WHERE provider_id = ?');
-  return stmt.all(provider_id);
+async function listOfferingsByProvider(provider_id) {
+  const result = await db.query('SELECT * FROM provider_offerings WHERE provider_id = $1', [provider_id]);
+  return result.rows;
 }
 
 module.exports = {
