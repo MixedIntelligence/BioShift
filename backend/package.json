@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node init-postgres.js && node index.js",
+    "start": "node index.js",
     "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
     "migrate": "node migrate.js",
-    "db:init-pg": "node init-postgres.js",
     "test-auth": "node test_auth_fix.js",
     "build": "echo 'Build step not required for backend'"
   },
