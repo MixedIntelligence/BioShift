@@ -1,3 +1,11 @@
+console.log('--- START OF APPLICATION ---');
+console.log(`NODE_ENV is: ${process.env.NODE_ENV}`);
+console.log(`DATABASE_URL is: ${process.env.DATABASE_URL ? 'SET' : 'NOT SET'}`);
+console.log('--------------------------');
+console.log('--- Environment Variables ---');
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Loaded' : 'MISSING OR UNDEFINED');
+console.log('---------------------------');
 if (process.env.NODE_ENV !== 'production') {
   console.log('Development environment: Loading .env file');
   require('dotenv').config();
