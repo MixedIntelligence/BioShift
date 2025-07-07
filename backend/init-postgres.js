@@ -61,7 +61,20 @@ CREATE TABLE IF NOT EXISTS users (
     email TEXT UNIQUE NOT NULL,
     password_hash TEXT NOT NULL,
     role TEXT NOT NULL DEFAULT 'Worker',
-    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    first_name TEXT,
+    last_name TEXT,
+    phone TEXT,
+    bio TEXT,
+    location TEXT,
+    years_experience INTEGER,
+    current_position TEXT,
+    company_name TEXT,
+    website TEXT,
+    linkedin_url TEXT,
+    github_url TEXT,
+    profile_completed BOOLEAN DEFAULT false,
+    onboarding_completed BOOLEAN DEFAULT false
 );
 `,
         `
