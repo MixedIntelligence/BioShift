@@ -26,21 +26,25 @@ const PostGigPage = ({ currentUser }) => {
   const handleSubmit = async e => {
     e.preventDefault();
     try {
-      await api.createGig(form);
-      setSubmitted(true);
-      setError(null);
-      setForm(initialState);
+      const response = await api.createGig(form);
+      if (response.status === 201) {
+        setSubmitted(true);
+        setError(null);
+        setForm(initialState);
+      } else {
+        setError('Failed to post gig. Please try again.');
+      }
     } catch (err) {
       setError('Failed to post gig. Please try again.');
       console.error(err);
     }
   };
 
-  if (!currentUser || currentUser.role !== 'Lab') {
+  if (!currentUser || !['Lab', 'Admin'].includes(currentUser.role)) {
     return (
       <div className="container mt-4">
         <Alert color="danger">
-          Only Labs can post gigs. Please contact your administrator if you believe this is an error.
+          Only Labs and Admins can post gigs. Please contact your administrator if you believe this is an error.
         </Alert>
       </div>
     );
