@@ -1,5 +1,6 @@
 import React from 'react';
 import Rickshaw from 'rickshaw';
+import 'd3';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
