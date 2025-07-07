@@ -30,12 +30,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running.', timestamp: new Date().toISOString() });
 });
 
-// Initialize PostgreSQL database on startup
-const { initializeDatabase } = require('./init-postgres');
-initializeDatabase().catch(error => {
-    console.error('❌ Fatal: Database initialization failed.', error);
-    process.exit(1);
-});
 
 // Railway-specific mock data endpoints (only non-auth endpoints)
 if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
