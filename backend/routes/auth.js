@@ -23,6 +23,7 @@ const loginSchema = Joi.object({
 
 // POST /api/auth/register
 router.post('/register', async (req, res) => {
+  console.log('[AUTH] Registration request received:', req.body);
   const { error, value } = registerSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
   const { email, password, role, companyName, website } = value;
@@ -35,8 +36,10 @@ router.post('/register', async (req, res) => {
     if (existingUser) {
       return res.status(409).json({ error: 'Email already exists' });
     }
+    console.log('[AUTH] Hashing password...');
     const passwordHash = await bcrypt.hash(password, 10);
     console.log('Password hash generated:', passwordHash);
+    console.log('[AUTH] Inserting user into database...');
     const user = await userModel.createUser(email, passwordHash, role);
     
     if (!user || !user.id) {
@@ -47,10 +50,14 @@ router.post('/register', async (req, res) => {
     console.log(`[AUTH_DEBUG] User successfully created with ID: ${user.id}`);
 
     if (role === 'Provider') {
+      console.log('[AUTH] Creating provider profile...');
       await providerModel.createProvider(user.id, companyName, website);
+      console.log('[AUTH] Provider profile created.');
     }
+    console.log('[AUTH] Generating JWT token...');
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
     auditLog('register', user, { ip: req.ip });
+    console.log('[AUTH] JWT token generated.');
     res.status(201).json({ token });
   } catch (err) {
     console.error('[AUTH_DEBUG] Deep registration error:', err);

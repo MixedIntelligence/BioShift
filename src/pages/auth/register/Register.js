@@ -115,6 +115,7 @@ class Register extends React.Component {
     }
 
     render() {
+        console.log('Rendering Register component');
         return (
             <div className="auth-page">
                 <Container>

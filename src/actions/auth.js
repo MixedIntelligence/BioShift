@@ -169,13 +169,14 @@ export function doInit() {
           });
           console.log('✅ doInit() completed successfully');
         } catch (error) {
-          console.log('❌ Unexpected error during doInit:', error);
+          console.error('❌ FATAL: Unexpected error during doInit, this is likely breaking the app.', error);
           
           dispatch({
             type: AUTH_INIT_ERROR,
-            payload: error,
+            payload: error.message || 'A critical error occurred during app initialization.',
           });
-          console.log('❌ doInit() completed with error');
+          
+          toast.error("A critical error occurred. Please try refreshing the page.");
         }
       }
     } finally {
