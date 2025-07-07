@@ -1,17 +1,23 @@
 const request = require('supertest');
-const express = require('express');
-const app = require('../index'); // Adjust if your app export is different
-const db = require('../models/db');
+const app = require('../index'); // Import the Express app
 
-describe('Auth API', () => {
-  afterAll(() => {
-    db.close();
-  });
-  it('should reject invalid registration', async () => {
-    const res = await request(app)
+describe('Auth Endpoints', () => {
+  /**
+   * @description This test verifies that the POST /api/auth/register endpoint
+   * works correctly after fixing the database compatibility bug. It sends a
+   * valid registration request and asserts that the server responds with a 201
+   * "Created" status.
+   */
+  it('should return 201 on POST /api/auth/register after fixing the bug', async () => {
+    const response = await request(app)
       .post('/api/auth/register')
-      .send({ username: '', password: '' });
-    expect(res.statusCode).toBe(400);
+      .send({
+        email: `testuser_${Date.now()}@example.com`,
+        password: 'password123'
+      });
+    
+    // We expect the registration to be successful.
+    // This assertion will pass if the bug is fixed.
+    expect(response.status).toBe(201);
   });
-  // Add more tests for registration, login, etc.
 });

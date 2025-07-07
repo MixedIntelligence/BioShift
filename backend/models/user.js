@@ -11,7 +11,7 @@ const findUserById = async (id) => {
 };
 
 const createUser = async (email, passwordHash, role) => {
-  const client = await db.getClient();
+  const client = await db.connect();
   try {
     await client.query('BEGIN');
     console.log(`[DB_DEBUG] Attempting to create user: ${email}`);

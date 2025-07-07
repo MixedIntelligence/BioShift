@@ -1,12 +1,11 @@
-// This script is responsible for initializing the PostgreSQL database.
-// It should be run before the main application server starts.
+// This script is responsible for initializing and seeding the PostgreSQL database.
+// It should be run during the deployment process.
 
-// Load environment variables from .env file in development
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
+// Load environment variables from .env file
+require('dotenv').config();
 
 const { Pool } = require('pg');
+const bcrypt = require('bcryptjs');
 
 const getPoolConfig = () => {
   // For production environments like Railway, use the standard DATABASE_URL.
@@ -72,31 +71,6 @@ const initializeDatabase = async () => {
         console.error('❌ Failed to connect to the database after multiple retries:', error);
         process.exit(1);
     }
-
-    // The comprehensive list of all tables to be dropped for a clean migration.
-    const dropTablesQueries = [
-      'DROP TABLE IF EXISTS transactions CASCADE;',
-      'DROP TABLE IF EXISTS agreements CASCADE;',
-      'DROP TABLE IF EXISTS applications CASCADE;',
-      'DROP TABLE IF EXISTS gigs CASCADE;',
-      'DROP TABLE IF EXISTS provider_offerings CASCADE;',
-      'DROP TABLE IF EXISTS provider_applications CASCADE;',
-      'DROP TABLE IF EXISTS providers CASCADE;',
-      'DROP TABLE IF EXISTS messages CASCADE;',
-      'DROP TABLE IF EXISTS conversation_participants CASCADE;',
-      'DROP TABLE IF EXISTS conversations CASCADE;',
-      'DROP TABLE IF EXISTS notifications CASCADE;',
-      'DROP TABLE IF EXISTS bank_accounts CASCADE;',
-      'DROP TABLE IF EXISTS user_documents CASCADE;',
-      'DROP TABLE IF EXISTS user_skills CASCADE;',
-      'DROP TABLE IF EXISTS user_education CASCADE;',
-      'DROP TABLE IF EXISTS user_publications CASCADE;',
-      'DROP TABLE IF EXISTS user_payments CASCADE;',
-      'DROP TABLE IF EXISTS user_history CASCADE;',
-      'DROP TABLE IF EXISTS user_startups CASCADE;',
-      'DROP TABLE IF EXISTS user_profiles CASCADE;',
-      'DROP TABLE IF EXISTS users CASCADE;',
-    ];
 
     const createTablesQueries = [
         `CREATE TABLE IF NOT EXISTS users (
@@ -294,12 +268,6 @@ const initializeDatabase = async () => {
     ];
 
     try {
-        // console.log('💣 Dropping all existing tables for a clean slate...');
-        // for (const query of dropTablesQueries) {
-        //     await client.query(query);
-        // }
-        // console.log('✅ All existing tables dropped successfully.');
-
         console.log('🏗️  Creating definitive database schema...');
         for (const query of createTablesQueries) {
             await client.query(query);
@@ -318,8 +286,96 @@ const initializeDatabase = async () => {
     }
 }
 
+const seedDatabase = async () => {
+    console.log('🌱 Starting to seed the PostgreSQL database...');
+    
+    const poolConfig = getPoolConfig();
+    const pool = new Pool(poolConfig);
+    const client = await pool.connect();
+
+    try {
+        // Seed test users
+        console.log('🌱 Seeding test users...');
+        
+        const testUsers = [
+            { email: 'test@example.com', password: 'password123', role: 'Worker' },
+            { email: 'lab@example.com', password: 'password123', role: 'Lab' },
+            { email: 'provider@example.com', password: 'password123', role: 'Provider' },
+            { email: 'admin@bioshift.com', password: 'password123', role: 'Admin' }
+        ];
+        
+        for (const user of testUsers) {
+            const hashedPassword = bcrypt.hashSync(user.password, 10);
+            // Use INSERT ... ON CONFLICT DO NOTHING to avoid errors on re-runs
+            const insertQuery = {
+                text: 'INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING',
+                values: [user.email, hashedPassword, user.role],
+            };
+            const res = await client.query(insertQuery);
+            if (res.rowCount > 0) {
+                console.log(`✅ Created user: ${user.email} (${user.role})`);
+            } else {
+                console.log(`⚠️ User already exists, skipping: ${user.email}`);
+            }
+        }
+
+        // Seed test gigs
+        console.log('🧪 Creating test gigs...');
+        
+        const labUserRes = await client.query('SELECT id FROM users WHERE email = $1', ['lab@example.com']);
+        const labUser = labUserRes.rows[0];
+
+        if (labUser) {
+            const testGigs = [
+                {
+                    title: 'Research Technician',
+                    description: 'Seeking experienced research technician for molecular biology project',
+                    location: 'San Francisco, CA',
+                    user_id: labUser.id
+                },
+                {
+                    title: 'Lab Assistant',
+                    description: 'Entry-level position for laboratory assistance',
+                    location: 'Boston, MA',
+                    user_id: labUser.id
+                }
+            ];
+            
+            for (const gig of testGigs) {
+                // Check if gig exists before inserting
+                const gigExistsRes = await client.query('SELECT id FROM gigs WHERE title = $1 AND user_id = $2', [gig.title, gig.user_id]);
+                if (gigExistsRes.rowCount === 0) {
+                    const insertGigQuery = {
+                        text: 'INSERT INTO gigs (title, description, location, user_id) VALUES ($1, $2, $3, $4)',
+                        values: [gig.title, gig.description, gig.location, gig.user_id],
+                    };
+                    await client.query(insertGigQuery);
+                    console.log(`✅ Created gig: ${gig.title}`);
+                } else {
+                    console.log(`⚠️ Gig already exists, skipping: ${gig.title}`);
+                }
+            }
+        } else {
+            console.warn('⚠️ Lab user not found, skipping gig creation.');
+        }
+
+        console.log('\n🎉 Database seeding complete!');
+
+    } catch (error) {
+        console.error('❌ Seeding failed:', error);
+    } finally {
+        await client.release();
+        await pool.end();
+    }
+};
+
+const setupDatabase = async () => {
+  await initializeDatabase();
+  await seedDatabase();
+}
+
 // Execute the initialization
-initializeDatabase().catch(err => {
-    console.error("Failed to initialize database:", err);
+setupDatabase().catch(err => {
+    console.error("Failed to setup database:", err);
     process.exit(1);
 });
