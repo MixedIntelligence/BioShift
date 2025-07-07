@@ -294,11 +294,11 @@ const initializeDatabase = async () => {
     ];
 
     try {
-        console.log('💣 Dropping all existing tables for a clean slate...');
-        for (const query of dropTablesQueries) {
-            await client.query(query);
-        }
-        console.log('✅ All existing tables dropped successfully.');
+        // console.log('💣 Dropping all existing tables for a clean slate...');
+        // for (const query of dropTablesQueries) {
+        //     await client.query(query);
+        // }
+        // console.log('✅ All existing tables dropped successfully.');
 
         console.log('🏗️  Creating definitive database schema...');
         for (const query of createTablesQueries) {

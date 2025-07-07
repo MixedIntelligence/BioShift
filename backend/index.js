@@ -1,15 +1,4 @@
-console.log('--- START OF APPLICATION ---');
-console.log(`NODE_ENV is: ${process.env.NODE_ENV}`);
-console.log(`DATABASE_URL is: ${process.env.DATABASE_URL ? 'SET' : 'NOT SET'}`);
-console.log('--------------------------');
-console.log('--- Environment Variables ---');
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Loaded' : 'MISSING OR UNDEFINED');
-console.log('---------------------------');
-if (process.env.NODE_ENV !== 'production') {
-  console.log('Development environment: Loading .env file');
-  require('dotenv').config();
-}
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
 
@@ -30,6 +19,18 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'Backend is running.', timestamp: new Date().toISOString() });
 });
 
+// Initialize database on startup
+console.log('🔄 Initializing database...');
+try {
+  const { initializeRailwayDeployment } = require('./railway-init');
+  initializeRailwayDeployment().then(() => {
+    console.log('✅ Database initialization complete');
+  }).catch(error => {
+    console.error('❌ Database initialization failed:', error);
+  });
+} catch (error) {
+  console.warn('⚠️ Railway init script not available, skipping database setup');
+}
 
 // Railway-specific mock data endpoints (only non-auth endpoints)
 if (process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production') {
@@ -106,9 +107,8 @@ app.use('/api/inbox', inboxRoutes);
 
 if (require.main === module) {
   const PORT = process.env.PORT || 8080;
-  
   app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
   });
 }
 
