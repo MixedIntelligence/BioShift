@@ -31,4 +31,5 @@ function getPool() {
 // Export a function that returns the singleton pool.
 module.exports = {
     query: (text, params) => getPool().query(text, params),
+    getClient: () => getPool().connect(),
 };

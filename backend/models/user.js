@@ -11,31 +11,38 @@ const findUserById = async (id) => {
 };
 
 const createUser = async (email, passwordHash, role) => {
+  const client = await db.getClient();
   try {
+    await client.query('BEGIN');
     console.log(`[DB_DEBUG] Attempting to create user: ${email}`);
-    const query = 'INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id';
-    const result = await db.query(query, [email, passwordHash, role]);
-    console.log('[DB_DEBUG] User insert result:', JSON.stringify(result.rows[0], null, 2));
+    const userQuery = 'INSERT INTO users (email, password_hash, role) VALUES ($1, $2, $3) RETURNING id';
+    const userResult = await client.query(userQuery, [email, passwordHash, role]);
+    console.log('[DB_DEBUG] User insert result:', JSON.stringify(userResult.rows[0], null, 2));
 
-    const newUserId = result.rows[0]?.id;
+    const newUserId = userResult.rows[0]?.id;
 
     if (!newUserId) {
-      console.error('[DB_DEBUG] CRITICAL: Insert operation did not return a valid ID.');
-      // Attempt to find user by email as a fallback
-      const user = await findUserByEmail(email);
-      if (!user) {
-        throw new Error('User was not created and could not be found.');
-      }
-      return user;
+      throw new Error('User creation failed, no ID returned.');
     }
 
+    // Create a corresponding user_profiles entry
+    const profileQuery = 'INSERT INTO user_profiles (user_id) VALUES ($1)';
+    await client.query(profileQuery, [newUserId]);
+    console.log(`[DB_DEBUG] Created empty profile for new user: ${newUserId}`);
+
+    await client.query('COMMIT');
+    
     return findUserById(newUserId);
+
   } catch (err) {
+    await client.query('ROLLBACK');
     console.error('[DB_DEBUG] Deep error creating user:', err);
     console.error('[DB_DEBUG] Error Name:', err.name);
     console.error('[DB_DEBUG] Error Message:', err.message);
     console.error('[DB_DEBUG] Error Stack:', err.stack);
     throw err;
+  } finally {
+    client.release();
   }
 };
 
@@ -155,40 +162,72 @@ const getApplicationStatus = async (userId, labId) => {
 const updateUserProfile = async (userId, profileData) => {
   const {
     first_name, last_name, phone, bio, location, years_experience,
-    current_position, company_name, website, linkedin_url, github_url
+    current_position, company_name, website, linkedin_url, github_url, avatar_url
   } = profileData;
 
   const stmt = `
-    UPDATE users SET
-      first_name = $1, last_name = $2, phone = $3, bio = $4, location = $5,
-      years_experience = $6, current_position = $7, company_name = $8,
-      website = $9, linkedin_url = $10, github_url = $11
-    WHERE id = $12
+    INSERT INTO user_profiles (
+      user_id, first_name, last_name, phone, bio, location, years_experience,
+      current_position, company_name, website, linkedin_url, github_url, avatar_url
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+    ON CONFLICT (user_id) DO UPDATE SET
+      first_name = EXCLUDED.first_name,
+      last_name = EXCLUDED.last_name,
+      phone = EXCLUDED.phone,
+      bio = EXCLUDED.bio,
+      location = EXCLUDED.location,
+      years_experience = EXCLUDED.years_experience,
+      current_position = EXCLUDED.current_position,
+      company_name = EXCLUDED.company_name,
+      website = EXCLUDED.website,
+      linkedin_url = EXCLUDED.linkedin_url,
+      github_url = EXCLUDED.github_url,
+      avatar_url = EXCLUDED.avatar_url,
+      updated_at = CURRENT_TIMESTAMP
+    RETURNING *;
   `;
 
-  return await db.query(stmt, [
-    first_name, last_name, phone, bio, location, years_experience,
-    current_position, company_name, website, linkedin_url, github_url, userId
+  const result = await db.query(stmt, [
+    userId, first_name, last_name, phone, bio, location, years_experience,
+    current_position, company_name, website, linkedin_url, github_url, avatar_url
   ]);
+  return result.rows[0];
 };
 
 const markProfileCompleted = async (userId) => {
-  const stmt = 'UPDATE users SET profile_completed = 1 WHERE id = $1';
+  const stmt = 'UPDATE user_profiles SET profile_completed = TRUE WHERE user_id = $1';
   return await db.query(stmt, [userId]);
 };
 
 const markOnboardingCompleted = async (userId) => {
-  const stmt = 'UPDATE users SET onboarding_completed = 1 WHERE id = $1';
+  const stmt = 'UPDATE user_profiles SET onboarding_completed = TRUE WHERE user_id = $1';
   return await db.query(stmt, [userId]);
 };
 
 const getUserProfile = async (userId) => {
   const result = await db.query(`
-    SELECT id, email, role, first_name, last_name, phone, bio, location,
-           years_experience, current_position, company_name, website,
-           linkedin_url, github_url, profile_completed, onboarding_completed,
-           created_at
-    FROM users WHERE id = $1
+    SELECT
+      u.id,
+      u.email,
+      u.role,
+      u.created_at,
+      p.first_name,
+      p.last_name,
+      p.phone,
+      p.bio,
+      p.location,
+      p.years_experience,
+      p.current_position,
+      p.company_name,
+      p.website,
+      p.linkedin_url,
+      p.github_url,
+      p.avatar_url,
+      p.profile_completed,
+      p.onboarding_completed
+    FROM users u
+    LEFT JOIN user_profiles p ON u.id = p.user_id
+    WHERE u.id = $1
   `, [userId]);
   return result.rows[0];
 };
@@ -214,10 +253,6 @@ module.exports = {
   addUserStartup,
   changePassword,
   getApplicationStatus,
-  updateUserProfile,
-  markProfileCompleted,
-  markOnboardingCompleted,
-  getUserProfile,
   updateUserProfile,
   markProfileCompleted,
   markOnboardingCompleted,
