@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node init-postgres.js && node index.js",
     "test": "cross-env NODE_ENV=test jest --runInBand --detectOpenHandles",
     "migrate": "node migrate.js",
     "test-auth": "node test_auth_fix.js",
