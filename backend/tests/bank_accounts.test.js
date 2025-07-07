@@ -20,7 +20,7 @@ describe('Bank Accounts API', () => {
   });
 
   afterAll(() => {
-    db.close();
+    // No db.close() needed for pg pool
   });
 
   afterEach(() => {

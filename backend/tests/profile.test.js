@@ -9,8 +9,7 @@ describe('Profile API Endpoints', () => {
 
   beforeAll(async () => {
     // Reset users table for a clean state
-    db.prepare('DELETE FROM users').run();
-    db.prepare("DELETE FROM sqlite_sequence WHERE name = 'users'").run(); // Reset autoincrement
+    await db.query('DELETE FROM users');
     // Register the test user via the API to ensure correct hashing and setup
     await request(app).post('/api/auth/register').send({ username: 'testuser', password: 'testpass' });
   });
@@ -58,6 +57,6 @@ describe('Profile API Endpoints', () => {
   // Add similar tests for upskill, payments, startups, documents, publications, patents, bionics
 
   afterAll(() => {
-    db.close();
+    // No db.close() needed for pg pool
   });
 });

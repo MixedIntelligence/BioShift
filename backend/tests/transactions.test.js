@@ -62,7 +62,7 @@ describe('Transactions API', () => {
   });
 
   afterAll(() => {
-    db.close();
+    // No db.close() needed for pg pool
   });
 
   describe('POST /api/transactions/payment', () => {

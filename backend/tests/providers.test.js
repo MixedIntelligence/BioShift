@@ -36,7 +36,7 @@ describe('Provider API', () => {
   });
 
   afterAll(() => {
-    db.close();
+    // No db.close() needed for pg pool
   });
 
   describe('POST /api/provider/applications', () => {

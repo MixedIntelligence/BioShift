@@ -4,7 +4,26 @@ const cors = require('cors');
 
 const app = express();
 
-app.use(cors());
+if (process.env.NODE_ENV === 'production') {
+  const allowedOrigins = [
+    'https://bioshift.xyz',
+    'https://www.bioshift.xyz',
+    'https://bioshift-production.up.railway.app',
+  ];
+  app.use(cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  }));
+} else {
+  // Allow all origins in development
+  app.use(cors({ origin: true, credentials: true }));
+}
 app.use(express.json());
 
 // Example route for health check
@@ -162,3 +181,13 @@ const inboxRoutes = require('./routes/inbox');
 app.use('/api/inbox', inboxRoutes);
 
 // TODO: Add bionics and integration routes
+
+// Only start the server if this file is run directly
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Backend server running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
