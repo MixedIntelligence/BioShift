@@ -8,26 +8,54 @@ if (process.env.NODE_ENV !== 'production') {
 
 const { Pool } = require('pg');
 
-const initializeDatabase = async () => {
-    if (!process.env.DATABASE_URL) {
-        console.error('❌ CRITICAL: DATABASE_URL environment variable is not set.');
-        process.exit(1);
-    }
+const connectWithRetry = async (pool, retries = 5, delay = 5000) => {
+  let lastError;
+  for (let i = 0; i < retries; i++) {
+    try {
+      // Check for required environment variables before attempting to connect
+      const requiredVars = ['PGUSER', 'POSTGRES_PASSWORD', 'RAILWAY_PRIVATE_DOMAIN', 'PGDATABASE'];
+      const missingVars = requiredVars.filter(v => !process.env[v]);
 
-    console.log('🐘 Connecting to PostgreSQL database for initialization...');
+      if (missingVars.length > 0) {
+        throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
+      }
+
+      const client = await pool.connect();
+      console.log('✅ Connected to PostgreSQL successfully for initialization.');
+      return client;
+    } catch (error) {
+      lastError = error;
+      console.warn(`🐘 Attempt ${i + 1} of ${retries} failed. Retrying in ${delay / 1000}s...`);
+      console.warn(`   Error: ${error.message}`);
+      if (i < retries - 1) {
+        await new Promise(res => setTimeout(res, delay));
+      }
+    }
+  }
+  console.error('❌ All attempts to connect to the database failed.');
+  throw lastError;
+};
+
+
+const initializeDatabase = async () => {
+    console.log('🐘 Attempting to connect to PostgreSQL database for initialization...');
     
+    // Construct the pool with individual parameters
     const pool = new Pool({
-        connectionString: process.env.DATABASE_URL,
+        user: process.env.PGUSER,
+        password: process.env.POSTGRES_PASSWORD,
+        host: process.env.RAILWAY_PRIVATE_DOMAIN,
+        port: 5432,
+        database: process.env.PGDATABASE,
         // In production (like on Railway), SSL is required.
         ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
     });
 
     let client;
     try {
-        client = await pool.connect();
-        console.log('✅ Connected to PostgreSQL successfully for initialization.');
+        client = await connectWithRetry(pool);
     } catch (error) {
-        console.error('❌ Failed to connect to the database for initialization:', error);
+        console.error('❌ Failed to connect to the database after multiple retries:', error);
         process.exit(1);
     }
 
