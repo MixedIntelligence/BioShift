@@ -3,7 +3,6 @@
 // PostgreSQL initialization script
 // This script sets up the database schema for a PostgreSQL database.
 
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 const { Pool } = require('pg');
 
 const createTablesQueries = [
