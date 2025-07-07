@@ -14,13 +14,21 @@ if (!process.env.DATABASE_URL) {
 
 console.log('🐘 Using PostgreSQL database');
 
-// Create a new connection pool.
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-    // Use SSL in production, but not in local development if your local DB doesn't use it.
-    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+// Lazy initialization of the connection pool.
+let pool;
 
-// Export the connection pool directly.
-// The rest of the application can now use this pool to query the database.
-module.exports = pool;
+function getPool() {
+    if (!pool) {
+        pool = new Pool({
+            connectionString: process.env.DATABASE_URL,
+            // Use SSL in production, but not in local development if your local DB doesn't use it.
+            ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+        });
+    }
+    return pool;
+}
+
+// Export a function that returns the singleton pool.
+module.exports = {
+    query: (text, params) => getPool().query(text, params),
+};
