@@ -69,6 +69,7 @@ router.post('/login', async (req, res) => {
   try {
     console.log(`[AUTH] Attempting login for: ${email}`);
     const user = await userModel.findUserByEmail(email);
+    console.log(`[AUTH_DEBUG] Result of findUserByEmail:`, user); // Roo: Added for debugging
     if (!user) {
       console.log(`[AUTH] User not found: ${email}`);
       return res.status(401).json({ error: 'Invalid credentials' });
