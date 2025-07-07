@@ -8,17 +8,40 @@ if (process.env.NODE_ENV !== 'production') {
 
 const { Pool } = require('pg');
 
+const getPoolConfig = () => {
+  // For production environments like Railway, use the standard DATABASE_URL.
+  if (process.env.NODE_ENV === 'production' && process.env.DATABASE_URL) {
+    console.log('🐘 Production environment detected. Using DATABASE_URL.');
+    return {
+      connectionString: process.env.DATABASE_URL,
+      ssl: {
+        rejectUnauthorized: false
+      }
+    };
+  }
+
+  // For local development, use individual variables from a .env file.
+  console.log('🐘 Development environment detected. Using individual PG variables.');
+  const requiredVars = ['PGHOST', 'PGUSER', 'PGPASSWORD', 'PGDATABASE', 'PGPORT'];
+  const missingVars = requiredVars.filter(v => !process.env[v]);
+
+  if (missingVars.length > 0) {
+    throw new Error(`Missing required environment variables for local development: ${missingVars.join(', ')}`);
+  }
+
+  return {
+    host: process.env.PGHOST,
+    user: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
+    port: process.env.PGPORT,
+  };
+};
+
 const connectWithRetry = async (pool, retries = 5, delay = 5000) => {
   let lastError;
   for (let i = 0; i < retries; i++) {
     try {
-      const requiredVars = ['PGUSER', 'POSTGRES_PASSWORD', 'RAILWAY_PRIVATE_DOMAIN', 'PGDATABASE'];
-      const missingVars = requiredVars.filter(v => !process.env[v]);
-
-      if (missingVars.length > 0) {
-        throw new Error(`Missing required environment variables: ${missingVars.join(', ')}`);
-      }
-
       const client = await pool.connect();
       console.log('✅ Connected to PostgreSQL successfully for initialization.');
       return client;
@@ -39,14 +62,8 @@ const connectWithRetry = async (pool, retries = 5, delay = 5000) => {
 const initializeDatabase = async () => {
     console.log('🐘 Attempting to connect to PostgreSQL database for initialization...');
     
-    const pool = new Pool({
-        user: process.env.PGUSER,
-        password: process.env.POSTGRES_PASSWORD,
-        host: process.env.RAILWAY_PRIVATE_DOMAIN,
-        port: 5432,
-        database: process.env.PGDATABASE,
-        ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-    });
+    const poolConfig = getPoolConfig();
+    const pool = new Pool(poolConfig);
 
     let client;
     try {
