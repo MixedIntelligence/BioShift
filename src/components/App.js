@@ -75,6 +75,7 @@ class App extends React.PureComponent {
           />
           <ConnectedRouter history={getHistory()}>
                 <Switch>
+                    <Route path="/app/gigs" exact render={() => <div>App Test Route (Top Level)</div>} />
                     <Route path="/" exact component={Landing} />
                     {/* <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/> */}
                     {/* <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/> */}
