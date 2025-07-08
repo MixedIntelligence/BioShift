@@ -121,7 +121,13 @@ export function doInit() {
                   localStorage.removeItem('token');
                   localStorage.removeItem('user');
                   delete axios.defaults.headers.common['Authorization'];
-                  currentUser = null;
+                  // Dispatch error and redirect
+                  const errorMsg = 'Session expired or profile fetch failed. Please log in again.';
+                  dispatch({ type: AUTH_INIT_ERROR, payload: errorMsg });
+                  toast.error(errorMsg);
+                  dispatch(push('/login'));
+                  isInitializing = false;
+                  return;
                 }
               }
             } catch (tokenError) {
