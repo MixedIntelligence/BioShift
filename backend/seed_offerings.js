@@ -1,11 +1,13 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+// PostgreSQL version of seed_offerings.js
+// Seeds the offerings table with sample data using pg and DATABASE_URL
+const { Pool } = require('pg');
+require('dotenv').config();
 
-// Database setup
-const dbPath = path.join(__dirname, 'biomvp.sqlite');
-const db = new Database(dbPath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
 
-// Sample offerings data
 const offerings = [
   {
     title: "PCR Machine Services",
@@ -334,30 +336,16 @@ const offerings = [
   }
 ];
 
-// Function to insert offerings
-function insertOfferings() {
-  console.log('Starting to insert sample offerings...');
-  
-  // First, get the user_id of a Provider user (we'll need to create one or use existing)
-  db.get("SELECT id FROM users WHERE role = 'Provider' LIMIT 1", (err, user) => {
-    if (err) {
-      console.error('Error finding provider user:', err);
-      return;
-    }
-    
-    const providerId = user ? user.id : 1; // Use existing provider or default to user 1
-    
-    // Insert each offering
-    const insertStmt = db.prepare(`
-      INSERT INTO offerings (
-        title, description, category, type, price, duration, location, 
-        image, tags, requirements, deliverables, user_id, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))
-    `);
-    
-    let insertedCount = 0;
-    offerings.forEach((offering, index) => {
-      insertStmt.run([
+async function insertOfferings() {
+  let insertedCount = 0;
+  for (const offering of offerings) {
+    try {
+      await pool.query(`
+        INSERT INTO offerings (
+          title, description, category, type, price, duration, location, 
+          image, tags, requirements, deliverables, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW(), NOW())
+      `, [
         offering.title,
         offering.description,
         offering.category,
@@ -368,38 +356,23 @@ function insertOfferings() {
         offering.image,
         offering.tags,
         offering.requirements,
-        offering.deliverables,
-        providerId
-      ], function(err) {
-        if (err) {
-          console.error(`Error inserting offering ${index + 1}:`, err);
-        } else {
-          insertedCount++;
-          console.log(`Inserted offering ${insertedCount}/25: ${offering.title}`);
-        }
-        
-        if (insertedCount === offerings.length) {
-          insertStmt.finalize();
-          console.log(`Successfully inserted all ${insertedCount} sample offerings!`);
-          db.close();
-        }
-      });
-    });
-  });
+        offering.deliverables
+      ]);
+      insertedCount++;
+      console.log(`Inserted offering ${insertedCount}: ${offering.title}`);
+    } catch (err) {
+      console.error(`Error inserting offering ${offering.title}:`, err.message);
+    }
+  }
+  console.log(`Successfully inserted all ${insertedCount} sample offerings!`);
 }
 
-// Check if offerings table exists and create if needed
-db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='offerings'", (err, row) => {
-  if (err) {
-    console.error('Error checking for offerings table:', err);
-    return;
-  }
-  
-  if (!row) {
-    console.log('Creating offerings table...');
-    db.run(`
-      CREATE TABLE offerings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+async function ensureTableAndSeed() {
+  try {
+    // Create table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS offerings (
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT,
         category TEXT,
@@ -411,21 +384,16 @@ db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='offerings'",
         tags TEXT,
         requirements TEXT,
         deliverables TEXT,
-        user_id INTEGER,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
       )
-    `, (err) => {
-      if (err) {
-        console.error('Error creating offerings table:', err);
-      } else {
-        console.log('Offerings table created successfully!');
-        insertOfferings();
-      }
-    });
-  } else {
-    console.log('Offerings table already exists.');
-    insertOfferings();
+    `);
+    await insertOfferings();
+  } catch (err) {
+    console.error('Error creating offerings table:', err.message);
+  } finally {
+    await pool.end();
   }
-});
+}
+
+ensureTableAndSeed();

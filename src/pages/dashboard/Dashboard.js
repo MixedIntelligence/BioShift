@@ -67,7 +67,9 @@ class Dashboard extends React.Component {
     if (!user) {
       return <div style={{padding: 40, color: 'red'}}>User not found. Please log in again.</div>;
     }
-
+    // Defensive: If user has no gigs or data, render a placeholder instead of charts
+    // (Assume you have a prop or selector for user gigs, e.g., this.props.gigs or similar)
+    const hasGigs = this.props.gigs && this.props.gigs.length > 0;
     return (
       <div className={s.root}>
         <h1 className="page-title">Dashboard &nbsp;
@@ -377,9 +379,8 @@ class Dashboard extends React.Component {
                   </tbody>
                 </Table>
               </div>
-
               <div className="widget-body mt-xlg chart-overflow-bottom" style={{ height: '100px' }}>
-                <Rickshaw height={100} />
+                {hasGigs ? <Rickshaw height={100} /> : <div style={{padding: 20, color: '#888'}}>No data to display yet.</div>}
               </div>
 
             </Widget>

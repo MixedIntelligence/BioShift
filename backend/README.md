@@ -5,7 +5,7 @@ This is the Node.js/Express backend for the LabLeap/BioShift platform, supportin
 
 - **API Base Path:** `/api`
 - **Authentication:** JWT-based
-- **Database:** SQLite (for local dev; PostgreSQL planned for production)
+- **Database:** PostgreSQL (for all environments)
 - **Roles:** Admin, Lab, Worker, Provider
 - **Key Features:**
   - User registration/login, role management
@@ -25,7 +25,7 @@ This is the Node.js/Express backend for the LabLeap/BioShift platform, supportin
 
 2. **Run database migrations:**
    ```sh
-   node migrate.js
+   node models/run_migrations.js
    ```
 
 3. **Start the server:**
@@ -41,11 +41,11 @@ This is the Node.js/Express backend for the LabLeap/BioShift platform, supportin
 ## Directory Structure
 
 - `/backend/index.js` - Express app entry
-- `/backend/models/` - Database models (SQLite)
+- `/backend/models/` - Database models (PostgreSQL)
 - `/backend/routes/` - API route handlers
 - `/backend/middleware/` - Auth, role, and logging middleware
 - `/backend/tests/` - Jest/Supertest tests
-- `/backend/migrate.js` - DB migrations
+- `/backend/models/run_migrations.js` - DB migrations
 - `/backend/.env` - Environment variables
 
 ## API Documentation
@@ -56,7 +56,7 @@ This is the Node.js/Express backend for the LabLeap/BioShift platform, supportin
 
 ## Development Notes
 
-- Use SQLite for local development. For production, update models for PostgreSQL.
+- Use PostgreSQL for all development and production. Set your `DATABASE_URL` in `.env`.
 - Follow RESTful API and security best practices.
 - Use role-based middleware to protect sensitive endpoints.
 - Audit logs are written to file for sensitive actions.

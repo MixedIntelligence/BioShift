@@ -82,8 +82,8 @@ router.post(
 router.get('/my-gigs', authenticateToken, requireRole('Lab', 'Admin'), async (req, res) => {
   try {
     console.log('my-gigs endpoint called, user:', req.user);
-    const stmt = db.prepare('SELECT * FROM gigs WHERE user_id = ? ORDER BY created_at DESC');
-    const myGigs = stmt.all(req.user.id);
+    const result = await db.query('SELECT * FROM gigs WHERE user_id = $1 ORDER BY created_at DESC', [req.user.id]);
+    const myGigs = result.rows;
     console.log('Found gigs:', myGigs);
     res.json(myGigs);
   } catch (err) {

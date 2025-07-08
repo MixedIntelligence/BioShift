@@ -1,11 +1,13 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+// PostgreSQL version of update_offering_images.js
+// Updates offering images in provider_offerings using pg and DATABASE_URL
+const { Pool } = require('pg');
+require('dotenv').config();
 
-// Database setup
-const dbPath = path.join(__dirname, 'biomvp.sqlite');
-const db = new Database(dbPath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
 
-// Available images in the LabLeapstock directory
 const images = [
   'alex-santiago-CPv7g7CK-K0-unsplash.jpg',
   'alexandra-lawrence-y0IEI3PoTtg-unsplash (1).jpg',
@@ -38,38 +40,34 @@ const images = [
   'venti-views-Q_qNWPd2knY-unsplash.jpg'
 ];
 
-try {
-  console.log('Updating offering images...');
-  
-  // Get all offerings
-  const offerings = db.prepare('SELECT id FROM provider_offerings ORDER BY id').all();
-  
-  // Update each offering with a local image
-  const updateStmt = db.prepare('UPDATE provider_offerings SET img = ? WHERE id = ?');
-  
-  let updated = 0;
-  offerings.forEach((offering, index) => {
-    // Use modulo to cycle through images if we have more offerings than images
-    const imageIndex = index % images.length;
-    const imagePath = `/images/LabLeapstock/${images[imageIndex]}`;
-    
-    const result = updateStmt.run(imagePath, offering.id);
-    if (result.changes > 0) {
-      updated++;
+async function updateOfferingImages() {
+  try {
+    console.log('Updating offering images...');
+    // Get all offerings
+    const offeringsResult = await pool.query('SELECT id, title FROM provider_offerings ORDER BY id');
+    const offerings = offeringsResult.rows;
+    let updated = 0;
+    for (let index = 0; index < offerings.length; index++) {
+      const offering = offerings[index];
+      const imageIndex = index % images.length;
+      const imagePath = `/images/LabLeapstock/${images[imageIndex]}`;
+      const result = await pool.query('UPDATE provider_offerings SET img = $1 WHERE id = $2', [imagePath, offering.id]);
+      if (result.rowCount > 0) {
+        updated++;
+      }
     }
-  });
-  
-  console.log(`Successfully updated ${updated} offerings with local images!`);
-  
-  // Verify the update
-  const updatedOfferings = db.prepare('SELECT id, title, img FROM provider_offerings LIMIT 5').all();
-  console.log('Sample updated offerings:');
-  updatedOfferings.forEach(offering => {
-    console.log(`- ${offering.title}: ${offering.img}`);
-  });
-  
-} catch (error) {
-  console.error('Error updating images:', error);
-} finally {
-  db.close();
+    console.log(`Successfully updated ${updated} offerings with local images!`);
+    // Verify the update
+    const updatedOfferings = await pool.query('SELECT id, title, img FROM provider_offerings LIMIT 5');
+    console.log('Sample updated offerings:');
+    updatedOfferings.rows.forEach(offering => {
+      console.log(`- ${offering.title}: ${offering.img}`);
+    });
+  } catch (error) {
+    console.error('Error updating images:', error);
+  } finally {
+    await pool.end();
+  }
 }
+
+updateOfferingImages();

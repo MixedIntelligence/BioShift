@@ -1,11 +1,13 @@
-const Database = require('better-sqlite3');
-const path = require('path');
+// PostgreSQL version of seed_offerings_new.js
+// Seeds the offerings table with sample data using pg and DATABASE_URL
+const { Pool } = require('pg');
+require('dotenv').config();
 
-// Database setup
-const dbPath = path.join(__dirname, 'biomvp.sqlite');
-const db = new Database(dbPath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
 
-// Sample offerings data
 const offerings = [
   {
     title: "High-Performance Centrifuge Service",
@@ -409,24 +411,15 @@ const offerings = [
   }
 ];
 
-// Insert offerings function
-function insertOfferings() {
-  console.log('Starting to insert offerings...');
-  
-  // Prepare insert statement
-  const insertOffering = db.prepare(`
-    INSERT INTO offerings (
-      title, description, provider_id, category, type, price, pricing_type,
-      location, image_url, contact_email, contact_phone, availability,
-      requirements, duration, created_at, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `);
-
-  // Insert all offerings in a transaction
-  const insertMany = db.transaction((offerings) => {
-    for (const offering of offerings) {
-      const now = new Date().toISOString();
-      insertOffering.run(
+async function insertOfferings() {
+  let insertedCount = 0;
+  for (const offering of offerings) {
+    try {
+      await pool.query(`
+        INSERT INTO offerings (
+          title, description, provider_id, category, type, price, pricing_type, location, image_url, contact_email, contact_phone, availability, requirements, duration, created_at, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, NOW(), NOW())
+      `, [
         offering.title,
         offering.description,
         offering.provider_id,
@@ -440,37 +433,23 @@ function insertOfferings() {
         offering.contact_phone,
         offering.availability,
         offering.requirements,
-        offering.duration,
-        now,
-        now
-      );
+        offering.duration
+      ]);
+      insertedCount++;
+      console.log(`Inserted offering ${insertedCount}: ${offering.title}`);
+    } catch (err) {
+      console.error(`Error inserting offering ${offering.title}:`, err.message);
     }
-  });
-
-  try {
-    insertMany(offerings);
-    console.log(`Successfully inserted ${offerings.length} offerings!`);
-    
-    // Verify the data was inserted
-    const count = db.prepare('SELECT COUNT(*) as count FROM offerings').get();
-    console.log(`Total offerings in database: ${count.count}`);
-    
-  } catch (error) {
-    console.error('Error seeding offerings:', error);
-  } finally {
-    db.close();
   }
+  console.log(`Successfully inserted all ${insertedCount} sample offerings!`);
 }
 
-// Check if offerings table exists and create if needed
-try {
-  const row = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='offerings'").get();
-  
-  if (!row) {
-    console.log('Creating offerings table...');
-    db.exec(`
-      CREATE TABLE offerings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+async function ensureTableAndSeed() {
+  try {
+    // Create table if it doesn't exist
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS offerings (
+        id SERIAL PRIMARY KEY,
         title TEXT NOT NULL,
         description TEXT,
         provider_id INTEGER,
@@ -485,19 +464,16 @@ try {
         availability TEXT,
         requirements TEXT,
         duration TEXT,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (provider_id) REFERENCES users(id)
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
       )
     `);
-    console.log('Offerings table created successfully!');
-  } else {
-    console.log('Offerings table already exists.');
+    await insertOfferings();
+  } catch (err) {
+    console.error('Error creating offerings table:', err.message);
+  } finally {
+    await pool.end();
   }
-  
-  insertOfferings();
-  
-} catch (error) {
-  console.error('Error with database operations:', error);
-  db.close();
 }
+
+ensureTableAndSeed();

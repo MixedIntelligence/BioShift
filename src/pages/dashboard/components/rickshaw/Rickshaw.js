@@ -49,43 +49,51 @@ class RickshawGraph extends React.Component {
   }
 
   initRickshaw() {
+    // Defensive: Only initialize if there is data
     const seriesData = [[], []];
     const random = new Rickshaw.Fixtures.RandomData(30);
     for (let i = 0; i < 30; i += 1) {
       random.addData(seriesData);
     }
-
-    // eslint-disable-next-line
-    this.state.graph = new Rickshaw.Graph({
-      element: this.rickshawChart,
-      height: this.props.height,
-      series: [
-        {
-          color: "rgba(111, 176, 249, 0.5)",
-          data: seriesData[0],
-          name: 'Uploads',
-        }, {
-          color: config.app.themeColors.primary,
-          data: seriesData[1],
-          name: 'Downloads',
-        },
-      ],
-    });
-
-    const hoverDetail = new Rickshaw.Graph.HoverDetail({
-      graph: this.state.graph,
-      xFormatter: x => new Date(x * 1000).toString(),
-    });
-
-    hoverDetail.show();
-
-    setInterval(() => {
-      random.removeData(seriesData);
-      random.addData(seriesData);
-      this.state.graph.update();
-    }, 1000);
-
-    this.state.graph.render();
+    if (!seriesData[0].length && !seriesData[1].length) {
+      // No data, do not initialize
+      return;
+    }
+    try {
+      // eslint-disable-next-line
+      this.state.graph = new Rickshaw.Graph({
+        element: this.rickshawChart,
+        height: this.props.height,
+        series: [
+          {
+            color: "rgba(111, 176, 249, 0.5)",
+            data: seriesData[0],
+            name: 'Uploads',
+          }, {
+            color: config.app.themeColors.primary,
+            data: seriesData[1],
+            name: 'Downloads',
+          },
+        ],
+      });
+      const hoverDetail = new Rickshaw.Graph.HoverDetail({
+        graph: this.state.graph,
+        xFormatter: x => new Date(x * 1000).toString(),
+      });
+      hoverDetail.show();
+      setInterval(() => {
+        random.removeData(seriesData);
+        random.addData(seriesData);
+        this.state.graph.update();
+      }, 1000);
+      this.state.graph.render();
+    } catch (err) {
+      // Prevent crash if Rickshaw fails
+      if (process.env.NODE_ENV !== 'production') {
+        // eslint-disable-next-line
+        console.error('Rickshaw chart error:', err);
+      }
+    }
   }
 
   render() {

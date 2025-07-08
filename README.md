@@ -18,9 +18,9 @@
 - **GitHub**: https://github.com/MixedIntelligence/BioShift (Updated ✅)
 
 ### 🎯 **DEPLOYMENT STRATEGY:**
-- **Pragmatic Solution**: Overcame SQLite binary compatibility issues
+- **Pragmatic Solution**: Overcame SQLite binary compatibility issues (now fully PostgreSQL)
 - **Immediate Functionality**: Platform deployed and ready for user testing
-- **PostgreSQL Database**: Successfully migrated to a robust production database
+- **PostgreSQL Database**: 100% PostgreSQL for all environments (local/dev/prod)
 
 ---
 
@@ -116,7 +116,7 @@ To run the application locally using PowerShell:
 
 2. **Configure Environment:**
    - Create a `.env` file in the `backend` directory
-   - Add necessary environment variables (see `.env.example`)
+   - Add your PostgreSQL connection string as `DATABASE_URL` (see `.env.example`)
 
 3. **Run Database Migrations:**
    ```powershell
@@ -136,13 +136,13 @@ The application is configured for deployment on Vercel with the following setup:
 
 - **Frontend**: React app deployed to Vercel edge network
 - **Backend**: Node.js API deployed on Railway
-- **Database**: PostgreSQL for production-grade performance and reliability
+- **Database**: PostgreSQL for all environments (local/dev/prod)
 
 ## 🏗️ Architecture
 
 - **Frontend**: React with Redux state management
 - **Backend**: Node.js with Express.js REST API
-- **Database**: PostgreSQL (production) / SQLite (local development)
+- **Database**: PostgreSQL (all environments)
 - **Authentication**: JWT tokens with role-based access control
 - **Deployment**: Vercel (frontend) and Railway (backend) with CI/CD
 
@@ -171,5 +171,5 @@ Visit the live application: [https://bioshift-seven.vercel.app](https://bioshift
 
 ---
 
-*Last Updated: July 6, 2025*  
+*Last Updated: July 8, 2025*  
 *Platform Status: Production Ready*

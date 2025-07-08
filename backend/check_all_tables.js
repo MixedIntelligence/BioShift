@@ -1,31 +1,37 @@
-const sqlite3 = require('better-sqlite3');
-const path = require('path');
+// PostgreSQL version of check_all_tables.js
+// Connects to the database using pg and DATABASE_URL
+const { Pool } = require('pg');
+require('dotenv').config();
 
-const dbPath = path.resolve(__dirname, 'biomvp.sqlite');
-const db = new sqlite3(dbPath);
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+});
 
-function checkAllTables() {
+async function checkAllTables() {
   try {
-    const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table'").all();
+    const tablesResult = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'`);
+    const tables = tablesResult.rows.map(row => row.table_name);
     console.log('Tables in the database:');
-    tables.forEach(table => {
-      console.log(`- ${table.name}`);
+    for (const table of tables) {
+      console.log(`- ${table}`);
       try {
-        const rowCount = db.prepare(`SELECT count(*) as count FROM ${table.name}`).get().count;
+        const rowCountResult = await pool.query(`SELECT count(*) as count FROM "${table}"`);
+        const rowCount = rowCountResult.rows[0].count;
         console.log(`  - Row count: ${rowCount}`);
         if (rowCount > 0) {
-          const rows = db.prepare(`SELECT * FROM ${table.name} LIMIT 5`).all();
+          const rowsResult = await pool.query(`SELECT * FROM "${table}" LIMIT 5`);
           console.log(`  - Sample data:`);
-          rows.forEach(row => console.log(`    - ${JSON.stringify(row)}`));
+          rowsResult.rows.forEach(row => console.log(`    - ${JSON.stringify(row)}`));
         }
       } catch (err) {
-        console.error(`    - Error querying table ${table.name}:`, err.message);
+        console.error(`    - Error querying table ${table}:`, err.message);
       }
-    });
+    }
   } catch (err) {
     console.error('Error checking tables:', err.message);
   } finally {
-    db.close();
+    await pool.end();
   }
 }
 

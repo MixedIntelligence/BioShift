@@ -7,13 +7,13 @@ This backend powers the LabLeap/BioShift gig marketplace and user management sys
 - **API Base Path:** `/api`
 - **Authentication:** JWT (see `/backend/middleware/auth.js`)
 - **Roles:** Admin, Lab, Worker, Provider (see `/backend/middleware/requireRole.js`)
-- **Database:** SQLite for local dev (see `/backend/models/db.js`)
+- **Database:** PostgreSQL for all environments (see `/backend/models/db.js`)
 - **Audit Logging:** File-based, for sensitive actions (see `/backend/middleware/auditLog.js`)
 - **Validation:** Joi schemas for input validation
 
 ## Local Development
 1. Install dependencies: `npm install`
-2. Run DB migrations: `node migrate.js`
+2. Run DB migrations: `node models/run_migrations.js`
 3. Start server: `npm start`
 4. Run tests: `npm test`
 
@@ -34,8 +34,7 @@ This backend powers the LabLeap/BioShift gig marketplace and user management sys
 - For now, see route files for endpoint details
 
 ## Deployment
-- Local: SQLite, `npm start`
-- Production: Update models for PostgreSQL, configure environment, use secure secrets
+- Local & Production: PostgreSQL, set `DATABASE_URL`, `npm start`
 
 ## Contributing
 - Fork, branch, PR workflow
