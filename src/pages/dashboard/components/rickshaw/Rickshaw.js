@@ -1,6 +1,9 @@
 import React from 'react';
+import * as d3 from 'd3';
+if (typeof window !== 'undefined') {
+  window.d3 = d3;
+}
 import Rickshaw from 'rickshaw';
-import 'd3';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
