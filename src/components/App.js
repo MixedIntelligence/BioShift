@@ -23,6 +23,7 @@ import Onboarding from '../pages/auth/onboarding/Onboarding';
 import Reset from '../pages/auth/reset';
 import Forgot from '../pages/auth/forgot';
 import Landing from '../pages/landing/Landing';
+import ErrorBoundary from './ErrorBoundary';
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
@@ -57,37 +58,38 @@ class App extends React.PureComponent {
     }
 
     return (
+      <ErrorBoundary>
         <div>
-            <ToastContainer
-                autoClose={5000}
-                hideProgressBar
-                closeButton={<CloseButton/>}
-            />
-            <ConnectedRouter history={getHistory()}>
-                  <Switch>
-                      <Route path="/" exact component={Landing} />
-                      <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
-                      <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
-                      <AdminRoute path="/admin" currentUser={this.props.currentUser} dispatch={this.props.dispatch}
-                              component={LayoutComponent}/>
-                      <Route path="/documentation" exact
-                            render={() => <Redirect to="/documentation/getting-started/overview"/>}/>
-                      <Route path="/documentation" component={DocumentationLayoutComponent}/>
-                      <AuthRoute path="/register" exact component={Register} />
-                      <AuthRoute path="/register/worker" exact component={WorkerRegister} />
-                      <AuthRoute path="/register/lab" exact component={LabRegister} />
-                      <AuthRoute path="/register/provider" exact component={ProviderRegister} />
-                      <UserRoute path="/onboarding" exact dispatch={this.props.dispatch} component={Onboarding} />
-                      <AuthRoute path="/login" exact component={Login}/>
-                      <AuthRoute path="/verify-email" exact component={Verify}/>
-                      <AuthRoute path="/password-reset" exact component={Reset}/>
-                      <AuthRoute path="/forgot" exact component={Forgot}/>
-                      <Route path="/error" exact component={ErrorPage}/>
-                      <Redirect from="*" to="/app/main/analytics"/>
-                  </Switch>
-            </ConnectedRouter>
-        </div>
-
+          <ToastContainer
+              autoClose={5000}
+              hideProgressBar
+              closeButton={<CloseButton/>}
+          />
+          <ConnectedRouter history={getHistory()}>
+                <Switch>
+                    <Route path="/" exact component={Landing} />
+                    <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
+                    <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
+                    <AdminRoute path="/admin" currentUser={this.props.currentUser} dispatch={this.props.dispatch}
+                            component={LayoutComponent}/>
+                    <Route path="/documentation" exact
+                          render={() => <Redirect to="/documentation/getting-started/overview"/>}/>
+                    <Route path="/documentation" component={DocumentationLayoutComponent}/>
+                    <AuthRoute path="/register" exact component={Register} />
+                    <AuthRoute path="/register/worker" exact component={WorkerRegister} />
+                    <AuthRoute path="/register/lab" exact component={LabRegister} />
+                    <AuthRoute path="/register/provider" exact component={ProviderRegister} />
+                    <UserRoute path="/onboarding" exact dispatch={this.props.dispatch} component={Onboarding} />
+                    <AuthRoute path="/login" exact component={Login}/>
+                    <AuthRoute path="/verify-email" exact component={Verify}/>
+                    <AuthRoute path="/password-reset" exact component={Reset}/>
+                    <AuthRoute path="/forgot" exact component={Forgot}/>
+                    <Route path="/error" exact component={ErrorPage}/>
+                    <Redirect from="*" to="/app/main/analytics"/>
+                </Switch>
+          </ConnectedRouter>
+      </div>
+      </ErrorBoundary>
     );
   }
 }

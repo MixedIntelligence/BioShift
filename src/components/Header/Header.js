@@ -340,7 +340,19 @@ class Header extends React.Component {
               ) : <span title={user && (user.firstName || user.email)}>{firstUserLetter}</span>
               }
             </span>
-                <span className={`small m-2 d-sm-down-none ${s.headerTitle} ${this.props.sidebarStatic ? s.adminEmail : ''}`}>{user ? (user.firstName || user.email) : "Philip smith"}</span>
+                <span className={`small m-2 d-sm-down-none ${s.headerTitle} ${this.props.sidebarStatic ? s.adminEmail : ''}`}>
+                  {(() => {
+                    // Defensive: log and fallback
+                    console.log('Header user object:', user);
+                    if (!user) return "Philip smith";
+                    if (typeof user === 'object') {
+                      // Try to show firstName, email, or id
+                      return user.firstName || user.email || user.id || "User";
+                    }
+                    // If user is not an object, fallback to string
+                    return String(user);
+                  })()}
+                </span>
                 {this.state.notifications.length > 0 &&
                   <span className="m-1 circle bg-light-red text-white fw-semi-bold d-sm-down-none">{this.state.notifications.length}</span>
                 }

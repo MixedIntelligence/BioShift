@@ -62,6 +62,9 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    // Debug: log props and state
+    console.log('Dashboard props:', this.props);
+    console.log('Dashboard state:', this.state);
     // v8-style: no Redux, no props, no API, just static content
     return (
       <div className={s.root}>
