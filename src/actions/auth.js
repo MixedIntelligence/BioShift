@@ -221,7 +221,7 @@ export function receiveToken(token) {
         dispatch({
           type: LOGIN_SUCCESS
         });
-        dispatch(push('/app'));
+        dispatch(push('/gigs'));
     }
 }
 
@@ -234,7 +234,7 @@ export function loginUser(creds) {
       if (!config.isBackend) {
         dispatch(receiveToken('token'));
         dispatch(doInit());
-        dispatch(push('/app'));
+        dispatch(push('/gigs'));
       } else {
         dispatch({
           type: LOGIN_REQUEST,
@@ -278,7 +278,7 @@ export function loginUser(creds) {
               
               dispatch(receiveToken(token));
               dispatch(doInit());
-              dispatch(push('/app'));
+              dispatch(push('/gigs'));
             })
             .catch(err => {
               console.log('❌ Login failed:', err);
