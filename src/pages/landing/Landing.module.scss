@@ -129,7 +129,7 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
   position: relative;
   overflow: hidden;
   padding-top: 80px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, $bg-dark 0%, $dark-secondary 100%);
 
   .heroBackground {
     position: absolute;
@@ -137,7 +137,7 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+    background: radial-gradient(circle at 50% 50%, rgba(0, 255, 153, 0.08) 0%, transparent 70%);
     z-index: 1;
   }
 
@@ -148,6 +148,7 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
     opacity: 0;
     transform: translateY(30px);
     transition: all 0.8s ease;
+    color: $text-primary;
 
     &.visible {
       opacity: 1;
@@ -158,14 +159,14 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      background: rgba(16, 185, 129, 0.1);
+      background: rgba(0, 255, 153, 0.12);
       color: $accent-green;
       padding: 0.5rem 1rem;
       border-radius: 20px;
       font-size: 0.85rem;
       font-weight: 600;
       margin-bottom: 1.5rem;
-      border: 1px solid rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(0, 255, 153, 0.2);
 
       .statusIndicator {
         width: 8px;
@@ -179,52 +180,33 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
     .heroTitle {
       font-size: 3.5rem;
       font-weight: 800;
-      line-height: 1.1;
-      margin-bottom: 1.5rem;
       color: $text-primary;
-      
-      @media (max-width: 768px) {
-        font-size: 2.5rem;
-      }
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.4);
     }
 
     .heroSubtitle {
-      font-size: 1.25rem;
+      font-size: 1.3rem;
       color: $text-secondary;
       margin-bottom: 2.5rem;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
-      line-height: 1.6;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
     }
 
     .heroStats {
       display: flex;
       justify-content: center;
-      gap: 3rem;
-      margin-bottom: 3rem;
-
-      @media (max-width: 768px) {
-        flex-direction: column;
-        gap: 1.5rem;
-      }
-
+      gap: 2.5rem;
+      margin-bottom: 2.5rem;
       .stat {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-
+        text-align: center;
         .statValue {
           font-size: 2rem;
           font-weight: 700;
-          color: $primary-blue;
+          color: $primary-green;
         }
-
         .statLabel {
-          font-size: 0.9rem;
           color: $text-secondary;
-          font-weight: 500;
+          font-size: 1rem;
         }
       }
     }
@@ -232,32 +214,30 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
     .heroAction {
       display: flex;
       justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-
+      gap: 1.5rem;
+      margin-top: 2rem;
       .primaryButton {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
-        background: $primary-blue;
-        color: white;
+        background: $primary-green;
+        color: #121212;
         padding: 1rem 2rem;
         border: none;
         border-radius: 8px;
-        font-weight: 600;
-        font-size: 1rem;
+        font-weight: 700;
+        font-size: 1.1rem;
         text-decoration: none;
         transition: all 0.2s ease;
         position: relative;
         overflow: hidden;
-
+        box-shadow: 0 2px 16px rgba(0,255,153,0.15);
         &:hover {
-          background: $secondary-blue;
+          background: $secondary-green;
+          color: #121212;
           transform: translateY(-2px);
           box-shadow: $shadow-lg;
-          color: white;
         }
-
         .buttonGlow {
           position: absolute;
           top: 0;
@@ -267,29 +247,26 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
           background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
           transition: left 0.5s ease;
         }
-
         &:hover .buttonGlow {
           left: 100%;
         }
       }
-
       .secondaryButton {
         display: inline-flex;
         align-items: center;
         gap: 0.5rem;
         background: transparent;
-        color: $primary-blue;
+        color: $primary-green;
         padding: 1rem 2rem;
-        border: 2px solid $primary-blue;
+        border: 2px solid $primary-green;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 1.1rem;
         text-decoration: none;
         transition: all 0.2s ease;
-
         &:hover {
-          background: $primary-blue;
-          color: white;
+          background: $primary-green;
+          color: #121212;
           transform: translateY(-2px);
           box-shadow: $shadow-lg;
         }
@@ -306,19 +283,16 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
 // User Paths Section
 .userPaths {
   padding: 5rem 0;
-  background: $bg-white;
-
+  background: $bg-darker;
   .sectionHeader {
     text-align: center;
     margin-bottom: 3rem;
-
     .sectionTitle {
       font-size: 2.5rem;
       font-weight: 700;
-      color: $text-primary;
+      color: $primary-green;
       margin-bottom: 1rem;
     }
-
     .sectionSubtitle {
       font-size: 1.1rem;
       color: $text-secondary;
@@ -326,125 +300,52 @@ $shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.
       margin: 0 auto;
     }
   }
-
   .pathCard {
-    background: $bg-white;
+    background: $dark-secondary;
     border-radius: 12px;
-    border: 1px solid $border-light;
+    border: 1px solid $border-glow;
     padding: 2rem;
     height: 100%;
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
-
+    color: $text-primary;
     &:hover {
       transform: translateY(-4px);
       box-shadow: $shadow-lg;
-      border-color: $primary-blue;
+      border-color: $primary-green;
     }
-
     .pathHeader {
       text-align: center;
       margin-bottom: 1.5rem;
-
       .pathIcon {
         width: 60px;
         height: 60px;
         margin: 0 auto 1rem auto;
         position: relative;
-
         .iconCore {
           width: 100%;
           height: 100%;
-          background: linear-gradient(135deg, $primary-blue, $secondary-blue);
+          background: linear-gradient(135deg, $primary-green, $secondary-green);
           border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: white;
-          font-size: 1.5rem;
-          font-weight: 600;
         }
       }
-
       h3 {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: $text-primary;
-        margin-bottom: 0.5rem;
+        color: $primary-green;
+        font-size: 1.3rem;
+        font-weight: 700;
       }
-
       .pathSubtitle {
-        font-size: 0.9rem;
         color: $text-secondary;
-        font-weight: 500;
+        font-size: 1rem;
       }
     }
-
-    .pathContent {
-      margin-bottom: 2rem;
-
-      p {
+    .pathList {
+      margin-top: 1rem;
+      color: $text-primary;
+      li {
+        margin-bottom: 0.5rem;
         color: $text-secondary;
-        margin-bottom: 1rem;
-        line-height: 1.6;
-      }
-
-      .pathFeatures {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-
-        li {
-          padding: 0.5rem 0;
-          color: $text-secondary;
-          font-size: 0.95rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-      }
-    }
-
-    .pathAction {
-      .pathButton {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background: $primary-blue;
-        color: white;
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 0.95rem;
-        text-decoration: none;
-        transition: all 0.2s ease;
-        position: relative;
-        overflow: hidden;
-        width: 100%;
-        justify-content: center;
-
-        &:hover {
-          background: $secondary-blue;
-          transform: translateY(-1px);
-          box-shadow: $shadow-md;
-          color: white;
-        }
-
-        .buttonAccent {
-          position: absolute;
-          top: 0;
-          left: -100%;
-          width: 100%;
-          height: 100%;
-          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-          transition: left 0.5s ease;
-        }
-
-        &:hover .buttonAccent {
-          left: 100%;
-        }
       }
     }
   }
