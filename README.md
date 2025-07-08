@@ -1,5 +1,14 @@
 # BioMVP - BioTech Marketplace Platform 🧬
 
+> **A BioShift Poem**
+> 
+> In labs and code, our dreams take flight,
+> Connecting minds, both day and night.
+> Gigs and science, side by side,
+> On BioShift’s wave, we learn and ride.
+> Workers, labs, and providers too—
+> This platform’s built for all of you!
+
 ## 🎉 **PRODUCTION STATUS - July 6, 2025 - LIVE & READY**
 
 ### 🏆 **MAJOR MILESTONE: BETA TESTING READY**
