@@ -10,11 +10,32 @@ router.get('/me', authenticateToken, async (req, res) => {
   try {
     console.log('IN /me route, req.user:', req.user, 'req.user.id:', req.user.id, 'Type:', typeof req.user.id); // DEBUG
     const user = await userModel.getUserProfile(req.user.id); // Use getUserProfile for complete profile data
-    console.log('DB user:', user); // DEBUG
+    console.log('DB user:', JSON.stringify(user, null, 2)); // Enhanced DEBUG
     if (!user) return res.status(404).json({ error: 'User not found' });
-    
-    // Return complete user profile data
-    res.json(user);
+
+    // Ensure all profile fields are present (default to empty string/null/false if missing)
+    const safeUser = {
+      id: user.id,
+      email: user.email,
+      role: user.role,
+      created_at: user.created_at,
+      first_name: user.first_name || '',
+      last_name: user.last_name || '',
+      phone: user.phone || '',
+      bio: user.bio || '',
+      location: user.location || '',
+      years_experience: user.years_experience || null,
+      current_position: user.current_position || '',
+      company_name: user.company_name || '',
+      website: user.website || '',
+      linkedin_url: user.linkedin_url || '',
+      github_url: user.github_url || '',
+      avatar_url: user.avatar_url || '',
+      profile_completed: user.profile_completed || false,
+      onboarding_completed: user.onboarding_completed || false
+    };
+
+    res.json(safeUser);
   } catch (err) {
     console.error('Error fetching user:', err);
     res.status(500).json({ error: 'Failed to fetch user data' });
