@@ -84,6 +84,7 @@ import Offerings from '../../pages/offerings/Offerings';
 import Offering from '../../pages/offerings/Offering';
 import PostOfferingPage from '../../pages/offerings/PostOfferingPageNew';
 import PublicProfilePage from '../../pages/profile/PublicProfilePage';
+import Dashboard from '../../pages/dashboard/Dashboard';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -161,7 +162,7 @@ class Layout extends React.Component {
                 >
                   <Switch>
                     <Route path="/app/main" exact render={() => <Redirect to="/app/main/dashboard" />} />
-                    <Route path="/app/main/dashboard" exact component={require('../../pages/dashboard/RoleBasedDashboard').default} />
+                    <Route path="/app/main/dashboard" exact component={Dashboard} />
                     <Route path="/app/main/widgets" exact component={Widgets} />
                     <Route path="/app/main/analytics" exact component={DashboardAnalytics} />
                     <Route path="/app/edit_profile" exact component={UserFormPage} />
