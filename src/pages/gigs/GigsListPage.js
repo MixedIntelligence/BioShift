@@ -143,6 +143,11 @@ const GigsListPage = ({ currentUser }) => {
     applyFilters();
   };
 
+  // Debug logging for blank page issue
+  console.log('GigsListPage currentUser:', currentUser);
+  console.log('GigsListPage gigs:', gigs);
+  console.log('GigsListPage filteredGigs:', filteredGigs);
+
   if (loading) {
     return <Spinner style={{ width: '3rem', height: '3rem' }} />
   }
