@@ -15,22 +15,12 @@ export const AdminRoute = ({currentUser, dispatch, component, ...rest}) => {
 export const UserRoute = ({dispatch, component, ...rest}) => {
   const token = localStorage.getItem('token');
   const isAuthenticated = Login.isAuthenticated(token);
-  
-  if (!isAuthenticated) {
-    // Temporarily disable automatic logout to prevent infinite loops
-    // TODO: Re-enable with proper safeguards after debugging
-    /*
-    if (token && !window.isLoggingOut) {
-      window.isLoggingOut = true;
-      setTimeout(() => {
-        dispatch(logoutUser());
-        window.isLoggingOut = false;
-      }, 0);
-    }
-    */
+  // Defensive: check for user in Redux store
+  const user = (window.store && window.store.getState && window.store.getState().auth && window.store.getState().auth.currentUser) || null;
+  if (!isAuthenticated || !user) {
     return (<Redirect to="/login"/>)
   } else {
-    return ( // eslint-disable-line
+    return (
       <Route {...rest} render={props => (React.createElement(component, props))}/>
     );
   }

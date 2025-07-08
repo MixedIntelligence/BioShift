@@ -29,6 +29,13 @@ const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-c
 class App extends React.PureComponent {
   
   render() {
+    // Defensive: If user or token is missing, redirect to login
+    const token = localStorage.getItem('token');
+    if (!token || !this.props.currentUser) {
+      if (!this.props.loadingInit) {
+        return <Redirect to="/login" />;
+      }
+    }
     if (this.props.loadingInit) {
       return (
         <div style={{ 

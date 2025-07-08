@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BioShift Landing Page (Dark Theme Preview)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #121212 0%, #1a1a1a 50%, #0a0a0a 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      background: rgba(18, 18, 18, 0.95);
+      border-bottom: 1px solid rgba(0,255,153,0.3);
+      padding: 1rem 0;
+      display: flex;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(0,255,153,0.2);
+    }
+    .nav-content {
+      width: 90%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00ff99;
+    }
+    .logo img {
+      height: 32px;
+      width: auto;
+    }
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    .nav-link {
+      color: #a0a0a0;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: all 0.2s;
+      padding: 0.5rem 0;
+    }
+    .nav-link:hover {
+      color: #007bff;
+    }
+    .nav-button {
+      background: #007bff;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .nav-button:hover {
+      background: #0056b3;
+      color: white;
+    }
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      padding-top: 120px;
+      background: linear-gradient(135deg, #121212 0%, #1a1a1a 100%);
+      text-align: center;
+    }
+    .hero-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(0,255,153,0.12);
+      color: #00ff99;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0,255,153,0.2);
+    }
+    .hero-title {
+      font-size: 3.5rem;
+      font-weight: 800;
+      color: #e0e0e0;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 16px rgba(0,0,0,0.4);
+    }
+    .hero-subtitle {
+      font-size: 1.3rem;
+      color: #a0a0a0;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.3);
+    }
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 2.5rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat {
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #00ff99;
+    }
+    .stat-label {
+      color: #a0a0a0;
+      font-size: 1rem;
+    }
+    .hero-action {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #00ff99;
+      color: #121212;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: all 0.2s;
+      box-shadow: 0 2px 16px rgba(0,255,153,0.15);
+    }
+    .primary-button:hover {
+      background: #00cc7a;
+      color: #121212;
+    }
+    .secondary-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: #00ff99;
+      padding: 1rem 2rem;
+      border: 2px solid #00ff99;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .secondary-button:hover {
+      background: #00ff99;
+      color: #121212;
+    }
+    .user-paths {
+      padding: 5rem 0;
+      background: #0a0a0a;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #00ff99;
+      margin-bottom: 1rem;
+    }
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: #a0a0a0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .path-cards {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+    .path-card {
+      background: #1a1a1a;
+      border-radius: 12px;
+      border: 1px solid rgba(0,255,153,0.3);
+      padding: 2rem;
+      width: 320px;
+      color: #e0e0e0;
+      margin-bottom: 2rem;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .path-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.4), 0 4px 6px -2px rgba(0,0,0,0.3);
+      border-color: #00ff99;
+    }
+    .path-header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    .path-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem auto;
+      background: linear-gradient(135deg, #00ff99, #00cc7a);
+      border-radius: 50%;
+    }
+    .path-title {
+      color: #00ff99;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .path-subtitle {
+      color: #a0a0a0;
+      font-size: 1rem;
+    }
+    .path-list {
+      margin-top: 1rem;
+      color: #e0e0e0;
+      list-style: disc inside;
+      padding-left: 0;
+    }
+    .path-list li {
+      margin-bottom: 0.5rem;
+      color: #a0a0a0;
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="logo">
+        <img src="logo-header.png" alt="BioShift LabLeap" />
+        <span>BioShift</span>
+      </div>
+      <div class="nav-links">
+        <a href="#" class="nav-link">Sign In</a>
+        <a href="#" class="nav-button">Get Started</a>
+      </div>
+    </div>
+  </nav>
+  <main>
+    <section class="hero">
+      <div class="hero-status">
+        <span style="display:inline-block;width:8px;height:8px;background:#00ff99;border-radius:50%;margin-right:6px;"></span>
+        BIOTECH PROFESSIONALS
+      </div>
+      <h1 class="hero-title">Connect. Collaborate. Accelerate Discovery.</h1>
+      <p class="hero-subtitle">The premier marketplace connecting biotech talent with breakthrough research opportunities</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">500+</span><br>
+          <span class="stat-label">Active Projects</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">1,200+</span><br>
+          <span class="stat-label">Professionals</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">150+</span><br>
+          <span class="stat-label">Labs & Providers</span>
+        </div>
+      </div>
+      <div class="hero-action">
+        <a href="#" class="primary-button">Get Started Free</a>
+        <a href="#" class="secondary-button">Sign In</a>
+      </div>
+    </section>
+    <section class="user-paths">
+      <div class="section-header">
+        <h2 class="section-title">Join the BioShift Community</h2>
+        <p class="section-subtitle">Choose your path in the biotech ecosystem</p>
+      </div>
+      <div class="path-cards">
+        <div class="path-card">
+          <div class="path-header">
+            <div class="path-icon"></div>
+            <div class="path-title">Researchers & Scientists</div>
+            <div class="path-subtitle">Advance Your Career</div>
+          </div>
+          <ul class="path-list">
+            <li>Discover contract and full-time positions</li>
+            <li>Connect with leading research institutions</li>
+            <li>Build valuable professional relationships</li>
+            <li>Showcase your expertise and achievements</li>
+          </ul>
+        </div>
+        <div class="path-card">
+          <div class="path-header">
+            <div class="path-icon"></div>
+            <div class="path-title">Research Institutions</div>
+            <div class="path-subtitle">Find Top Talent</div>
+          </div>
+          <ul class="path-list">
+            <li>Post research positions and projects</li>
+            <li>Review qualified candidate profiles</li>
+            <li>Streamline your hiring process</li>
+            <li>Access specialized scientific expertise</li>
+          </ul>
+        </div>
+        <div class="path-card">
+          <div class="path-header">
+            <div class="path-icon"></div>
+            <div class="path-title">Service Providers</div>
+            <div class="path-subtitle">Grow Your Business</div>
+          </div>
+          <ul class="path-list">
+            <li>List your specialized services</li>
+            <li>Connect with potential clients</li>
+            <li>Manage service requests</li>
+            <li>Expand your client base</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

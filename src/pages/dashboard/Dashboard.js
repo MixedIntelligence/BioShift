@@ -62,6 +62,12 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    // Defensive: If user is missing, show error message instead of crashing
+    const user = (window.store && window.store.getState && window.store.getState().auth && window.store.getState().auth.currentUser) || null;
+    if (!user) {
+      return <div style={{padding: 40, color: 'red'}}>User not found. Please log in again.</div>;
+    }
+
     return (
       <div className={s.root}>
         <h1 className="page-title">Dashboard &nbsp;
