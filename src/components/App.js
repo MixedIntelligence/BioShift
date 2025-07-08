@@ -30,14 +30,22 @@ const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-c
 class App extends React.PureComponent {
   
   render() {
+    // Log props and state for debugging
+    console.log('[App.js] render', {
+      currentUser: this.props.currentUser,
+      loadingInit: this.props.loadingInit,
+      token: localStorage.getItem('token')
+    });
     // Defensive: If user or token is missing, redirect to login
     const token = localStorage.getItem('token');
     if (!token || !this.props.currentUser) {
       if (!this.props.loadingInit) {
+        console.log('[App.js] Redirecting to /login', { token, currentUser: this.props.currentUser });
         return <Redirect to="/login" />;
       }
     }
     if (this.props.loadingInit) {
+      console.log('[App.js] Loading init...');
       return (
         <div style={{ 
           display: 'flex', 
