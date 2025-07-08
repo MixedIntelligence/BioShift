@@ -62,14 +62,25 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    // Always use mock data for illustrative dashboard
+    const user = {
+      id: 1,
+      email: 'mockuser@bioshift.com',
+      first_name: 'Mock',
+      last_name: 'User',
+      role: 'Worker',
+      created_at: '2025-01-01T00:00:00Z',
+      // Add any other fields needed for display
+    };
+    const gigs = [
+      { id: 1, title: 'Mock Gig 1', status: 'active' },
+      { id: 2, title: 'Mock Gig 2', status: 'completed' }
+    ];
     // Defensive: If user is missing, show error message instead of crashing
-    const user = (window.store && window.store.getState && window.store.getState().auth && window.store.getState().auth.currentUser) || null;
     if (!user) {
       return <div style={{padding: 40, color: 'red'}}>User not found. Please log in again.</div>;
     }
-    // Defensive: If user has no gigs or data, render a placeholder instead of charts
-    // (Assume you have a prop or selector for user gigs, e.g., this.props.gigs or similar)
-    const hasGigs = this.props.gigs && this.props.gigs.length > 0;
+    const hasGigs = gigs.length > 0;
     return (
       <div className={s.root}>
         <h1 className="page-title">Dashboard &nbsp;
