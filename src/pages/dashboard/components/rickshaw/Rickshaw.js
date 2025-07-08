@@ -44,8 +44,17 @@ class RickshawGraph extends React.Component {
   }
 
   onResizeRickshaw() {
-    this.state.graph.configure({ height: this.props.height });
-    this.state.graph.render();
+    if (this.state.graph) {
+      try {
+        this.state.graph.configure({ height: this.props.height });
+        this.state.graph.render();
+      } catch (err) {
+        if (process.env.NODE_ENV !== 'production') {
+          // eslint-disable-next-line
+          console.error('Rickshaw resize error:', err);
+        }
+      }
+    }
   }
 
   initRickshaw() {
@@ -60,8 +69,7 @@ class RickshawGraph extends React.Component {
       return;
     }
     try {
-      // eslint-disable-next-line
-      this.state.graph = new Rickshaw.Graph({
+      const graph = new Rickshaw.Graph({
         element: this.rickshawChart,
         height: this.props.height,
         series: [
@@ -77,16 +85,26 @@ class RickshawGraph extends React.Component {
         ],
       });
       const hoverDetail = new Rickshaw.Graph.HoverDetail({
-        graph: this.state.graph,
+        graph: graph,
         xFormatter: x => new Date(x * 1000).toString(),
       });
       hoverDetail.show();
       setInterval(() => {
         random.removeData(seriesData);
         random.addData(seriesData);
-        this.state.graph.update();
+        if (graph) {
+          try {
+            graph.update();
+          } catch (err) {
+            if (process.env.NODE_ENV !== 'production') {
+              // eslint-disable-next-line
+              console.error('Rickshaw update error:', err);
+            }
+          }
+        }
       }, 1000);
-      this.state.graph.render();
+      graph.render();
+      this.setState({ graph });
     } catch (err) {
       // Prevent crash if Rickshaw fails
       if (process.env.NODE_ENV !== 'production') {
