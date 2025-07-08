@@ -77,20 +77,31 @@ class App extends React.PureComponent {
                 <Switch>
                     <Route path="/" exact component={Landing} />
                     <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
+                    {console.log('[App.js] Rendering UserRoute for /app', {component: LayoutComponent, dispatch: this.props.dispatch})}
                     <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/>
+                    {console.log('[App.js] Rendering AdminRoute for /admin', {component: LayoutComponent, currentUser: this.props.currentUser, dispatch: this.props.dispatch})}
                     <AdminRoute path="/admin" currentUser={this.props.currentUser} dispatch={this.props.dispatch}
                             component={LayoutComponent}/>
                     <Route path="/documentation" exact
                           render={() => <Redirect to="/documentation/getting-started/overview"/>}/>
                     <Route path="/documentation" component={DocumentationLayoutComponent}/>
+                    {console.log('[App.js] Rendering AuthRoute for /register', {component: Register})}
                     <AuthRoute path="/register" exact component={Register} />
+                    {console.log('[App.js] Rendering AuthRoute for /register/worker', {component: WorkerRegister})}
                     <AuthRoute path="/register/worker" exact component={WorkerRegister} />
+                    {console.log('[App.js] Rendering AuthRoute for /register/lab', {component: LabRegister})}
                     <AuthRoute path="/register/lab" exact component={LabRegister} />
+                    {console.log('[App.js] Rendering AuthRoute for /register/provider', {component: ProviderRegister})}
                     <AuthRoute path="/register/provider" exact component={ProviderRegister} />
+                    {console.log('[App.js] Rendering UserRoute for /onboarding', {component: Onboarding, dispatch: this.props.dispatch})}
                     <UserRoute path="/onboarding" exact dispatch={this.props.dispatch} component={Onboarding} />
+                    {console.log('[App.js] Rendering AuthRoute for /login', {component: Login})}
                     <AuthRoute path="/login" exact component={Login}/>
+                    {console.log('[App.js] Rendering AuthRoute for /verify-email', {component: Verify})}
                     <AuthRoute path="/verify-email" exact component={Verify}/>
+                    {console.log('[App.js] Rendering AuthRoute for /password-reset', {component: Reset})}
                     <AuthRoute path="/password-reset" exact component={Reset}/>
+                    {console.log('[App.js] Rendering AuthRoute for /forgot', {component: Forgot})}
                     <AuthRoute path="/forgot" exact component={Forgot}/>
                     <Route path="/error" exact component={ErrorPage}/>
                     <Redirect from="*" to="/app/main/analytics"/>
