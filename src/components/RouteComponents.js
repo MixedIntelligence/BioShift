@@ -15,8 +15,8 @@ export const AdminRoute = ({currentUser, dispatch, component, ...rest}) => {
 export const UserRoute = ({dispatch, component, ...rest}) => {
   const token = localStorage.getItem('token');
   const isAuthenticated = Login.isAuthenticated(token);
-  // Defensive: check for user in Redux store
   const user = (window.store && window.store.getState && window.store.getState().auth && window.store.getState().auth.currentUser) || null;
+  console.log('UserRoute user:', user);
   if (!isAuthenticated || !user) {
     return (<Redirect to="/login"/>)
   } else {

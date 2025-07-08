@@ -135,6 +135,7 @@ class Layout extends React.Component {
   }
 
   render() {
+    console.log('Layout currentUser:', this.props.currentUser);
     return (
       <div
         className={[
