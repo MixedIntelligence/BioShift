@@ -76,7 +76,7 @@ class App extends React.PureComponent {
           <ConnectedRouter history={getHistory()}>
                 <Switch>
                     <Route path="/" exact component={Landing} />
-                    <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/>
+                    {/* <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/> */}
                     {/* <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/> */}
                     {console.log('[App.js] Rendering AdminRoute for /admin', {component: LayoutComponent, currentUser: this.props.currentUser, dispatch: this.props.dispatch})}
                     <AdminRoute path="/admin" currentUser={this.props.currentUser} dispatch={this.props.dispatch}
