@@ -227,6 +227,7 @@ class Layout extends React.Component {
                     <Route path="/app/core/typography" exact component={CoreTypography} />
                     <Route path="/app/core/colors" exact component={CoreColors} />
                     <Route path="/app/core/grid" exact component={CoreGrid} />
+                    <Route path="/app/gigs" exact render={() => <div>Gigs Test</div>} />
                     <Route path="/app/gigs" exact component={GigsListPage} />
                     <Route path="/app/gigs/edit/:id" exact component={EditGigPage} />
                     <Route path="/app/gigs/:id/applicants" exact component={MyApplicants} />
