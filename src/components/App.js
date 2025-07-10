@@ -24,6 +24,7 @@ import Reset from '../pages/auth/reset';
 import Forgot from '../pages/auth/forgot';
 import Landing from '../pages/landing/Landing';
 import ErrorBoundary from './ErrorBoundary';
+import GigsListPage from '../pages/gigs/GigsListPage'; // Added for real gigs page
 
 const CloseButton = ({closeToast}) => <i onClick={closeToast} className="la la-close notifications-close"/>
 
@@ -68,7 +69,8 @@ class App extends React.PureComponent {
           />
           <ConnectedRouter history={getHistory()}>
                 <Switch>
-                    <Route path="/app/gigs" exact render={() => <div>App Test Route (Top Level)</div>} />
+                    {/* /app/gigs now renders the real GigsListPage instead of a placeholder. */}
+                    <Route path="/app/gigs" exact component={GigsListPage} />
                     <Route path="/" exact component={Landing} />
                     {/* <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/> */}
                     {/* <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/> */}
