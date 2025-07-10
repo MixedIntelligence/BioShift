@@ -62,6 +62,7 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    const hasGigs = false;
     // Debug: log props and state
     console.log('Dashboard props:', this.props);
     console.log('Dashboard state:', this.state);

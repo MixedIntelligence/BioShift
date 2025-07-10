@@ -9,6 +9,20 @@ import LandingPage from '../pages/landing/Landing';
 
 class App extends React.PureComponent {
   render() {
+    if (this.props.loadingInit) {
+      return (
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          height: '100vh',
+          fontSize: '2rem',
+          color: '#ccc'
+        }}>
+          Loading...
+        </div>
+      );
+    }
     return (
       <Router>
         <Switch>
@@ -17,8 +31,7 @@ class App extends React.PureComponent {
           <Route path="/" exact component={LandingPage} />
           <Route path="/app" exact render={() => <Redirect to="/app/gigs" />} />
           <UserRoute
-            path="/app/gigs"
-            exact
+            path="/app"
             dispatch={this.props.dispatch}
             component={LayoutComponent}
             currentUser={this.props.currentUser}

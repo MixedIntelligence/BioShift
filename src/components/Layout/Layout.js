@@ -163,6 +163,10 @@ class Layout extends React.Component {
                   timeout={200}
                 >
                   <Switch>
+                    <Route path="/app/profile" exact component={Profile} />
+                    <Route path="/app/edit_profile" exact component={UserFormPage} />
+                    <Route path="/app/inbox" exact component={Email} />
+                    <Route path="/app/chat" exact component={ChatPage} />
                     <Route path="/app/gigs" exact component={GigsListPage} />
                     <Route path="/app/gigs/edit/:id" exact component={EditGigPage} />
                     <Route path="/app/gigs/:id/applicants" exact component={MyApplicants} />
@@ -173,6 +177,7 @@ class Layout extends React.Component {
                     <Route path="/app/post-gig" exact component={PostGigPage} />
                     <Route path="/app/dashboard/lab" exact component={LabDashboardPage} />
                     <Route path="/app/dashboard/worker" exact component={WorkerDashboardPage} />
+                    <Route path="/app/main" exact component={Dashboard} />
                     <Route path="/app/labs" exact component={LabsListPage} />
                     <Route path="/app/payments" exact component={PaymentsBanking} />
                     <Route path="/app/upskill" exact component={Upskill} />
