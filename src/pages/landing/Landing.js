@@ -1,300 +1,178 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import s from './Landing.module.scss';
 
-const LandingPage = () => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+const ALPHA_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScbXp-DxHb5zciyepNsM-LLfIVRWHbKsaFj1TFrXcODVMNGug/viewform?usp=dialog";
 
-  useEffect(() => {
-    setIsVisible(true);
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % 3);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+const LandingPage = () => (
+  <div className={s.root}>
+    {/* Hero Section */}
+    <section className={s.hero}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col xs={12} lg={10} className="text-center">
+            <img src="/logo-header.png" alt="LabLeap by BioShift" className={s.logoImage} style={{maxWidth: 180, marginBottom: 24}} />
+            <h1 className={s.heroTitle} style={{fontWeight: 700, fontSize: '2.5rem'}}>
+              LabLeap by BioShift: Closed Alpha – Apply for Early Access
+            </h1>
+            <p className={s.heroSubtitle} style={{fontSize: '1.3rem', margin: '1.5rem 0'}}>
+              Join our invite‑only pilot — empowering labs, scientists, and biotech providers during today’s hiring downturn and Federal funding crunch.
+            </p>
+            <a href={ALPHA_FORM_URL} target="_blank" rel="noopener noreferrer" className={s.primaryButton} style={{fontSize: '1.2rem', padding: '0.75em 2em', marginBottom: 32}}>
+              Request Alpha Access
+            </a>
+          </Col>
+        </Row>
+      </Container>
+    </section>
 
-  const heroSlides = [
-    {
-      title: "Connect. Collaborate. Accelerate Discovery.",
-      subtitle: "The premier marketplace connecting biotech talent with breakthrough research opportunities",
-      accent: "BIOTECH PROFESSIONALS"
-    },
-    {
-      title: "Find Top Talent for Your Research",
-      subtitle: "Access qualified scientists and researchers for your critical projects",
-      accent: "RESEARCH INSTITUTIONS"
-    },
-    {
-      title: "Showcase Your Expertise",
-      subtitle: "Offer specialized services to the biotech community and grow your business",
-      accent: "SERVICE PROVIDERS"
-    }
-  ];
+    {/* Why Now Section */}
+    <section className={s.whyNow} style={{background: '#f8fafc', padding: '3rem 0'}}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col xs={12} lg={8} className="text-center">
+            <h2 className={s.sectionTitle}>Science Needs Agility — Now More Than Ever</h2>
+            <ul className={s.bulletList} style={{textAlign: 'left', margin: '2rem auto', maxWidth: 600}}>
+              <li>Federal funding is tightening—labs need fast, reliable, short‑term talent.</li>
+              <li>Layoffs are hitting researchers—microskills like yours are in demand.</li>
+              <li>Our closed alpha builds a trusted network ahead of full launch.</li>
+            </ul>
+          </Col>
+        </Row>
+      </Container>
+    </section>
 
-  return (
-    <div className={s.root}>
-      {/* Navigation */}
-      <nav className={s.nav}>
-        <Container>
-          <div className={s.navContent}>
-            <div className={s.logo}>
-              <img src="/logo-header.png" alt="BioShift LabLeap" className={s.logoImage} />
-              <span className={s.logoText}>BioShift</span>
+    {/* Who We're Inviting & What You Gain */}
+    <section className={s.invitees} style={{padding: '3rem 0'}}>
+      <Container>
+        <Row className="justify-content-center mb-4">
+          <Col xs={12} lg={8} className="text-center">
+            <h2 className={s.sectionTitle}>Who We’re Inviting & What You Gain</h2>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={4} className="mb-4">
+            <div className={s.inviteeCard}>
+              <h3>🏢 Labs</h3>
+              <ul>
+                <li>Access pre‑vetted, gig-ready talent with verified skill sets</li>
+                <li>Post projects instantly and reduce hiring lag</li>
+                <li>Pay only on delivery, backed by built-in workflow and documentation support</li>
+              </ul>
             </div>
-            <div className={s.navLinks}>
-              <Link to="/login" className={s.navLink}>Sign In</Link>
-              <Link to="/register" className={s.navButton}>Get Started</Link>
+          </Col>
+          <Col md={4} className="mb-4">
+            <div className={s.inviteeCard}>
+              <h3>👩‍🔬 Workers</h3>
+              <ul>
+                <li>Showcase real science skills (certifications, tools, badges)</li>
+                <li>Find high‑impact gigs from reputable institutions</li>
+                <li>Streamline contracts, messaging, and payments—all in one place</li>
+              </ul>
             </div>
-          </div>
-        </Container>
-      </nav>
+          </Col>
+          <Col md={4} className="mb-4">
+            <div className={s.inviteeCard}>
+              <h3>🔧 Providers</h3>
+              <ul>
+                <li>Connect with active labs and researchers</li>
+                <li>Elevate your offerings with built-in distribution and engagement</li>
+                <li>Earn pilot privileges, referral rewards, and brand exposure</li>
+              </ul>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </section>
 
-      {/* Hero Section */}
-      <section className={s.hero}>
-        <div className={s.heroBackground}></div>
-        <Container>
-          <Row className="justify-content-center">
-            <Col xs={12} lg={10}>
-              <div className={`${s.heroContent} ${isVisible ? s.visible : ''}`}>
-                <div className={s.heroStatus}>
-                  <span className={s.statusIndicator}></span>
-                  <span className={s.statusText}>{heroSlides[currentSlide].accent}</span>
-                </div>
-                <h1 className={s.heroTitle}>
-                  {heroSlides[currentSlide].title}
-                </h1>
-                <p className={s.heroSubtitle}>
-                  {heroSlides[currentSlide].subtitle}
-                </p>
-                <div className={s.heroStats}>
-                  <div className={s.stat}>
-                    <span className={s.statValue}>500+</span>
-                    <span className={s.statLabel}>Active Projects</span>
-                  </div>
-                  <div className={s.stat}>
-                    <span className={s.statValue}>1,200+</span>
-                    <span className={s.statLabel}>Professionals</span>
-                  </div>
-                  <div className={s.stat}>
-                    <span className={s.statValue}>150+</span>
-                    <span className={s.statLabel}>Labs & Providers</span>
-                  </div>
-                </div>
-                <div className={s.heroAction}>
-                  <Link to="/register" className={s.primaryButton}>
-                    <span>Get Started Free</span>
-                    <div className={s.buttonGlow}></div>
-                  </Link>
-                  <Link to="/login" className={s.secondaryButton}>
-                    <span>Sign In</span>
-                  </Link>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+    {/* How It Works Section */}
+    <section className={s.howItWorks} style={{background: '#f8fafc', padding: '3rem 0'}}>
+      <Container>
+        <Row className="justify-content-center mb-4">
+          <Col xs={12} lg={8} className="text-center">
+            <h2 className={s.sectionTitle}>How It Works (Closed Alpha Flow)</h2>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col xs={12} md={10}>
+            <ol className={s.howList} style={{maxWidth: 700, margin: '0 auto', textAlign: 'left'}}>
+              <li>Apply for Invite – Choose your role and fill out a short profile</li>
+              <li>Get Matched – Labs post gigs, workers & providers apply</li>
+              <li>Onboard Easily – SOPs, protocols, and comms auto‑delivered for fast ramp-up</li>
+              <li>Deliver & Get Paid – Stripe-powered payment on completion</li>
+              <li>Feedback Loop – Earn reviews, badges, and insights to boost future success</li>
+            </ol>
+            <div className={s.howNote} style={{fontSize: '1rem', color: '#666', marginTop: 16}}>
+              <em>This flow emphasizes SOP delivery and tool documentation to cut time from hire to result.</em>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </section>
 
-      {/* User Paths Section */}
-      <section className={s.userPaths}>
-        <Container>
-          <Row className="justify-content-center mb-5">
-            <Col xs={12} lg={8}>                <div className={s.sectionHeader}>
-                <h2 className={s.sectionTitle}>Join the BioShift Community</h2>
-                <p className={s.sectionSubtitle}>
-                  Choose your path in the biotech ecosystem
-                </p>
-              </div>
-            </Col>
-          </Row>
-          <Row className="justify-content-center">
-            <Col xs={12} md={4} className="mb-4">
-              <div className={`${s.pathCard} ${s.workerPath}`}>
-                <div className={s.pathHeader}>
-                  <div className={s.pathIcon}>
-                    <div className={s.iconCore}></div>
-                  </div>
-                  <h3>Researchers & Scientists</h3>
-                  <span className={s.pathSubtitle}>Advance Your Career</span>
-                </div>
-                <div className={s.pathContent}>
-                  <p>Find exciting research opportunities and advance your career in biotechnology</p>
-                  <ul className={s.pathFeatures}>
-                    <li>• Discover contract and full-time positions</li>
-                    <li>• Connect with leading research institutions</li>
-                    <li>• Build valuable professional relationships</li>
-                    <li>• Showcase your expertise and achievements</li>
-                  </ul>
-                </div>
-                <div className={s.pathAction}>
-                  <Link to="/register/worker" className={s.pathButton}>
-                    <span>Find Research Opportunities</span>
-                    <div className={s.buttonAccent}></div>
-                  </Link>
-                </div>
-              </div>
-            </Col>
-            <Col xs={12} md={4} className="mb-4">
-              <div className={`${s.pathCard} ${s.labPath}`}>
-                <div className={s.pathHeader}>
-                  <div className={s.pathIcon}>
-                    <div className={s.iconCore}></div>
-                  </div>
-                  <h3>Research Institutions</h3>
-                  <span className={s.pathSubtitle}>Find Top Talent</span>
-                </div>
-                <div className={s.pathContent}>
-                  <p>Access a pool of qualified professionals for your research initiatives</p>
-                  <ul className={s.pathFeatures}>
-                    <li>• Post research positions and projects</li>
-                    <li>• Review qualified candidate profiles</li>
-                    <li>• Streamline your hiring process</li>
-                    <li>• Access specialized scientific expertise</li>
-                  </ul>
-                </div>
-                <div className={s.pathAction}>
-                  <Link to="/register/lab" className={s.pathButton}>
-                    <span>Post Research Positions</span>
-                    <div className={s.buttonAccent}></div>
-                  </Link>
-                </div>
-              </div>
-            </Col>
-            <Col xs={12} md={4} className="mb-4">
-              <div className={`${s.pathCard} ${s.providerPath}`}>
-                <div className={s.pathHeader}>
-                  <div className={s.pathIcon}>
-                    <div className={s.iconCore}></div>
-                  </div>
-                  <h3>Service Providers</h3>
-                  <span className={s.pathSubtitle}>Grow Your Business</span>
-                </div>
-                <div className={s.pathContent}>
-                  <p>Connect with labs and researchers who need your services</p>
-                  <ul className={s.pathFeatures}>
-                    <li>• List your specialized services</li>
-                    <li>• Connect with potential clients</li>
-                    <li>• Manage service requests</li>
-                    <li>• Expand your client base</li>
-                  </ul>
-                </div>
-                <div className={s.pathAction}>
-                  <Link to="/register/provider" className={s.pathButton}>
-                    <span>List Services</span>
-                    <div className={s.buttonAccent}></div>
-                  </Link>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+    {/* Pilot Benefits Section */}
+    <section className={s.benefits} style={{padding: '3rem 0'}}>
+      <Container>
+        <Row className="justify-content-center mb-4">
+          <Col xs={12} lg={8} className="text-center">
+            <h2 className={s.sectionTitle}>Pilot Benefits</h2>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col xs={12} md={10}>
+            <ul className={s.benefitList} style={{maxWidth: 700, margin: '0 auto', textAlign: 'left'}}>
+              <li>Shape the Future — Your feedback will directly influence product design</li>
+              <li>Priority Access — First in line for full launch, plus referral perks</li>
+              <li>Community & Credibility — Feature on our pilot landing page and early case studies</li>
+            </ul>
+          </Col>
+        </Row>
+      </Container>
+    </section>
 
-      {/* Platform Features */}
-      <section className={s.features}>
-        <Container>
-          <Row className="justify-content-center mb-5">
-            <Col xs={12} lg={8}>                <div className={s.sectionHeader}>
-                <h2 className={s.sectionTitle}>Powered by Innovation</h2>
-                <p className={s.sectionSubtitle}>
-                  Advanced tools designed for the biotech industry
-                </p>
-              </div>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={12} md={6} lg={3} className="mb-4">
-              <div className={s.featureCard}>
-                <div className={s.featureIcon}>
-                  <div className={s.iconMatrix}></div>
-                </div>
-                <h4>Smart Job Matching</h4>
-                <p>Discover opportunities that perfectly align with your skills, experience, and research interests</p>
-              </div>
-            </Col>
-            <Col xs={12} md={6} lg={3} className="mb-4">
-              <div className={s.featureCard}>
-                <div className={s.featureIcon}>
-                  <div className={s.iconMatrix}></div>
-                </div>
-                <h4>AI-Powered Insights</h4>
-                <p>Get personalized career guidance and project recommendations from our intelligent assistant</p>
-              </div>
-            </Col>
-            <Col xs={12} md={6} lg={3} className="mb-4">
-              <div className={s.featureCard}>
-                <div className={s.featureIcon}>
-                  <div className={s.iconMatrix}></div>
-                </div>
-                <h4>Professional Networking</h4>
-                <p>Connect with industry leaders, collaborators, and peers in the biotech community</p>
-              </div>
-            </Col>
-            <Col xs={12} md={6} lg={3} className="mb-4">
-              <div className={s.featureCard}>
-                <div className={s.featureIcon}>
-                  <div className={s.iconMatrix}></div>
-                </div>
-                <h4>Secure Transactions</h4>
-                <p>Safe, reliable payment processing with transparent fees and timely compensation</p>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
+    {/* FAQ Section */}
+    <section className={s.faq} style={{background: '#f8fafc', padding: '3rem 0'}}>
+      <Container>
+        <Row className="justify-content-center mb-4">
+          <Col xs={12} lg={8} className="text-center">
+            <h2 className={s.sectionTitle}>FAQ</h2>
+          </Col>
+        </Row>
+        <Row className="justify-content-center">
+          <Col xs={12} md={10}>
+            <dl className={s.faqList} style={{maxWidth: 700, margin: '0 auto', textAlign: 'left'}}>
+              <dt>Who can join?</dt>
+              <dd>Labs, scientists, and providers building out micro‑expertise pipelines.</dd>
+              <dt>What’s expected?</dt>
+              <dd>Active engagement, feedback, and project participation.</dd>
+              <dt>When does it start?</dt>
+              <dd>We're accepting pilots over the next 8–12 weeks.</dd>
+            </dl>
+          </Col>
+        </Row>
+      </Container>
+    </section>
 
-      {/* Call to Action */}
-      <section className={s.cta}>
-        <div className={s.ctaBackground}></div>
-        <Container>
-          <Row className="justify-content-center">
-            <Col xs={12} lg={8}>
-              <div className={s.ctaContent}>
-                <h2 className={s.ctaTitle}>
-                  Ready to Transform Your Biotech Career?
-                </h2>
-                <p className={s.ctaSubtitle}>
-                  Join the BioShift community and connect with opportunities that match your expertise
-                </p>
-                <div className={s.ctaActions}>
-                  <Link to="/register" className={s.ctaPrimary}>
-                    <span>Sign Up Free</span>
-                    <div className={s.ctaGlow}></div>
-                  </Link>
-                  <Link to="/login" className={s.ctaSecondary}>
-                    <span>Sign In</span>
-                  </Link>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </section>
-
-      {/* Footer */}
-      <footer className={s.footer}>
-        <Container>
-          <Row>
-            <Col xs={12}>
-              <div className={s.footerContent}>
-                <div className={s.footerLogo}>
-                  <img src="/logo-header.png" alt="BioShift" className={s.footerLogoImage} />
-                  <span>BioShift</span>
-                </div>
-                <div className={s.footerLinks}>
-                  <span>© 2025 BioShift</span>
-                  <span>•</span>
-                  <span>Powered by LabLeap Technology</span>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </Container>
-      </footer>
-    </div>
-  );
-};
+    {/* Footer CTA */}
+    <footer className={s.footer} style={{padding: '2rem 0', background: '#222', color: '#fff'}}>
+      <Container>
+        <Row className="justify-content-center">
+          <Col xs={12} lg={8} className="text-center">
+            <a href={ALPHA_FORM_URL} target="_blank" rel="noopener noreferrer" className={s.primaryButton} style={{fontSize: '1.1rem', padding: '0.7em 2em', marginBottom: 12, background: '#00cc7a'}}>
+              Request Your Closed Alpha Invite →
+            </a>
+            <div style={{fontSize: '0.95rem', color: '#bbb', marginTop: 8}}>
+              Applications reviewed weekly — limited spots available.
+            </div>
+            <div style={{marginTop: 24}}>
+              <img src="/logo-header.png" alt="BioShift" style={{maxWidth: 120, opacity: 0.7}} />
+              <div style={{marginTop: 8}}>© 2025 BioShift • Powered by LabLeap Technology</div>
+            </div>
+          </Col>
+        </Row>
+      </Container>
+    </footer>
+  </div>
+);
 
 export default LandingPage;
