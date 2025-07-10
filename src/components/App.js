@@ -86,8 +86,8 @@ class App extends React.PureComponent {
                     <AuthRoute path="/register/lab" exact component={LabRegister} />
                     {console.log('[App.js] Rendering AuthRoute for /register/provider', {component: ProviderRegister})}
                     <AuthRoute path="/register/provider" exact component={ProviderRegister} />
-                    {console.log('[App.js] Rendering UserRoute for /onboarding', {component: Onboarding, dispatch: this.props.dispatch})}
-                    <UserRoute path="/onboarding" exact dispatch={this.props.dispatch} component={Onboarding} />
+                    {console.log('[App.js] Rendering UserRoute for /onboarding', {component: Onboarding, dispatch: this.props.dispatch, currentUser: this.props.currentUser, isAuthenticated: this.props.isAuthenticated})}
+                    <UserRoute path="/onboarding" exact dispatch={this.props.dispatch} currentUser={this.props.currentUser} isAuthenticated={this.props.isAuthenticated} component={Onboarding} />
                     {console.log('[App.js] Rendering AuthRoute for /login', {component: Login})}
                     <AuthRoute path="/login" exact component={Login}/>
                     {console.log('[App.js] Rendering AuthRoute for /verify-email', {component: Verify})}
@@ -109,6 +109,7 @@ class App extends React.PureComponent {
 const mapStateToProps = store => ({
   currentUser: store.auth.currentUser,
   loadingInit: store.auth.loadingInit,
+  isAuthenticated: store.auth.isAuthenticated,
 });
 
 export default connect(mapStateToProps)(App);

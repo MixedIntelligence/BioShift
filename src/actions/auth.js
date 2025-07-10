@@ -227,19 +227,18 @@ export function receiveToken(token) {
         dispatch({
           type: LOGIN_SUCCESS
         });
-        dispatch(push('/gigs'));
     }
 }
 
 export function loginUser(creds) {
-    return (dispatch) => {
+    return async (dispatch) => {
       localStorage.setItem("dashboardTheme", 'dark')
       localStorage.setItem('navbarColor', '#fff')
       localStorage.setItem('navbarType', 'static')
       
       if (!config.isBackend) {
         dispatch(receiveToken('token'));
-        dispatch(doInit());
+        await dispatch(doInit());
         dispatch(push('/gigs'));
       } else {
         dispatch({
@@ -257,65 +256,64 @@ export function loginUser(creds) {
           localStorage.removeItem('user');
           delete axios.defaults.headers.common['Authorization'];
           
-          axios.post("/auth/login", creds)
-            .then(res => {
-              console.log('✅ Login successful:', res.data);
-              const { token } = res.data;
-              if (!token) {
-                throw new Error('No token received from server');
+          try {
+            const res = await axios.post("/auth/login", creds);
+            console.log('✅ Login successful:', res.data);
+            const { token } = res.data;
+            if (!token) {
+              throw new Error('No token received from server');
+            }
+            
+            // Validate token format before storing
+            try {
+              const tokenParts = token.split('.');
+              if (tokenParts.length !== 3) {
+                throw new Error('Invalid JWT format received from server');
               }
-              
-              // Validate token format before storing
-              try {
-                const tokenParts = token.split('.');
-                if (tokenParts.length !== 3) {
-                  throw new Error('Invalid JWT format received from server');
-                }
-                // Test decode to ensure it's valid
-                let base64 = tokenParts[1];
-                while (base64.length % 4) {
-                  base64 += '=';
-                }
-                JSON.parse(atob(base64));
-              } catch (tokenValidationError) {
-                console.error('❌ Invalid token format from server:', tokenValidationError);
-                throw new Error('Invalid token format received from server');
+              // Test decode to ensure it's valid
+              let base64 = tokenParts[1];
+              while (base64.length % 4) {
+                base64 += '=';
               }
-              
-              dispatch(receiveToken(token));
-              dispatch(doInit());
-              dispatch(push('/gigs'));
-            })
-            .catch(err => {
-              console.log('❌ Login failed:', err);
-              console.log('Response data:', err.response?.data);
-              console.log('Response status:', err.response?.status);
-              
-              let errorMessage = 'Login failed';
-              if (err.response?.data?.error) {
-                errorMessage = err.response.data.error;
-              } else if (err.response?.data?.message) {
-                errorMessage = err.response.data.message;
-              } else if (err.response?.data) {
-                errorMessage = typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data);
-              } else if (err.message) {
-                errorMessage = err.message;
-              }
-              
-              // Add specific error messages for common issues
-              if (err.response?.status === 401) {
-                errorMessage = 'Invalid email or password';
-              } else if (err.response?.status === 404) {
-                errorMessage = 'Login service not found. Please check if the server is running.';
-              } else if (err.response?.status === 500) {
-                errorMessage = 'Server error. Please try again later.';
-              } else if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
-                errorMessage = 'Cannot connect to server. Please check if the backend is running.';
-              }
-              
-              dispatch(authError(errorMessage));
-              toast.error(errorMessage);
-            });
+              JSON.parse(atob(base64));
+            } catch (tokenValidationError) {
+              console.error('❌ Invalid token format from server:', tokenValidationError);
+              throw new Error('Invalid token format received from server');
+            }
+            
+            dispatch(receiveToken(token));
+            await dispatch(doInit());
+            dispatch(push('/gigs'));
+          } catch (err) {
+            console.log('❌ Login failed:', err);
+            console.log('Response data:', err.response?.data);
+            console.log('Response status:', err.response?.status);
+            
+            let errorMessage = 'Login failed';
+            if (err.response?.data?.error) {
+              errorMessage = err.response.data.error;
+            } else if (err.response?.data?.message) {
+              errorMessage = err.response.data.message;
+            } else if (err.response?.data) {
+              errorMessage = typeof err.response.data === 'string' ? err.response.data : JSON.stringify(err.response.data);
+            } else if (err.message) {
+              errorMessage = err.message;
+            }
+            
+            // Add specific error messages for common issues
+            if (err.response?.status === 401) {
+              errorMessage = 'Invalid email or password';
+            } else if (err.response?.status === 404) {
+              errorMessage = 'Login service not found. Please check if the server is running.';
+            } else if (err.response?.status === 500) {
+              errorMessage = 'Server error. Please try again later.';
+            } else if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+              errorMessage = 'Cannot connect to server. Please check if the backend is running.';
+            }
+            
+            dispatch(authError(errorMessage));
+            toast.error(errorMessage);
+          }
         } else {
           const errorMessage = 'Please enter both email and password';
           dispatch(authError(errorMessage));

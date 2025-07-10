@@ -14,12 +14,9 @@ export const AdminRoute = ({currentUser, dispatch, component, ...rest}) => {
   }
 };
 
-export const UserRoute = ({dispatch, component, ...rest}) => {
-  const token = localStorage.getItem('token');
-  const isAuthenticated = Login.isAuthenticated(token);
-  const user = (window.store && window.store.getState && window.store.getState().auth && window.store.getState().auth.currentUser) || null;
-  console.log('[UserRoute] user:', user, 'isAuthenticated:', isAuthenticated, 'component:', component, 'rest:', rest);
-  if (!isAuthenticated || !user) {
+export const UserRoute = ({currentUser, isAuthenticated, dispatch, component, ...rest}) => {
+  console.log('[UserRoute] currentUser:', currentUser, 'isAuthenticated:', isAuthenticated, 'component:', component, 'rest:', rest);
+  if (!isAuthenticated || !currentUser) {
     console.log('[UserRoute] Redirecting to /login');
     return (<Redirect to="/login"/>);
   } else {
