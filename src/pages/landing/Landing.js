@@ -1,6 +1,10 @@
 import React from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import s from './Landing.module.scss';
+import LinkedinIcon from '../../images/basil-icons/svg/Solid/Brands/Linkedin.svg';
+import InstagramIcon from '../../images/basil-icons/svg/Solid/Brands/Instagram.svg';
+import TikTokIcon from '../../images/basil-icons/svg/Solid/Brands/tiktok.svg';
+import BlueskyIcon from '../../images/basil-icons/svg/Solid/Brands/Bluesky_Logo.svg';
 
 const ALPHA_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLScbXp-DxHb5zciyepNsM-LLfIVRWHbKsaFj1TFrXcODVMNGug/viewform?usp=dialog";
 
@@ -165,8 +169,25 @@ const LandingPage = () => (
               Applications reviewed weekly — limited spots available.
             </div>
             <div style={{marginTop: 24}}>
-              <img src="/logo-header.png" alt="BioShift" style={{maxWidth: 120, opacity: 0.7}} />
+              <img src="https://i.imgur.com/ALEL90c.png" alt="BioShift" style={{maxWidth: 120, opacity: 0.7}} />
               <div style={{marginTop: 8}}>© 2025 BioShift • Powered by LabLeap Technology</div>
+              <div style={{marginTop: 8, fontSize: '0.95rem'}}>
+                <a href="mailto:bioshiftgigs@gmail.com" style={{color: '#00ff99', textDecoration: 'underline'}}>bioshiftgigs@gmail.com</a>
+              </div>
+              <div style={{marginTop: 12, fontSize: '1.5rem', display: 'flex', justifyContent: 'center', gap: '18px'}}>
+                <a href="https://www.linkedin.com/company/bioshiftgigs" target="_blank" rel="noopener noreferrer" title="LinkedIn">
+                  <img src={LinkedinIcon} alt="LinkedIn" style={{height: 28, width: 28, verticalAlign: 'middle'}} />
+                </a>
+                <a href="https://www.instagram.com/bioshiftgigs/" target="_blank" rel="noopener noreferrer" title="Instagram">
+                  <img src={InstagramIcon} alt="Instagram" style={{height: 28, width: 28, verticalAlign: 'middle'}} />
+                </a>
+                <a href="https://www.tiktok.com/@bioshiftgigs" target="_blank" rel="noopener noreferrer" title="TikTok">
+                  <img src={TikTokIcon} alt="TikTok" style={{height: 28, width: 28, verticalAlign: 'middle'}} />
+                </a>
+                <a href="https://bsky.app/profile/bioshift.bsky.social" target="_blank" rel="noopener noreferrer" title="Bluesky">
+                  <img src={BlueskyIcon} alt="Bluesky" style={{height: 28, width: 28, verticalAlign: 'middle'}} />
+                </a>
+              </div>
             </div>
           </Col>
         </Row>
