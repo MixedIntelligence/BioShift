@@ -11,7 +11,7 @@ const LandingPage = () => (
       <Container>
         <Row className="justify-content-center">
           <Col xs={12} lg={10} className="text-center">
-            <img src="/logo-header.png" alt="LabLeap by BioShift" className={s.logoImage} style={{maxWidth: 180, marginBottom: 24}} />
+            <img src="https://i.imgur.com/ALEL90c.png" alt="LabLeap by BioShift" className={s.logoImage} style={{maxWidth: 180, marginBottom: 24}} />
             <h1 className={s.heroTitle} style={{fontWeight: 700, fontSize: '2.5rem'}}>
               LabLeap by BioShift: Closed Alpha – Apply for Early Access
             </h1>
