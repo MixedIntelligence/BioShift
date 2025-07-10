@@ -84,19 +84,20 @@ class Sidebar extends React.Component {
         className={s.root}
       >
         <header className={s.logo}>
-          <a href="/app/main/dashboard"><span className={s.logoStyle}>BioShift <span className={s.logoPart}></span></span></a>
+          {/* Changed logo link from /app/main/dashboard to /app/gigs to avoid broken dashboard route. Restore if dashboard is fixed. */}
+          <a href="/app/gigs"><span className={s.logoStyle}>BioShift <span className={s.logoPart}></span></span></a>
         </header>
         <ul className={s.nav}>
           <h5 className={s.navTitle}>BioShift</h5>
-          {/* Dashboard is visible to all roles */}
-          <LinksGroup
+          {/* Dashboard link removed due to persistent blank page and route issues. Restore if dashboard is fixed. */}
+          {/* <LinksGroup
             header="Dashboard"
             iconElement={<Home />}
             link="/app/main"
             isHeader
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
-          />
+          /> */}
           {/* Profile section for all roles */}
           <LinksGroup
             header="Profile"

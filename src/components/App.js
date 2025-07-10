@@ -97,7 +97,8 @@ class App extends React.PureComponent {
                     {console.log('[App.js] Rendering AuthRoute for /forgot', {component: Forgot})}
                     <AuthRoute path="/forgot" exact component={Forgot}/>
                     <Route path="/error" exact component={ErrorPage}/>
-                    <Redirect from="*" to="/app/main/analytics"/>
+                    {/* Default catch-all redirect updated from /app/main/analytics to /app/gigs due to dashboard issues. Restore if dashboard is fixed. */}
+                    <Redirect from="*" to="/app/gigs"/>
                 </Switch>
           </ConnectedRouter>
       </div>
