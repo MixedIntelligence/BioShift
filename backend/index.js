@@ -1,6 +1,7 @@
 require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 
@@ -60,9 +61,6 @@ app.use('/api/connect', connectRoutes);
 const offeringsRoutes = require('./routes/offerings');
 app.use('/api/offerings', offeringsRoutes);
 
-const bankAccountsRoutes = require('./routes/bank_accounts');
-app.use('/api/bank_accounts', bankAccountsRoutes);
-
 const agreementsRoutes = require('./routes/agreements');
 app.use('/api/agreements', agreementsRoutes);
 
@@ -79,6 +77,14 @@ const inboxRoutes = require('./routes/inbox');
 app.use('/api/inbox', inboxRoutes);
 
 // TODO: Add bionics and integration routes
+
+// Serve static files from the React app build (for production)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../build')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build/index.html'));
+  });
+}
 
 // Only start the server if this file is run directly
 if (require.main === module) {

@@ -1,7 +1,7 @@
 // Backend API configuration
 const isDevelopment = process.env.NODE_ENV === "development";
 const backendUrl = process.env.REACT_APP_BACKEND_URL || 
-  (isDevelopment ? "http://localhost:8080" : "https://bioshift-production.up.railway.app");
+  (isDevelopment ? "http://localhost:5000" : "https://bioshift-production.up.railway.app");
 
 const hostApi = backendUrl;
 const baseURLApi = `${backendUrl}/api`;

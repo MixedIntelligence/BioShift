@@ -8,3 +8,15 @@
 @import '~bootstrap/scss/mixins';
 @import 'mixins';
 
+:root {
+  --sidebar-bg-color: #3d3d3d;
+  --sidebar-color: #fff;
+}
+
+body {
+  font-family: $font-family-base;
+  font-size: 16px;
+  background: $body-bg;
+  color: $body-color;
+}
+

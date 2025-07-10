@@ -1,3 +1,7 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+import './styles/app.scss';
+import './styles/theme.scss';
+
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import {routerMiddleware} from 'connected-react-router';

@@ -207,9 +207,8 @@ export function logoutUser() {
 }
 
 export function receiveToken(token) {
-    return (dispatch) => {
+    return async (dispatch) => {
         let user;
-
         if (config.isBackend) {
           user = jwt.decode(token)
         } else {
@@ -220,13 +219,11 @@ export function receiveToken(token) {
             }
           }
         }
-
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
         axios.defaults.headers.common['Authorization'] = "Bearer " + token;
-        dispatch({
-          type: LOGIN_SUCCESS
-        });
+        // Instead of dispatching LOGIN_SUCCESS or AUTH_INIT_SUCCESS directly, call doInit
+        await dispatch(doInit());
         dispatch(push('/gigs'));
     }
 }

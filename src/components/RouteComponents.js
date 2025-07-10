@@ -1,5 +1,5 @@
 import Login from '../pages/login/Login';
-import { Redirect, Route } from 'react-router';
+import { Redirect, Route } from 'react-router-dom';
 import React from 'react';
 
 export const AdminRoute = ({currentUser, dispatch, component, ...rest}) => {
@@ -14,18 +14,66 @@ export const AdminRoute = ({currentUser, dispatch, component, ...rest}) => {
   }
 };
 
-export const UserRoute = ({dispatch, component, ...rest}) => {
+export function UserRoute({dispatch, component, currentUser, loadingInit, isAuthenticated, ...rest}) {
   const token = localStorage.getItem('token');
-  const isAuthenticated = Login.isAuthenticated(token);
-  const user = (window.store && window.store.getState && window.store.getState().auth && window.store.getState().auth.currentUser) || null;
-  console.log('[UserRoute] user:', user, 'isAuthenticated:', isAuthenticated, 'component:', component, 'rest:', rest);
+  const user = currentUser;
+  const currentPath = (rest && rest.location && rest.location.pathname) || window.location.pathname;
+  console.log('[UserRoute] user:', user, 'isAuthenticated:', isAuthenticated, 'component:', component, 'rest:', rest, 'currentPath:', currentPath, 'loadingInit:', loadingInit);
+
+  // Error boundary/fallback UI
+  if (typeof component !== 'function') {
+    return (
+      <div style={{color: 'red', padding: 20}}>
+        [UserRoute Error] Invalid component provided. Please check route configuration.
+      </div>
+    );
+  }
+
+  // Block redirect logic until Redux auth state is initialized
+  if (loadingInit) {
+    return (
+      <div style={{color: 'gray', padding: 20}}>
+        [UserRoute] Initializing authentication state... Please wait.
+      </div>
+    );
+  }
+
+  // Prevent infinite redirect loop
   if (!isAuthenticated || !user) {
-    console.log('[UserRoute] Redirecting to /login');
-    return (<Redirect to="/login"/>);
+    if (currentPath !== '/login') {
+      console.log('[UserRoute] Redirecting to /login');
+      return (
+        <>
+          <Redirect to="/login" />
+          <div style={{color: 'red', padding: 20}}>
+            [UserRoute] Not authenticated. Redirecting to login...<br />
+            If you see this message, authentication state is missing or invalid.<br />
+            Redux user: {JSON.stringify(user)}<br />
+            Token: {token ? 'present' : 'absent'}
+          </div>
+        </>
+      );
+    } else {
+      return (
+        <div style={{color: 'red', padding: 20}}>
+          [UserRoute] Not authenticated and already on /login. Redux user: {JSON.stringify(user)}
+        </div>
+      );
+    }
   } else {
-    const el = <Route {...rest} render={props => (React.createElement(component, props))}/>;
-    console.log('[UserRoute] Rendering Route:', el);
-    return el;
+    try {
+      const el = <Route {...rest} render={props => (React.createElement(component, props))}/>;
+      console.log('[UserRoute] Rendering Route:', el);
+      return el;
+    } catch (err) {
+      console.error('[UserRoute] Render error:', err);
+      return (
+        <div style={{color: 'red', padding: 20}}>
+          [UserRoute Error] Failed to render protected route.<br />
+          {err && err.message}
+        </div>
+      );
+    }
   }
 };
 

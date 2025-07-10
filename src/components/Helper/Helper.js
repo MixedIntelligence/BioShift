@@ -84,10 +84,15 @@ class Helper extends Component {
     });
   };
 
-  changeTheme = (state) => {
-    localStorage.setItem("dashboardTheme", state)
-    this.props.dispatch(changeTheme(state));
-    this.props.dispatch(changeSidebarColor(state))
+  setSidebarBgColor = (colorValue) => {
+    document.body.style.setProperty('--sidebar-bg-color', colorValue);
+  };
+
+  changeTheme = (colorValue) => {
+    localStorage.setItem("dashboardTheme", colorValue)
+    this.props.dispatch(changeTheme(colorValue));
+    this.props.dispatch(changeSidebarColor(colorValue))
+    this.setSidebarBgColor(colorValue);
   };
 
   navbarStateToggle = (state) => {

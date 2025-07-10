@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Switch, Route, withRouter, Redirect } from 'react-router';
+import { Switch, Route, withRouter, Redirect } from 'react-router-dom';
 import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import Hammer from 'rc-hammerjs';
 
@@ -136,6 +136,7 @@ class Layout extends React.Component {
 
   render() {
     console.log('Layout currentUser:', this.props.currentUser);
+    console.log('Layout location:', this.props.location);
     return (
       <div
         className={[
@@ -162,9 +163,6 @@ class Layout extends React.Component {
                   timeout={200}
                 >
                   <Switch>
-                    {/* <Route path="/app/main" exact render={() => <Redirect to="/app/gigs" />} /> */}
-                    {/* <Route path="/app/main/dashboard" exact render={() => <Redirect to="/app/gigs" />} /> */}
-                    <Route path="/app/gigs" exact render={() => <div>Gigs Test</div>} />
                     <Route path="/app/gigs" exact component={GigsListPage} />
                     <Route path="/app/gigs/edit/:id" exact component={EditGigPage} />
                     <Route path="/app/gigs/:id/applicants" exact component={MyApplicants} />
@@ -189,6 +187,13 @@ class Layout extends React.Component {
                     <Route path="/app/offerings/:id" exact component={Offering} />
                     <Route path="/app/offerings" exact component={Offerings} />
                     <Route path="/app/profile/:userId" exact component={PublicProfilePage} />
+                    {/* Fallback for unmatched routes */}
+                    <Route render={() => (
+                      <div style={{color: 'red', padding: 20}}>
+                        [Layout] No route matched. Path: {this.props.location && this.props.location.pathname}
+                        <br />Props: {JSON.stringify(this.props)}
+                      </div>
+                    )} />
                   </Switch>
                 </CSSTransition>
               </TransitionGroup>

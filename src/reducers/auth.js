@@ -26,6 +26,8 @@ export default function auth(state = {
               isFetching: false,
               errorMessage: '',
               isAuthenticated: true,
+              currentUser: payload && payload.currentUser ? payload.currentUser : state.currentUser,
+              loadingInit: false,
           });
       case LOGOUT_SUCCESS:
       case RESET_SUCCESS:
@@ -34,12 +36,14 @@ export default function auth(state = {
               isFetching: false,
               errorMessage: '',
               isAuthenticated: false,
+              currentUser: null,
           });
       case AUTH_FAILURE:
           return Object.assign({}, state, {
               isFetching: false,
               errorMessage: payload.error || payload,
               isAuthenticated: false,
+              currentUser: null,
           });
       case AUTH_INIT_SUCCESS:
           return Object.assign({}, state, {
