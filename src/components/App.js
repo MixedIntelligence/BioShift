@@ -69,8 +69,7 @@ class App extends React.PureComponent {
           />
           <ConnectedRouter history={getHistory()}>
                 <Switch>
-                    {/* /app/gigs now renders the real GigsListPage instead of a placeholder. */}
-                    <Route path="/app/gigs" exact component={GigsListPage} />
+                    {/* Removed direct /app/gigs route from App.js. All /app routes are now handled by LayoutComponent, which includes sidebar and navigation. */}
                     <Route path="/" exact component={Landing} />
                     {/* <Route path="/app" exact render={() => <Redirect to="/app/main"/>}/> */}
                     {/* <UserRoute path="/app" dispatch={this.props.dispatch} component={LayoutComponent}/> */}
