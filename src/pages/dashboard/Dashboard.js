@@ -62,6 +62,8 @@ class Dashboard extends React.Component {
   }
 
   render() {
+    // TODO: Replace with real gig data logic. This is a static/mock value to prevent ReferenceError.
+    const hasGigs = false;
     // Debug: log props and state
     console.log('Dashboard props:', this.props);
     console.log('Dashboard state:', this.state);

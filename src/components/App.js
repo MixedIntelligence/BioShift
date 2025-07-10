@@ -36,14 +36,7 @@ class App extends React.PureComponent {
       loadingInit: this.props.loadingInit,
       token: localStorage.getItem('token')
     });
-    // Defensive: If user or token is missing, redirect to login
-    const token = localStorage.getItem('token');
-    if (!token || !this.props.currentUser) {
-      if (!this.props.loadingInit) {
-        console.log('[App.js] Redirecting to /login', { token, currentUser: this.props.currentUser });
-        return <Redirect to="/login" />;
-      }
-    }
+    // Only render router after auth state is initialized
     if (this.props.loadingInit) {
       console.log('[App.js] Loading init...');
       return (
@@ -64,7 +57,7 @@ class App extends React.PureComponent {
         </div>
       );
     }
-
+    // Only render the router after loadingInit is false
     return (
       <ErrorBoundary>
         <div>

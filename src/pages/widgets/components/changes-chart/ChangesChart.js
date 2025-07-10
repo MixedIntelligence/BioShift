@@ -1,17 +1,17 @@
 import React from 'react';
 import * as d3 from 'd3';
-if (typeof window !== 'undefined') {
-  window.d3 = d3;
-}
 import Rickshaw from 'rickshaw';
 import { connect } from 'react-redux';
 import {
   Row, Col,
 } from 'reactstrap';
-
 import Sparklines from '../../../../components/Sparklines';
 import s from './ChangesChart.module.scss';
-import config from '../../../../config'
+import config from '../../../../config';
+
+if (typeof window !== 'undefined') {
+  window.d3 = d3;
+}
 
 class ChangesChart extends React.Component {
 

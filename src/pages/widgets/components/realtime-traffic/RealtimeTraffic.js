@@ -3,12 +3,13 @@ import {
   Progress,
 } from 'reactstrap';
 import * as d3 from 'd3';
+import Rickshaw from 'rickshaw';
+import { connect } from 'react-redux';
+import config from '../../../../config';
+
 if (typeof window !== 'undefined') {
   window.d3 = d3;
 }
-import Rickshaw from 'rickshaw';
-import { connect } from 'react-redux';
-import config from '../../../../config'
 
 class RealtimeTraffic extends React.Component {
   state = { graph: null }
