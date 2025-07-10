@@ -1,11 +1,11 @@
-# BLANK PAGE POSTMORTEM
+# BLANK PAGE BIBLE
 
-## Overview
-This document details the root causes, diagnostic steps, and solutions for the persistent blank page issue encountered in the BioMVP (LabLeap) React/Redux application, especially after login or when navigating via sidebar links.
+## Purpose
+This document is a permanent, living diagnostic and solution guide for all blank page issues in the BioMVP (LabLeap) React/Redux application. It is intended to be the single source of truth for troubleshooting, root cause analysis, and permanent fixes for blank page and navigation failures.
 
 ---
 
-## Root Cause(s)
+## Common Root Causes
 
 ### 1. Race Condition in Authentication Initialization
 - **Symptom:** Blank page after login or on protected routes.

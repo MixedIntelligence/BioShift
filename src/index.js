@@ -37,20 +37,29 @@ export const store = createStore(
   )
 );
 
-// Initialize auth state - wrapped in try-catch to prevent app crashes
-try {
-  store.dispatch(doInit());
-} catch (error) {
-  console.error('Error during app initialization:', error);
-}
-
-const container = document.getElementById('root');
-const root = createRoot(container);
-root.render(
+const renderApp = () => {
+  const container = document.getElementById('root');
+  const root = createRoot(container);
+  root.render(
     <Provider store={store}>
-        <App />
+      <App />
     </Provider>
-);
+  );
+};
+
+// Wrap the initialization in an async function to wait for completion
+const initializeApp = async () => {
+  try {
+    await store.dispatch(doInit());
+    renderApp();
+  } catch (error) {
+    console.error('Error during app initialization:', error);
+    // Optionally render an error state
+    renderApp();
+  }
+};
+
+initializeApp();
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
