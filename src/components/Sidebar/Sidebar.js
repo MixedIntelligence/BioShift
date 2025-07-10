@@ -89,15 +89,15 @@ class Sidebar extends React.Component {
         </header>
         <ul className={s.nav}>
           <h5 className={s.navTitle}>BioShift</h5>
-          {/* Dashboard link removed due to persistent blank page and route issues. Restore if dashboard is fixed. */}
-          {/* <LinksGroup
+          {/* Dashboard link restored for sidebar structure. Remove or update if needed, but do not leave sidebar empty. */}
+          <LinksGroup
             header="Dashboard"
             iconElement={<Home />}
             link="/app/main"
             isHeader
             onActiveSidebarItemChange={activeItem => this.props.dispatch(changeActiveSidebarItem(activeItem))}
             activeItem={this.props.activeItem}
-          /> */}
+          />
           {/* Profile section for all roles */}
           <LinksGroup
             header="Profile"
