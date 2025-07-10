@@ -164,10 +164,12 @@ class Layout extends React.Component {
                   <Switch>
                     {/* <Route path="/app/main" exact render={() => <Redirect to="/app/gigs" />} /> */}
                     {/* <Route path="/app/main/dashboard" exact render={() => <Redirect to="/app/gigs" />} /> */}
-                    <Route path="/app/gigs" exact render={() => <div>Gigs Test</div>} />
+                    <Route path="/app/profile" exact component={Profile} />
                     <Route path="/app/gigs" exact component={GigsListPage} />
                     <Route path="/app/gigs/edit/:id" exact component={EditGigPage} />
                     <Route path="/app/gigs/:id/applicants" exact component={MyApplicants} />
+                    <Route path="/app/chat" exact component={ChatPage} />
+                    <Route path="/app/inbox" exact component={Email} />
                     <Route path="/app/gigs/:id" exact component={GigDetailsPage} />
                     <Route path="/app/my-gigs" exact component={MyGigsPage} />
                     <Route path="/app/my-applications" exact component={MyApplications} />
