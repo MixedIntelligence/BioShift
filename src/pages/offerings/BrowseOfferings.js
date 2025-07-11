@@ -68,12 +68,12 @@ const BrowseOfferings = ({ currentUser }) => {
   };
 
   // Check if user has access
-  if (!currentUser || !['Lab', 'Worker'].includes(currentUser.role)) {
+  if (!currentUser) {
     return (
       <Container className="mt-4">
         <Alert color="warning">
           <h4>Access Restricted</h4>
-          <p>Only Lab and Worker accounts can browse offerings. Please contact your administrator if you believe this is an error.</p>
+          <p>You must be logged in to browse offerings.</p>
         </Alert>
       </Container>
     );

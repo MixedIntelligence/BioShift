@@ -85,6 +85,7 @@ import Offering from '../../pages/offerings/Offering';
 import PostOfferingPage from '../../pages/offerings/PostOfferingPageNew';
 import PublicProfilePage from '../../pages/profile/PublicProfilePage';
 import Dashboard from '../../pages/dashboard/Dashboard';
+import CreateOfferingPage from '../../pages/offerings/CreateOfferingPage';
 
 class Layout extends React.Component {
   static propTypes = {
@@ -184,13 +185,14 @@ class Layout extends React.Component {
                     <Route path="/app/patents" exact component={Patents} />
                     <Route path="/app/bionics" exact component={Bionics} />
                     <Route path="/app/connect" exact component={Connect} />
-                    <Route path="/app/offerings/create" exact component={PostOfferingPage} />
+                    <Route path="/app/offerings/create" exact component={CreateOfferingPage} />
                     <Route path="/app/offerings/:id" exact component={Offering} />
-                    <Route path="/app/offerings" exact component={Offerings} />
+                    <Route path="/app/offerings/my-offerings" exact component={require('../../pages/offerings/ManageOfferings').default} />
+                    <Route path="/app/offerings" exact component={require('../../pages/offerings/BrowseOfferings').default} />
                     <Route path="/app/profile" exact component={Profile} />
                     <Route path="/app/edit_profile" exact component={Profile} />
                     <Route path="/app/chat" exact component={ChatPage} />
-                    <Route path="/app/inbox" exact component={require('../components/Notifications/notifications-demo/Messages').default} />
+                    <Route path="/app/inbox" exact component={require('../../components/Notifications/notifications-demo/Messages2').default} />
                     <Route path="/app/profile/:userId" exact component={PublicProfilePage} />
                   </Switch>
                 </CSSTransition>

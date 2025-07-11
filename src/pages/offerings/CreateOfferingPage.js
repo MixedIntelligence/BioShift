@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
-import { 
-  Container, Card, CardBody, CardTitle, Form, FormGroup, Label, Input, Button, 
-  Alert, Row, Col, Badge, InputGroup, InputGroupText 
-} from 'reactstrap';
+import { Container, Card, CardBody, CardTitle, Form, FormGroup, Label, Input, Button, Alert, Row, Col, Badge, InputGroup, InputGroupText } from 'reactstrap';
 import { FaPlus, FaArrowLeft, FaImage, FaLink, FaDollarSign } from 'react-icons/fa';
 import { useHistory } from 'react-router-dom';
 import api from '../../services/api';
@@ -16,12 +12,12 @@ const initialState = {
   offering_type: 'SERVICE',
   category: '',
   pricing_model: 'FIXED',
-  price: 0, // Default to number
-  rating: 0, // Default to number
+  price: 0,
+  rating: 0,
   url: '',
 };
 
-const PostOfferingPage = ({ currentUser }) => {
+const CreateOfferingPage = () => {
   const [form, setForm] = useState(initialState);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState(null);
@@ -37,15 +33,12 @@ const PostOfferingPage = ({ currentUser }) => {
     e.preventDefault();
     setLoading(true);
     try {
-      // Ensure price and rating are numbers, and price is 0 for FREE
       const price = form.pricing_model === 'FREE' ? 0 : Number(form.price) || 0;
       const payload = { ...form, price, rating: Number(form.rating) || 0 };
       await api.createOffering(payload);
       setSubmitted(true);
       setError(null);
       setForm(initialState);
-      
-      // Redirect to manage offerings after 2 seconds
       setTimeout(() => {
         history.push('/app/offerings');
       }, 2000);
@@ -67,17 +60,6 @@ const PostOfferingPage = ({ currentUser }) => {
     }
   };
 
-  if (!currentUser || currentUser.role !== 'Provider') {
-    return (
-      <Container className="mt-4">
-        <Alert color="warning">
-          <h4>Access Restricted</h4>
-          <p>Only Provider accounts can create offerings. Please contact your administrator if you believe this is an error.</p>
-        </Alert>
-      </Container>
-    );
-  }
-
   const previewPrice = form.pricing_model === 'FREE' ? 0 : Number(form.price) || 0;
 
   return (
@@ -91,10 +73,7 @@ const PostOfferingPage = ({ currentUser }) => {
                   <FaPlus className="me-2" />
                   Create New Offering
                 </CardTitle>
-                <Button 
-                  color="outline-secondary" 
-                  onClick={() => history.push('/app/offerings')}
-                >
+                <Button color="outline-secondary" onClick={() => history.push('/app/offerings')}>
                   <FaArrowLeft className="me-1" />
                   Back to Offerings
                 </Button>
@@ -118,26 +97,13 @@ const PostOfferingPage = ({ currentUser }) => {
                   <Col md={8}>
                     <FormGroup>
                       <Label for="title">Title *</Label>
-                      <Input 
-                        name="title" 
-                        id="title" 
-                        value={form.title} 
-                        onChange={handleChange} 
-                        required 
-                        placeholder="Enter a clear, descriptive title"
-                      />
+                      <Input name="title" id="title" value={form.title} onChange={handleChange} required placeholder="Enter a clear, descriptive title" />
                     </FormGroup>
                   </Col>
                   <Col md={4}>
                     <FormGroup>
                       <Label for="offering_type">Type *</Label>
-                      <Input 
-                        type="select" 
-                        name="offering_type" 
-                        id="offering_type" 
-                        value={form.offering_type} 
-                        onChange={handleChange}
-                      >
+                      <Input type="select" name="offering_type" id="offering_type" value={form.offering_type} onChange={handleChange}>
                         <option value="SERVICE">Service</option>
                         <option value="EQUIPMENT">Equipment</option>
                         <option value="SOFTWARE">Software</option>
@@ -146,82 +112,21 @@ const PostOfferingPage = ({ currentUser }) => {
                     </FormGroup>
                   </Col>
                 </Row>
-                
                 <FormGroup>
                   <Label for="subtitle">Subtitle</Label>
-                  <Input 
-                    name="subtitle" 
-                    id="subtitle" 
-                    value={form.subtitle} 
-                    onChange={handleChange} 
-                    placeholder="Brief tagline or summary"
-                  />
+                  <Input name="subtitle" id="subtitle" value={form.subtitle} onChange={handleChange} placeholder="Brief tagline or summary" />
                 </FormGroup>
-
                 <FormGroup>
                   <Label for="description">Description</Label>
-                  <Input 
-                    type="textarea" 
-                    name="description" 
-                    id="description" 
-                    value={form.description} 
-                    onChange={handleChange} 
-                    rows={4}
-                    placeholder="Detailed description of your offering..."
-                  />
+                  <Input type="textarea" name="description" id="description" value={form.description} onChange={handleChange} placeholder="Describe your offering in detail" />
                 </FormGroup>
-
-                <Row>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label for="category">Category</Label>
-                      <Input 
-                        name="category" 
-                        id="category" 
-                        value={form.category} 
-                        onChange={handleChange} 
-                        placeholder="e.g., Lab Equipment, Data Analysis, Training"
-                      />
-                    </FormGroup>
-                  </Col>
-                  <Col md={6}>
-                    <FormGroup>
-                      <Label for="pricing_model">Pricing Model *</Label>
-                      <Input 
-                        type="select" 
-                        name="pricing_model" 
-                        id="pricing_model" 
-                        value={form.pricing_model} 
-                        onChange={handleChange}
-                      >
-                        <option value="FIXED">Fixed Price</option>
-                        <option value="SUBSCRIPTION">Subscription</option>
-                        <option value="PER_USE">Pay Per Use</option>
-                        <option value="FREE">Free</option>
-                      </Input>
-                    </FormGroup>
-                  </Col>
-                </Row>
-
                 <Row>
                   <Col md={6}>
                     <FormGroup>
                       <Label for="price">Price</Label>
                       <InputGroup>
-                        <InputGroupText>
-                          <FaDollarSign />
-                        </InputGroupText>
-                        <Input 
-                          type="number" 
-                          name="price" 
-                          id="price" 
-                          value={form.price} 
-                          onChange={handleChange} 
-                          min="0"
-                          step="0.01"
-                          disabled={form.pricing_model === 'FREE'}
-                          placeholder={form.pricing_model === 'FREE' ? 'Free' : '0.00'}
-                        />
+                        <InputGroupText><FaDollarSign /></InputGroupText>
+                        <Input type="number" name="price" id="price" value={form.price} onChange={handleChange} min="0" step="0.01" disabled={form.pricing_model === 'FREE'} placeholder={form.pricing_model === 'FREE' ? 'Free' : '0.00'} />
                       </InputGroup>
                     </FormGroup>
                   </Col>
@@ -229,46 +134,26 @@ const PostOfferingPage = ({ currentUser }) => {
                     <FormGroup>
                       <Label for="img">Image URL</Label>
                       <InputGroup>
-                        <InputGroupText>
-                          <FaImage />
-                        </InputGroupText>
-                        <Input 
-                          name="img" 
-                          id="img" 
-                          value={form.img} 
-                          onChange={handleChange} 
-                          placeholder="https://... (optional)"
-                        />
+                        <InputGroupText><FaImage /></InputGroupText>
+                        <Input name="img" id="img" value={form.img} onChange={handleChange} placeholder="https://... (optional)" />
                       </InputGroup>
                     </FormGroup>
                   </Col>
                 </Row>
-
                 <FormGroup>
                   <Label for="url">Website URL</Label>
                   <InputGroup>
-                    <InputGroupText>
-                      <FaLink />
-                    </InputGroupText>
-                    <Input 
-                      name="url" 
-                      id="url" 
-                      value={form.url} 
-                      onChange={handleChange} 
-                      placeholder="https://..."
-                    />
+                    <InputGroupText><FaLink /></InputGroupText>
+                    <Input name="url" id="url" value={form.url} onChange={handleChange} placeholder="https://..." />
                   </InputGroup>
                 </FormGroup>
-
                 {/* Preview */}
                 <Card color="light" className="mb-4">
                   <CardBody>
                     <h5 className="mb-3">Preview</h5>
-                    <div className="p-3 border rounded offering-preview" style={{ display: 'block', whiteSpace: 'normal' }}>
+                    <div className="offering-preview" style={{ display: 'block', whiteSpace: 'normal' }}>
                       <div className="mb-2">
-                        <Badge color={getOfferingTypeColor(form.offering_type)} className="me-2">
-                          {form.offering_type}
-                        </Badge>
+                        <Badge color={getOfferingTypeColor(form.offering_type)} className="me-2">{form.offering_type}</Badge>
                         {form.category && <Badge color="light">{form.category}</Badge>}
                       </div>
                       <h6 style={{marginBottom: '0.5rem'}}>{form.title || 'Your offering title'}</h6>
@@ -276,7 +161,7 @@ const PostOfferingPage = ({ currentUser }) => {
                       <p style={{marginBottom: '0.5rem'}}>{form.description || 'Your offering description will appear here...'}</p>
                       <div className="text-primary" style={{marginBottom: '0.5rem'}}>
                         <strong>
-                          {form.pricing_model === 'FREE' ? 'Free' : previewPrice ? `$${previewPrice}${form.pricing_model === 'SUBSCRIPTION' ? '/month' : form.pricing_model === 'PER_USE' ? '/use' : ''}` : 'Contact for pricing'}
+                          {form.pricing_model === 'FREE' ? 'Free' : previewPrice ? `$${previewPrice}${form.pricing_model === 'SUBSCRIPTION' ? '/month' : form.pricing_model === 'PER_USE' ? '/use' : ''}` : ''}
                         </strong>
                       </div>
                       {form.url && <div><a href={form.url} target="_blank" rel="noopener noreferrer">{form.url}</a></div>}
@@ -284,14 +169,8 @@ const PostOfferingPage = ({ currentUser }) => {
                     </div>
                   </CardBody>
                 </Card>
-
                 <div className="text-center">
-                  <Button 
-                    color="primary" 
-                    type="submit" 
-                    size="lg"
-                    disabled={loading || submitted}
-                  >
+                  <Button color="primary" type="submit" size="lg" disabled={loading || submitted}>
                     {loading ? 'Creating...' : 'Create Offering'}
                   </Button>
                 </div>
@@ -304,8 +183,4 @@ const PostOfferingPage = ({ currentUser }) => {
   );
 };
 
-const mapStateToProps = (state) => ({
-  currentUser: state.auth.currentUser,
-});
-
-export default connect(mapStateToProps)(PostOfferingPage);
+export default CreateOfferingPage;

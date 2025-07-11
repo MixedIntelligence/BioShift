@@ -33,7 +33,13 @@ router.get('/', async (req, res) => {
 // GET /api/offerings/my-offerings - List all offerings for the current provider
 router.get('/my-offerings', [authenticateToken, requireRole('Provider', 'Admin')], async (req, res) => {
   try {
-    const offerings = await offeringModel.listOfferingsByProvider(req.user.id);
+    // Find provider record for this user
+    const providerModel = require('../models/provider');
+    const provider = await providerModel.findProviderByUserId(req.user.id);
+    if (!provider) {
+      return res.status(404).json({ error: 'Provider profile not found for this user.' });
+    }
+    const offerings = await offeringModel.listOfferingsByProvider(provider.id);
     res.json(offerings);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch offerings' });
@@ -43,8 +49,12 @@ router.get('/my-offerings', [authenticateToken, requireRole('Provider', 'Admin')
 // GET /api/offerings/:id - Get a single offering
 // GET /api/offerings/:id - Get a specific offering by ID (public)
 router.get('/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (!id || isNaN(id) || id <= 0) {
+    return res.status(400).json({ error: 'Invalid offering ID.' });
+  }
   try {
-    const offering = await offeringModel.getOfferingById(req.params.id);
+    const offering = await offeringModel.getOfferingById(id);
     if (!offering) return res.status(404).json({ error: 'Offering not found' });
     res.json(offering);
   } catch (err) {
@@ -54,18 +64,29 @@ router.get('/:id', async (req, res) => {
 
 // POST /api/offerings - Create a new offering
 router.post('/', [authenticateToken, requireRole('Provider', 'Admin')], async (req, res) => {
+  console.log('Incoming offering payload:', req.body);
   const { error, value } = offeringSchema.validate(req.body);
-  if (error) return res.status(400).json({ error: error.details[0].message });
-
+  if (error) {
+    console.error('Validation error:', error.details);
+    return res.status(400).json({ error: error.details[0].message });
+  }
   try {
+    // Look up provider.id for this user
+    const providerResult = await require('../models/db').query('SELECT id FROM providers WHERE user_id = $1', [req.user.id]);
+    if (!providerResult.rows.length) {
+      console.error('No provider profile found for user:', req.user.id);
+      return res.status(400).json({ error: 'Provider profile not found for this user.' });
+    }
+    const provider_id = providerResult.rows[0].id;
     const offering = await offeringModel.createOffering({
       ...value,
-      provider_id: req.user.id,
+      provider_id,
     });
     auditLog('create_offering', req.user, { offeringId: offering.id });
     res.status(201).json(offering);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to create offering' });
+    console.error('DB error:', err);
+    res.status(500).json({ error: 'Failed to create offering', details: err.message });
   }
 });
 

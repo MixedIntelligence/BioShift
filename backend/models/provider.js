@@ -47,6 +47,11 @@ const providerModel = {
   async deleteApplication(id) {
     const result = await db.query('DELETE FROM provider_applications WHERE id = $1', [id]);
     return result.rowCount > 0;
+  },
+
+  async findProviderByUserId(userId) {
+    const result = await db.query('SELECT * FROM providers WHERE user_id = $1', [userId]);
+    return result.rows[0];
   }
 };
 

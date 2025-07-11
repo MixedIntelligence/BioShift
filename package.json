@@ -2,7 +2,7 @@
   "name": "lableap-v9",
   "version": "9.0.0",
   "private": true,
-  "proxy": "http://localhost:8080",
+  "proxy": "http://localhost:5000",
   "scripts": {
     "build": "cross-env NODE_OPTIONS='--max-old-space-size=4096' REACT_APP_BACKEND=true react-app-rewired --openssl-legacy-provider build",
     "start": "cross-env NODE_ENV=development react-app-rewired --openssl-legacy-provider start",

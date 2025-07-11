@@ -110,7 +110,11 @@ const ManageOfferings = ({ currentUser }) => {
   };
 
   const handleViewDetails = (offering) => {
-    history.push(`/app/offerings/${offering.id}`);
+    if (offering && typeof offering.id === 'number' && offering.id > 0) {
+      history.push(`/app/offerings/${offering.id}`);
+    } else {
+      setError('Invalid offering ID. Cannot view details.');
+    }
   };
 
   const getOfferingTypeColor = (type) => {
@@ -425,7 +429,6 @@ const ManageOfferings = ({ currentUser }) => {
           </ModalFooter>
         </Form>
       </Modal>
-
       {/* Delete Confirmation Modal */}
       <Modal isOpen={deleteModal} toggle={() => setDeleteModal(false)}>
         <ModalHeader toggle={() => setDeleteModal(false)}>
