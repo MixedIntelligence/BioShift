@@ -190,7 +190,7 @@ class Layout extends React.Component {
                     <Route path="/app/profile" exact component={Profile} />
                     <Route path="/app/edit_profile" exact component={Profile} />
                     <Route path="/app/chat" exact component={ChatPage} />
-                    <Route path="/app/inbox" exact component={require('../Notifications/notifications-demo/Messages').default} />
+                    <Route path="/app/inbox" exact component={require('../components/Notifications/notifications-demo/Messages').default} />
                     <Route path="/app/profile/:userId" exact component={PublicProfilePage} />
                   </Switch>
                 </CSSTransition>
