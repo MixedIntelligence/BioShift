@@ -18,6 +18,8 @@ const gigSchema = Joi.object({
   requiredCertifications: Joi.string().allow('').max(500),
   duration: Joi.string().allow('').max(100),
   payRate: Joi.string().allow('').max(100),
+  labInfo: Joi.string().allow('').max(2000),
+  faq: Joi.string().allow('').max(4000),
 });
 
 // GET /api/gigs/search - Search for gigs
@@ -59,7 +61,7 @@ router.post(
   async (req, res) => {
     const { error, value } = gigSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
-    const { title, description, location, status, requiredSkills, requiredCertifications, duration, payRate } = value;
+    const { title, description, location, status, requiredSkills, requiredCertifications, duration, payRate, labInfo, faq } = value;
     try {
       const gig = await gigModel.createGig({
         title,
@@ -71,6 +73,8 @@ router.post(
         requiredCertifications,
         duration,
         payRate,
+        labInfo,
+        faq,
       });
       res.status(201).json(gig);
     } catch (err) {
@@ -136,11 +140,11 @@ router.put(
   async (req, res) => {
     const { error, value } = gigSchema.validate(req.body);
     if (error) return res.status(400).json({ error: error.details[0].message });
-    const { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate } = value;
+    const { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate, labInfo, faq } = value;
     const updated = await gigModel.updateGig(
       req.params.id,
       req.user,
-      { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate }
+      { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate, labInfo, faq }
     );
     auditLog('edit_gig', req.user, { gigId: req.params.id });
     if (!updated)

@@ -20,6 +20,31 @@ const OfferingDetail = ({ data }) => {
     return tags.split(',').map(tag => tag.trim());
   };
 
+  const handleContactProvider = async () => {
+    // Replace with actual user ID from auth context in real app
+    const currentUserId = window.currentUserId || 1;
+    const payload = {
+      subject: `Inquiry about Offering: ${data.title}`,
+      participantIds: [data.provider_id],
+      body: 'Hi, I am interested in this offering.',
+      context: { offeringId: data.id }
+    };
+    try {
+      const res = await fetch('/api/inbox/conversations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        alert('Conversation started! Check your inbox.');
+      } else {
+        alert('Failed to start conversation.');
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
+
   return (
     <div className={s.offeringDetail}>
       {/* Header Section */}
@@ -126,7 +151,7 @@ const OfferingDetail = ({ data }) => {
             <span>Provider ID: {data.provider_id}</span>
           </div>
           <div className={s.contactActions}>
-            <button className="btn btn-primary mr-2">
+            <button className="btn btn-primary mr-2" onClick={handleContactProvider}>
               Contact Provider
             </button>
             <button className="btn btn-outline-primary">

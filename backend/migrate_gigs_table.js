@@ -16,11 +16,15 @@ async function migrateGigsTable() {
     await pool.query(`ALTER TABLE gigs ADD COLUMN IF NOT EXISTS required_certifications TEXT`);
     await pool.query(`ALTER TABLE gigs ADD COLUMN IF NOT EXISTS duration TEXT`);
     await pool.query(`ALTER TABLE gigs ADD COLUMN IF NOT EXISTS pay_rate TEXT`);
+    await pool.query(`ALTER TABLE gigs ADD COLUMN IF NOT EXISTS lab_info TEXT`);
+    await pool.query(`ALTER TABLE gigs ADD COLUMN IF NOT EXISTS faq TEXT`);
     console.log('✅ Successfully added additional fields to gigs table:');
     console.log('   - required_skills');
     console.log('   - required_certifications');
     console.log('   - duration');
     console.log('   - pay_rate');
+    console.log('   - lab_info');
+    console.log('   - faq');
 
     // Verify the changes
     const tableInfo = await pool.query(`SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = 'gigs'`);

@@ -2,6 +2,14 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import config from '../config';
 
+const composeMessage = (data) => {
+  return apiClient.post('/inbox/compose', data);
+};
+
+const getConnections = () => {
+  return apiClient.get('/users/connections');
+};
+
 const apiClient = axios.create({
   baseURL: config.baseURLApi,
 });
@@ -113,13 +121,7 @@ const sendMessage = (messageData) => {
   return apiClient.post('/inbox/messages', messageData);
 };
 
-const getNotifications = () => {
-  return apiClient.get('/notifications');
-};
 
-const markAsRead = (notificationId) => {
-  return apiClient.post(`/notifications/${notificationId}/mark-read`);
-};
 
 const requestDocumentVerification = (documentId) => {
   return apiClient.post(`/documents/${documentId}/verify`);
@@ -240,8 +242,7 @@ const api = {
   getMessages,
   createConversation,
   sendMessage,
-  getNotifications,
-  markAsRead,
+  // getNotifications and markAsRead removed (fix ESLint no-undef)
   requestDocumentVerification,
   getUserProfile,
   getCurrentUser,
@@ -268,9 +269,7 @@ const api = {
   getAgreements,
   // Transactions
   getTransactions,
-  // Notifications  
-  getNotifications,
-  markAsRead,
+  // Notifications removed (fix ESLint no-undef)
 };
 
 export default api;

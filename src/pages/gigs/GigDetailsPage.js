@@ -9,6 +9,34 @@ import classnames from 'classnames';
 
 
 const GigDetailsPage = ({ currentUser }) => {
+  const handleMessageLab = async () => {
+    if (!gig || !gig.user_id) return;
+    const payload = {
+      subject: `Inquiry about Gig: ${gig.title}`,
+      participantIds: [gig.user_id],
+      body: 'Hi, I am interested in this gig.',
+      context: { gigId: gig.id }
+    };
+    try {
+      // Get token from currentUser or localStorage
+      const token = currentUser?.token || localStorage.getItem('token');
+      const res = await fetch('/api/inbox/conversations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { 'Authorization': 'Bearer ' + token } : {})
+        },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        setMessageSent(true);
+      } else {
+        alert('Failed to start conversation.');
+      }
+    } catch (err) {
+      alert('Error: ' + err.message);
+    }
+  };
   const { id } = useParams();
   const history = useHistory();
   const [gig, setGig] = useState(null);
@@ -99,46 +127,56 @@ const GigDetailsPage = ({ currentUser }) => {
     }
   }, [activeTab, isLab, gig]);
 
-  // Helper: Render Lab Profile Card
-  const LabProfileCard = ({ labProfile }) => (
+  // Helper: Render Lab Info
+  const [labInfoEdit, setLabInfoEdit] = useState('');
+  const [faqEdit, setFaqEdit] = useState('');
+  const [editMode, setEditMode] = useState(false);
+  const handleSaveLabInfo = async () => {
+    await api.updateGig(gig.id, { ...gig, labInfo: labInfoEdit });
+    setGig({ ...gig, lab_info: labInfoEdit });
+    setEditMode(false);
+  };
+  const handleSaveFaq = async () => {
+    await api.updateGig(gig.id, { ...gig, faq: faqEdit });
+    setGig({ ...gig, faq: faqEdit });
+    setEditMode(false);
+  };
+
+  const LabInfoSection = () => (
     <Card className="mb-3">
       <CardBody>
-        {labProfile ? (
-          <Row>
-            <Col xs="3">
-              <img src={labProfile.logo} alt="Lab Logo" className="img-fluid rounded-circle" style={{ width: 64, height: 64 }} />
-            </Col>
-            <Col xs="9">
-              <CardTitle tag="h5">{labProfile.name} {labProfile.verified && <Badge color="primary">Verified</Badge>}</CardTitle>
-              <CardText>
-                <b>Rating:</b> {labProfile.rating} / 5<br/>
-                <b>Industry:</b> {labProfile.industry}<br/>
-                <b>About:</b> {labProfile.about}<br/>
-                <a href={labProfile.website} target="_blank" rel="noopener noreferrer">Website</a>
-              </CardText>
-            </Col>
-          </Row>
+        <CardTitle tag="h5">Lab Info</CardTitle>
+        {isLab && editMode ? (
+          <>
+            <textarea value={labInfoEdit} onChange={e => setLabInfoEdit(e.target.value)} rows={6} className="form-control mb-2" />
+            <Button color="primary" onClick={handleSaveLabInfo}>Save</Button>{' '}
+            <Button color="secondary" onClick={() => setEditMode(false)}>Cancel</Button>
+          </>
         ) : (
-          <p>Lab profile not available.</p>
+          <>
+            <CardText>{gig?.lab_info || 'Lab info not available.'}</CardText>
+            {isLab && <Button color="link" onClick={() => { setEditMode(true); setLabInfoEdit(gig?.lab_info || ''); }}>Edit</Button>}
+          </>
         )}
       </CardBody>
     </Card>
   );
 
-  // Helper: Render FAQ
-  const FAQSection = ({ faq }) => (
+  const FAQSection = () => (
     <Card className="mb-3">
       <CardBody>
         <CardTitle tag="h5">FAQ & Expectations</CardTitle>
-        {faq && faq.length > 0 ? (
-          faq.map((item, idx) => (
-            <div key={idx} className="mb-2">
-              <b>Q:</b> {item.q}<br/>
-              <b>A:</b> {item.a}
-            </div>
-          ))
+        {isLab && editMode ? (
+          <>
+            <textarea value={faqEdit} onChange={e => setFaqEdit(e.target.value)} rows={8} className="form-control mb-2" />
+            <Button color="primary" onClick={handleSaveFaq}>Save</Button>{' '}
+            <Button color="secondary" onClick={() => setEditMode(false)}>Cancel</Button>
+          </>
         ) : (
-          <p>No FAQ available.</p>
+          <>
+            <CardText>{gig?.faq || 'No FAQ available.'}</CardText>
+            {isLab && <Button color="link" onClick={() => { setEditMode(true); setFaqEdit(gig?.faq || ''); }}>Edit</Button>}
+          </>
         )}
       </CardBody>
     </Card>
@@ -190,7 +228,7 @@ const GigDetailsPage = ({ currentUser }) => {
                     api.applyToGig(gig?.id).then(() => setApplied(true));
                   }}>Apply</Button>}
                   {isWorker && applied && <Button color="success" disabled>Application Submitted</Button>}
-                  {isWorker && <Button color="secondary" className="ms-2" onClick={() => setMessageSent(true)}>Message Lab</Button>}
+                  {isWorker && <Button color="secondary" className="ms-2" onClick={handleMessageLab}>Message Lab</Button>}
                   {isWorker && <Button color="info" className="ms-2" onClick={() => setShowCredentialUpload(true)}>Upload Credential</Button>}
                   {messageSent && <Alert color="info" className="mt-2">Demo: Message sent to lab!</Alert>}
                   {showCredentialUpload && !credentialUploaded && (
@@ -249,15 +287,15 @@ const GigDetailsPage = ({ currentUser }) => {
                   )}
                 </TabPane>
                 <TabPane tabId="3">
-                  <LabProfileCard labProfile={gig?.lab_profile} />
+                  <LabInfoSection />
                 </TabPane>
                 <TabPane tabId="4">
-                  <FAQSection faq={gig?.faq} />
+                  <FAQSection />
                 </TabPane>
               </TabContent>
             </Col>
             <Col md="4">
-              <LabProfileCard labProfile={gig?.lab_profile} />
+              <LabInfoSection />
             </Col>
           </Row>
         </CardBody>

@@ -5,12 +5,14 @@ const authenticateToken = require('../middleware/auth');
 
 // Get all conversations for the logged-in user
 router.get('/conversations', authenticateToken, (req, res) => {
-  try {
-    const conversations = getConversationsByUserId(req.user.id);
-    res.json(conversations);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to retrieve conversations' });
-  }
+  (async () => {
+    try {
+      const conversations = await getConversationsByUserId(req.user.id);
+      res.json(conversations);
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to retrieve conversations' });
+    }
+  })();
 });
 
 // Get all messages for a conversation
@@ -28,7 +30,7 @@ router.get('/conversations/:id', authenticateToken, async (req, res) => {
 
 // Create a new conversation
 router.post('/conversations', authenticateToken, async (req, res) => {
-  const { subject, participantIds, body } = req.body;
+  const { subject, participantIds, body, context } = req.body;
   const senderId = req.user.id;
 
   if (!participantIds || participantIds.length === 0) {
@@ -37,7 +39,7 @@ router.post('/conversations', authenticateToken, async (req, res) => {
 
   try {
     const allParticipantIds = [...new Set([senderId, ...participantIds])];
-    const conversation = await createConversation(subject, allParticipantIds);
+    const conversation = await createConversation(subject, allParticipantIds, context);
     const message = await sendMessage(conversation.id, senderId, body);
     res.status(201).json({ conversation, message });
   } catch (err) {
@@ -55,6 +57,26 @@ router.post('/messages', authenticateToken, async (req, res) => {
     res.status(201).json(message);
   } catch (err) {
     res.status(500).json({ error: 'Failed to send message' });
+  }
+});
+
+// Tier 2: Compose message to a 1st-degree connection (reuses existing conversation or creates new if none)
+router.post('/compose', authenticateToken, async (req, res) => {
+  const { recipientId, subject, body } = req.body;
+  const senderId = req.user.id;
+
+  try {
+    // Find existing conversation between sender and recipient
+    const conversations = await getConversationsByUserId(senderId);
+    let conversation = conversations.find(c => c.participants && c.participants.includes(recipientId));
+    if (!conversation) {
+      // Create new conversation if none exists
+      conversation = await createConversation(subject, [recipientId], {});
+    }
+    const message = await sendMessage(conversation.id, senderId, body);
+    res.status(201).json({ conversation, message });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to compose message' });
   }
 });
 

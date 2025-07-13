@@ -1,5 +1,5 @@
-CREATE TABLE notifications (
-    notification_id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS notifications (
+    notification_id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     message TEXT NOT NULL,
     is_read BOOLEAN DEFAULT 0,

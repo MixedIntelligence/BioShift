@@ -1,5 +1,5 @@
-CREATE TABLE provider_offerings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+CREATE TABLE IF NOT EXISTS provider_offerings (
+    id SERIAL PRIMARY KEY,
     provider_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     subtitle TEXT,

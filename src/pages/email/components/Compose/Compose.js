@@ -14,14 +14,23 @@ class Compose extends Component {
     editorState: EditorState.createEmpty(),
     to: '',
     subject: '',
+    connections: [],
   };
 
-  componentDidMount() {
+  async componentDidMount() {
     if (this.props.data) {
       this.setState({
         to: this.props.data.from || '',
         subject: this.props.data.theme ? `Re: ${this.props.data.theme}` : '',
       });
+    }
+    // Fetch 1st-degree connections for the To field
+    try {
+      const res = await api.getConnections();
+      this.setState({ connections: res.data || [] });
+    } catch (err) {
+      // fallback: no connections
+      this.setState({ connections: [] });
     }
   }
 
@@ -40,20 +49,14 @@ class Compose extends Component {
     const content = convertToRaw(editorState.getCurrentContent());
     const body = content.blocks.map(block => block.text).join('\n');
 
-    // This is a simplified example. In a real app, you'd get the
-    // recipient's ID from the "to" field, maybe via a lookup.
+    // Use new /compose endpoint for Tier 2 messaging
     const recipientId = parseInt(to, 10);
     if (isNaN(recipientId)) {
-      alert("Please enter a valid recipient ID.");
+      alert("Please select a valid connection.");
       return;
     }
-
     try {
-      await api.createConversation({
-        participantIds: [recipientId],
-        subject,
-        body,
-      });
+      await api.composeMessage({ recipientId, subject, body });
       alert('Message sent!');
     } catch (error) {
       console.error('Failed to send message', error);
@@ -62,12 +65,17 @@ class Compose extends Component {
   }
 
   render() {
-    const { editorState, to, subject } = this.state;
+    const { editorState, to, subject, connections } = this.state;
     return (
       <Widget>
         <div className={s.compose}>
           <h4>Compose <span className="fw-semi-bold">New</span></h4>
-          <Input type="text" name="to" placeholder="To" value={to} onChange={this.handleInputChange} />
+          <Input type="select" name="to" value={to} onChange={this.handleInputChange}>
+            <option value="">Select connection...</option>
+            {connections.map(conn => (
+              <option key={conn.id} value={conn.id}>{conn.name || conn.username}</option>
+            ))}
+          </Input>
           <Input type="text" name="subject" placeholder="Subject" value={subject} onChange={this.handleInputChange} />
           <Editor
             editorState={editorState}

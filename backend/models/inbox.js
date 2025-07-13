@@ -1,18 +1,40 @@
 const db = require('./db');
 
-async function createConversation(subject, participantIds) {
+const { createConnection } = require('./connection');
+async function createConversation(subject, participantIds, context = {}) {
   const client = await db.getClient();
   try {
     await client.query('BEGIN');
-    const convQuery = 'INSERT INTO conversations (subject) VALUES ($1) RETURNING id';
-    const convResult = await client.query(convQuery, [subject]);
+    // Insert conversation with optional context columns
+    let convQuery = 'INSERT INTO conversations (subject';
+    let convValues = [subject];
+    let valuePlaceholders = ['$1'];
+    let idx = 2;
+    if (context.gigId) {
+      convQuery += ', context_gig_id';
+      convValues.push(context.gigId);
+      valuePlaceholders.push(`$${idx++}`);
+    }
+    if (context.offeringId) {
+      convQuery += ', context_offering_id';
+      convValues.push(context.offeringId);
+      valuePlaceholders.push(`$${idx++}`);
+    }
+    convQuery += `) VALUES (${valuePlaceholders.join(', ')}) RETURNING id`;
+    const convResult = await client.query(convQuery, convValues);
     const conversationId = convResult.rows[0].id;
 
+    // Add participants
     const partQuery = 'INSERT INTO conversation_participants (conversation_id, user_id) VALUES ($1, $2)';
     for (const userId of participantIds) {
       await client.query(partQuery, [conversationId, userId]);
     }
-    
+
+    // Create connection between first two participants if context is provided
+    if (participantIds.length >= 2 && (context.gigId || context.offeringId)) {
+      await createConnection(participantIds[0], participantIds[1]);
+    }
+
     await client.query('COMMIT');
     return { id: conversationId, subject, participants: participantIds };
   } catch (e) {
@@ -30,20 +52,33 @@ async function sendMessage(conversationId, senderId, body) {
 }
 
 async function getConversationsByUserId(userId) {
+  // Get conversations and latest message info
   const query = `
     SELECT
       c.id,
       c.subject,
-      (SELECT (p.first_name || ' ' || p.last_name) FROM user_profiles p JOIN messages m ON p.user_id = m.sender_id WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_sender,
-      (SELECT m.body FROM messages m WHERE m.conversation_id = c.id ORDER BY m.created_at DESC LIMIT 1) as last_message,
-      c.created_at
+      COALESCE(
+        (SELECT m.sent_at FROM messages m WHERE m.conversation_id = c.id ORDER BY m.sent_at DESC LIMIT 1),
+        c.created_at
+      ) as created_at,
+      (SELECT (p.first_name || ' ' || p.last_name) FROM user_profiles p JOIN messages m ON p.user_id = m.sender_id WHERE m.conversation_id = c.id ORDER BY m.sent_at DESC LIMIT 1) as last_sender,
+      (SELECT m.body FROM messages m WHERE m.conversation_id = c.id ORDER BY m.sent_at DESC LIMIT 1) as last_message,
+      (SELECT m.sender_id FROM messages m WHERE m.conversation_id = c.id ORDER BY m.sent_at DESC LIMIT 1) as last_sender_id
     FROM conversations c
     JOIN conversation_participants cp ON c.id = cp.conversation_id
     WHERE cp.user_id = $1
-    ORDER BY c.created_at DESC
+    ORDER BY created_at DESC
   `;
   const result = await db.query(query, [userId]);
-  return result.rows;
+  // Add unreaded property: true if last message not sent by user
+  return result.rows.map(row => ({
+    id: row.id,
+    subject: row.subject,
+    last_sender: row.last_sender,
+    last_message: row.last_message,
+    created_at: row.created_at,
+    unreaded: row.last_sender_id !== userId && row.last_sender_id !== null
+  }));
 }
 
 async function getMessagesByConversationId(conversationId, userId) {

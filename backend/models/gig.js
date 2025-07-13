@@ -1,13 +1,13 @@
 // Gig/Project model
 const db = require('./db');
 
-async function createGig({ title, description, userId, location, status = 'open', requiredSkills, requiredCertifications, duration, payRate }) {
+async function createGig({ title, description, userId, location, status = 'open', requiredSkills, requiredCertifications, duration, payRate, labInfo = '', faq = '' }) {
   const query = `
-    INSERT INTO gigs (title, description, user_id, location, status, required_skills, required_certifications, duration, pay_rate)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    INSERT INTO gigs (title, description, user_id, location, status, required_skills, required_certifications, duration, pay_rate, lab_info, faq)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *;
   `;
-  const params = [title, description, userId, location, status, requiredSkills, requiredCertifications, duration, payRate];
+  const params = [title, description, userId, location, status, requiredSkills, requiredCertifications, duration, payRate, labInfo, faq];
   const result = await db.query(query, params);
   return result.rows[0];
 }
@@ -22,7 +22,7 @@ async function getGigById(id) {
   return result.rows[0];
 }
 
-async function updateGig(id, user, { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate }) {
+async function updateGig(id, user, { title, description, status, location, requiredSkills, requiredCertifications, duration, payRate, labInfo, faq }) {
   const gig = await getGigById(id);
   if (!gig) return false;
   if (user.role !== 'Admin' && gig.user_id !== user.id) return false;
@@ -62,6 +62,14 @@ async function updateGig(id, user, { title, description, status, location, requi
   if (payRate !== undefined) {
     fields.push(`pay_rate = $${paramIndex++}`);
     params.push(payRate);
+  }
+  if (labInfo !== undefined) {
+    fields.push(`lab_info = $${paramIndex++}`);
+    params.push(labInfo);
+  }
+  if (faq !== undefined) {
+    fields.push(`faq = $${paramIndex++}`);
+    params.push(faq);
   }
 
   if (fields.length === 0) {

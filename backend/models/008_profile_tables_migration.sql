@@ -2,7 +2,7 @@
 
 -- Create user_payments table
 CREATE TABLE IF NOT EXISTS user_payments (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     payment_info TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS user_payments (
 
 -- Create user_history table
 CREATE TABLE IF NOT EXISTS user_history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     action TEXT NOT NULL,
     details TEXT,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS user_history (
 
 -- Create user_startups table
 CREATE TABLE IF NOT EXISTS user_startups (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id SERIAL PRIMARY KEY,
     user_id INTEGER NOT NULL,
     startup_name TEXT NOT NULL,
     description TEXT,

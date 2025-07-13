@@ -35,7 +35,8 @@ class Filters extends Component {
       <div className={s.filters}>
         <button
           className="btn btn-primary btn-block"
-          onClick={() => compose(true)}
+          disabled
+          title="Direct Compose is disabled. Use contextual messaging from Gigs/Offerings."
         >
           Compose
         </button>

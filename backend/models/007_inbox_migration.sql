@@ -2,7 +2,7 @@
 
 -- Conversations Table
 CREATE TABLE IF NOT EXISTS conversations (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   subject TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS conversation_participants (
 
 -- Messages Table
 CREATE TABLE IF NOT EXISTS messages (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  id SERIAL PRIMARY KEY,
   conversation_id INTEGER,
   sender_id INTEGER,
   body TEXT,
