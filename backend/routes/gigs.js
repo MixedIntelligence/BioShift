@@ -8,6 +8,7 @@ const Joi = require('joi');
 const auditLog = require('../middleware/auditLog');
 const db = require('../models/db');
 
+const applicationModel = require('../models/application');
 const gigSchema = Joi.object({
   title: Joi.string().min(3).max(100).required(),
   description: Joi.string().allow('').max(1000),
@@ -81,10 +82,7 @@ router.post(
 // GET /api/gigs/my-gigs - Get gigs created by the current user (Lab)
 router.get('/my-gigs', authenticateToken, requireRole('Lab', 'Admin'), async (req, res) => {
   try {
-    console.log('my-gigs endpoint called, user:', req.user);
-    const result = await db.query('SELECT * FROM gigs WHERE user_id = $1 ORDER BY created_at DESC', [req.user.id]);
-    const myGigs = result.rows;
-    console.log('Found gigs:', myGigs);
+    const myGigs = await gigModel.listGigsByUserId(req.user.id);
     res.json(myGigs);
   } catch (err) {
     console.error('Error in my-gigs endpoint:', err);
@@ -190,8 +188,7 @@ router.get(
     const userId = req.user.id;
     
     try {
-      const stmt = db.prepare('SELECT id, status, applied_at FROM applications WHERE gig_id = ? AND user_id = ?');
-      const application = stmt.get(gigId, userId);
+      const application = await applicationModel.getApplicationByGigAndUser(gigId, userId);
       
       if (application) {
         res.json({ hasApplied: true, application });

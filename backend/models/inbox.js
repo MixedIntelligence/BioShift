@@ -46,7 +46,16 @@ async function getConversationsByUserId(userId) {
   return result.rows;
 }
 
-async function getMessagesByConversationId(conversationId) {
+async function getMessagesByConversationId(conversationId, userId) {
+  const participationCheck = await db.query(
+    'SELECT 1 FROM conversation_participants WHERE conversation_id = $1 AND user_id = $2',
+    [conversationId, userId]
+  );
+
+  if (participationCheck.rows.length === 0) {
+    throw new Error('User is not a participant in this conversation.');
+  }
+
   const query = `
     SELECT
       m.id,

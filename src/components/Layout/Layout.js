@@ -186,13 +186,13 @@ class Layout extends React.Component {
                     <Route path="/app/bionics" exact component={Bionics} />
                     <Route path="/app/connect" exact component={Connect} />
                     <Route path="/app/offerings/create" exact component={CreateOfferingPage} />
-                    <Route path="/app/offerings/:id" exact component={Offering} />
                     <Route path="/app/offerings/my-offerings" exact component={require('../../pages/offerings/ManageOfferings').default} />
+                    <Route path="/app/offerings/:id" exact component={Offering} />
                     <Route path="/app/offerings" exact component={require('../../pages/offerings/BrowseOfferings').default} />
                     <Route path="/app/profile" exact component={Profile} />
                     <Route path="/app/edit_profile" exact component={Profile} />
                     <Route path="/app/chat" exact component={ChatPage} />
-                    <Route path="/app/inbox" exact component={require('../../components/Notifications/notifications-demo/Messages2').default} />
+                    <Route path="/app/inbox" exact component={require('../../pages/email/Email').default} />
                     <Route path="/app/profile/:userId" exact component={PublicProfilePage} />
                   </Switch>
                 </CSSTransition>

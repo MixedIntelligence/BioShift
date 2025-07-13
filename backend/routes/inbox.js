@@ -14,12 +14,14 @@ router.get('/conversations', authenticateToken, (req, res) => {
 });
 
 // Get all messages for a conversation
-router.get('/conversations/:id', authenticateToken, (req, res) => {
+router.get('/conversations/:id', authenticateToken, async (req, res) => {
   try {
-    // TODO: Check if user is a participant in the conversation
-    const messages = getMessagesByConversationId(req.params.id);
+    const messages = await getMessagesByConversationId(req.params.id, req.user.id);
     res.json(messages);
   } catch (err) {
+    if (err.message === 'User is not a participant in this conversation.') {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
     res.status(500).json({ error: 'Failed to retrieve messages' });
   }
 });

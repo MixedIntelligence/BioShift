@@ -136,6 +136,11 @@ async function listUserApplications(userId) {
   return result.rows;
 }
 
+async function listGigsByUserId(userId) {
+  const result = await db.query('SELECT * FROM gigs WHERE user_id = $1 ORDER BY created_at DESC', [userId]);
+  return result.rows;
+}
+
 module.exports = {
   createGig,
   listGigs,
@@ -146,4 +151,5 @@ module.exports = {
   applyToGig,
   searchGigs,
   listUserApplications,
+  listGigsByUserId,
 };

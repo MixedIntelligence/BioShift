@@ -12,7 +12,13 @@ async function updateApplicationStatus(id, status) {
   return result.rowCount > 0;
 }
 
+async function getApplicationByGigAndUser(gigId, userId) {
+  const result = await db.query('SELECT id, status, applied_at FROM applications WHERE gig_id = $1 AND user_id = $2', [gigId, userId]);
+  return result.rows[0];
+}
+
 module.exports = {
   getApplicationById,
   updateApplicationStatus,
+  getApplicationByGigAndUser,
 };

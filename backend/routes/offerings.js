@@ -72,12 +72,13 @@ router.post('/', [authenticateToken, requireRole('Provider', 'Admin')], async (r
   }
   try {
     // Look up provider.id for this user
-    const providerResult = await require('../models/db').query('SELECT id FROM providers WHERE user_id = $1', [req.user.id]);
-    if (!providerResult.rows.length) {
+    const providerModel = require('../models/provider');
+    const provider = await providerModel.findProviderByUserId(req.user.id);
+    if (!provider) {
       console.error('No provider profile found for user:', req.user.id);
       return res.status(400).json({ error: 'Provider profile not found for this user.' });
     }
-    const provider_id = providerResult.rows[0].id;
+    const provider_id = provider.id;
     const offering = await offeringModel.createOffering({
       ...value,
       provider_id,

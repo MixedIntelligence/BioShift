@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Editor, EditorState, convertToRaw } from 'react-draft-wysiwyg';
+import { Editor } from 'react-draft-wysiwyg';
+import { EditorState, convertToRaw } from 'draft-js';
 import { Input, Button } from 'reactstrap';
 import api from '../../../../services/api';
 

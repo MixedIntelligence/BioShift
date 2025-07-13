@@ -192,3 +192,8 @@
 {"timestamp":"2025-07-11T19:08:49.085Z","user":{"id":18,"role":"Worker"},"action":"login","details":{"ip":"::1"}}
 {"timestamp":"2025-07-11T19:08:56.078Z","user":{"id":18,"role":"Worker"},"action":"apply_gig","details":{"gigId":"3"}}
 {"timestamp":"2025-07-11T19:09:06.770Z","user":{"id":18,"role":"Worker"},"action":"apply_gig","details":{"gigId":"1"}}
+{"timestamp":"2025-07-11T20:00:47.388Z","user":{"id":21,"role":"Provider"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-11T20:16:38.831Z","user":{"id":21,"role":"Provider"},"action":"edit_offering","details":{"offeringId":"5"}}
+{"timestamp":"2025-07-11T23:19:08.910Z","user":{"id":21,"role":"Provider"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-11T23:21:06.098Z","user":{"id":21,"role":"Provider"},"action":"login","details":{"ip":"::1"}}
+{"timestamp":"2025-07-11T23:24:08.323Z","user":{"id":21,"role":"Provider"},"action":"login","details":{"ip":"::1"}}
