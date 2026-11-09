@@ -10,6 +10,7 @@ const app = express();
 app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173' }));
 app.use(express.json({ limit: '1mb' }));
 
+if (process.env.NODE_ENV === 'production' && !process.env.JWT_SECRET) throw new Error('JWT_SECRET must be configured in production.');
 const JWT_SECRET = process.env.JWT_SECRET || 'development-only-change-me';
 const sign = user => jwt.sign({ sub: user.id, role: user.role }, JWT_SECRET, { expiresIn: '7d' });
 async function auth(req, res, next) {
@@ -24,6 +25,7 @@ async function auth(req, res, next) {
 }
 const requireRole = role => (req,res,next) => req.user.role === role ? next() : res.status(403).json({error:'This action is not available for your account.'});
 const registerSchema = z.object({ email:z.string().email(), password:z.string().min(10), role:z.enum(['organization','professional']), fullName:z.string().min(2), organizationName:z.string().optional() });
+const applicationSchema = z.object({ coverNote:z.string().max(3000).default(''), proposedRateCents:z.number().int().positive().optional() });
 const gigSchema = z.object({ title:z.string().min(5).max(120), description:z.string().min(30).max(5000), discipline:z.string().min(2), location:z.string().default('Remote'), workMode:z.enum(['Remote','On-site','Hybrid']).default('Remote'), hourlyRateCents:z.number().int().positive(), estimatedHours:z.number().int().positive(), skills:z.array(z.string()).default([]) });
 
 app.get('/api/health', (_req,res)=>res.json({status:'ok',service:'BioShift MVP API'}));
@@ -96,6 +98,20 @@ app.post('/api/engagements/:id/accept',auth,requireRole('professional'),async(re
   await client.query('COMMIT');
   res.json({engagement:{...engagement,status:'active'},message:'Offer accepted. Your engagement is now active.'});
  }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not accept offer.'});}finally{client.release();}
+});
+app.post('/api/engagements/:id/decline',auth,requireRole('professional'),async(req,res)=>{
+ const client=await db.connect();
+ try{
+  await client.query('BEGIN');
+  const {rows}=await client.query('SELECT * FROM engagements WHERE id=$1 FOR UPDATE',[req.params.id]);
+  const engagement=rows[0];
+  if(!engagement||engagement.professional_id!==req.user.id)throw Object.assign(new Error('Offer not found.'),{status:404});
+  if(engagement.status!=='offered')throw Object.assign(new Error('Only pending offers can be declined.'),{status:409});
+  await client.query("UPDATE engagements SET status='cancelled' WHERE id=$1",[engagement.id]);
+  await client.query("UPDATE applications SET status='declined' WHERE id=$1",[engagement.application_id]);
+  await client.query('COMMIT');
+  res.json({engagement:{...engagement,status:'cancelled'},message:'Offer declined. The opportunity is available to the organization again.'});
+ }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not decline offer.'});}finally{client.release();}
 });
 app.get('/api/engagements',auth,async(req,res)=>{
  const field=req.user.role==='organization'?'organization_id':'professional_id';
