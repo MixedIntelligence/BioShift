@@ -53,7 +53,7 @@ API health check: http://localhost:4000/api/health
 4. Professional explicitly accepts or declines the offer; only acceptance activates the engagement and moves the gig to in progress.
 5. Professional starts and submits each milestone.
 6. Organization approves submitted work.
-7. Approval creates a demo payment-ledger entry. In demo mode this is explicitly marked `paid_demo`; it is not a real payment or transfer.
+7. Approval creates a demo payment-ledger entry. In demo mode this is explicitly marked `paid_demo`; it is not a real payment or transfer.\n8. When all milestones are approved, the engagement and gig are marked completed.
 
 ## Payments are deliberately not represented as escrow
 
