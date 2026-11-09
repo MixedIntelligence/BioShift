@@ -80,3 +80,6 @@ CREATE INDEX IF NOT EXISTS gigs_status_created_idx ON gigs(status, created_at DE
 CREATE INDEX IF NOT EXISTS applications_gig_idx ON applications(gig_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS engagements_professional_idx ON engagements(professional_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS milestones_engagement_idx ON milestones(engagement_id, created_at);
+
+-- Prevent two simultaneous offers/active engagements for the same gig.
+CREATE UNIQUE INDEX IF NOT EXISTS one_live_engagement_per_gig_idx ON engagements(gig_id) WHERE status IN ('offered','active','awaiting_review');
