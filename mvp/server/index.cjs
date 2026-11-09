@@ -79,7 +79,7 @@ app.post('/api/applications/:id/offer',auth,requireRole('organization'),async(re
   const parts=[Math.round(total*.25),Math.round(total*.5),total-Math.round(total*.25)-Math.round(total*.5)];
   for(let i=0;i<3;i++) await client.query('INSERT INTO milestones(engagement_id,title,amount_cents) VALUES($1,$2,$3)',[engagement.rows[0].id,['Scope & initial deliverable','Core work & review','Final delivery & handoff'][i],parts[i]]);
   await client.query('COMMIT');res.status(201).json({engagement:engagement.rows[0]});
- }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not create offer.'});}finally{client.release();}
+ }catch(e){await client.query('ROLLBACK');res.status(e.status||(e.code==='23505'?409:500)).json({error:e.message||(e.code==='23505'?'This opportunity already has an active offer or engagement.':'Could not create offer.')});}finally{client.release();}
 });
 app.post('/api/engagements/:id/accept',auth,requireRole('professional'),async(req,res)=>{
  const client=await db.connect();
@@ -91,7 +91,8 @@ app.post('/api/engagements/:id/accept',auth,requireRole('professional'),async(re
   if(engagement.status!=='offered')throw Object.assign(new Error('This offer is no longer awaiting acceptance.'),{status:409});
   await client.query("UPDATE engagements SET status='active' WHERE id=$1",[engagement.id]);
   await client.query("UPDATE applications SET status='hired' WHERE id=$1",[engagement.application_id]);
-  await client.query("UPDATE gigs SET status='in_progress' WHERE id=$1",[engagement.gig_id]);
+  const gigUpdate=await client.query("UPDATE gigs SET status='in_progress' WHERE id=$1 AND status='open' RETURNING id",[engagement.gig_id]);
+  if(!gigUpdate.rows[0])throw Object.assign(new Error('This opportunity is no longer available.'),{status:409});
   await client.query('COMMIT');
   res.json({engagement:{...engagement,status:'active'},message:'Offer accepted. Your engagement is now active.'});
  }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not accept offer.'});}finally{client.release();}
@@ -106,11 +107,11 @@ app.get('/api/engagements/:id/milestones',auth,async(req,res)=>{
  if(!rows.length)return res.status(404).json({error:'Engagement not found.'});res.json({milestones:rows});
 });
 app.post('/api/milestones/:id/start',auth,requireRole('professional'),async(req,res)=>{
- const {rows}=await db.query("UPDATE milestones m SET status='in_progress' FROM engagements e WHERE m.id=$1 AND m.engagement_id=e.id AND e.professional_id=$2 AND m.status='upcoming' RETURNING m.*",[req.params.id,req.user.id]);
+ const {rows}=await db.query("UPDATE milestones m SET status='in_progress' FROM engagements e WHERE m.id=$1 AND m.engagement_id=e.id AND e.professional_id=$2 AND e.status='active' AND m.status='upcoming' RETURNING m.*",[req.params.id,req.user.id]);
  if(!rows[0])return res.status(409).json({error:'Milestone cannot be started.'});res.json({milestone:rows[0]});
 });
 app.post('/api/milestones/:id/submit',auth,requireRole('professional'),async(req,res)=>{
- const {rows}=await db.query("UPDATE milestones m SET status='submitted',submitted_at=now() FROM engagements e WHERE m.id=$1 AND m.engagement_id=e.id AND e.professional_id=$2 AND m.status IN ('in_progress','upcoming') RETURNING m.*",[req.params.id,req.user.id]);
+ const {rows}=await db.query("UPDATE milestones m SET status='submitted',submitted_at=now() FROM engagements e WHERE m.id=$1 AND m.engagement_id=e.id AND e.professional_id=$2 AND e.status='active' AND m.status IN ('in_progress','upcoming') RETURNING m.*",[req.params.id,req.user.id]);
  if(!rows[0])return res.status(409).json({error:'Milestone cannot be submitted.'});res.json({milestone:rows[0]});
 });
 app.post('/api/milestones/:id/approve',auth,requireRole('organization'),async(req,res)=>{
@@ -119,6 +120,8 @@ app.post('/api/milestones/:id/approve',auth,requireRole('organization'),async(re
   await client.query('BEGIN');
   const {rows}=await client.query("SELECT m.*,e.organization_id,e.id AS engagement_id FROM milestones m JOIN engagements e ON e.id=m.engagement_id WHERE m.id=$1 FOR UPDATE",[req.params.id]);
   const m=rows[0];if(!m||m.organization_id!==req.user.id)throw Object.assign(new Error('Milestone not found.'),{status:404});
+  const active=await client.query("SELECT id FROM engagements WHERE id=$1 AND status='active'",[m.engagement_id]);
+  if(!active.rows[0])throw Object.assign(new Error('This engagement is not active.'),{status:409});
   if(m.status!=='submitted')throw Object.assign(new Error('Only submitted work can be approved.'),{status:409});
   await client.query("UPDATE milestones SET status='approved',approved_at=now() WHERE id=$1",[m.id]);
   const provider='demo';
