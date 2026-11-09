@@ -146,7 +146,10 @@ app.post('/api/milestones/:id/approve',auth,requireRole('organization'),async(re
   const provider='demo';
   const paymentStatus='paid_demo';
   const payment=await client.query('INSERT INTO payments(milestone_id,engagement_id,amount_cents,provider,status) VALUES($1,$2,$3,$4,$5) RETURNING *',[m.id,m.engagement_id,m.amount_cents,provider,paymentStatus]);
-  await client.query('COMMIT');res.json({milestone:{...m,status:'approved'},payment:payment.rows[0],notice:'Demo ledger entry only; no money moved. Live payment processing is not connected.'});
+  const remaining=await client.query("SELECT COUNT(*)::int AS count FROM milestones WHERE engagement_id=$1 AND status<>'approved'",[m.engagement_id]);
+  const completed=remaining.rows[0].count===0;
+  if(completed){ await client.query("UPDATE engagements SET status='completed' WHERE id=$1",[m.engagement_id]); await client.query("UPDATE gigs SET status='completed' WHERE id=(SELECT gig_id FROM engagements WHERE id=$1)",[m.engagement_id]); }
+  await client.query('COMMIT');res.json({milestone:{...m,status:'approved'},payment:payment.rows[0],engagementStatus:completed?'completed':'active',notice:'Demo ledger entry only; no money moved. Live payment processing is not connected.'});
  }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not approve milestone.'});}finally{client.release();}
 });
 app.get('/api/payments',auth,async(req,res)=>{
