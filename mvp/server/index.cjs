@@ -76,11 +76,25 @@ app.post('/api/applications/:id/offer',auth,requireRole('organization'),async(re
   if(!Number.isInteger(total)||total<=0)throw Object.assign(new Error('Invalid agreed amount.'),{status:400});
   const engagement=await client.query("INSERT INTO engagements(gig_id,application_id,organization_id,professional_id,agreed_total_cents) VALUES($1,$2,$3,$4,$5) RETURNING *",[a.gig_id,a.id,req.user.id,a.professional_id,total]);
   await client.query("UPDATE applications SET status='offered' WHERE id=$1",[a.id]);
-  await client.query("UPDATE gigs SET status='in_progress' WHERE id=$1",[a.gig_id]);
   const parts=[Math.round(total*.25),Math.round(total*.5),total-Math.round(total*.25)-Math.round(total*.5)];
   for(let i=0;i<3;i++) await client.query('INSERT INTO milestones(engagement_id,title,amount_cents) VALUES($1,$2,$3)',[engagement.rows[0].id,['Scope & initial deliverable','Core work & review','Final delivery & handoff'][i],parts[i]]);
   await client.query('COMMIT');res.status(201).json({engagement:engagement.rows[0]});
  }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not create offer.'});}finally{client.release();}
+});
+app.post('/api/engagements/:id/accept',auth,requireRole('professional'),async(req,res)=>{
+ const client=await db.connect();
+ try{
+  await client.query('BEGIN');
+  const {rows}=await client.query('SELECT * FROM engagements WHERE id=$1 FOR UPDATE',[req.params.id]);
+  const engagement=rows[0];
+  if(!engagement||engagement.professional_id!==req.user.id)throw Object.assign(new Error('Offer not found.'),{status:404});
+  if(engagement.status!=='offered')throw Object.assign(new Error('This offer is no longer awaiting acceptance.'),{status:409});
+  await client.query("UPDATE engagements SET status='active' WHERE id=$1",[engagement.id]);
+  await client.query("UPDATE applications SET status='hired' WHERE id=$1",[engagement.application_id]);
+  await client.query("UPDATE gigs SET status='in_progress' WHERE id=$1",[engagement.gig_id]);
+  await client.query('COMMIT');
+  res.json({engagement:{...engagement,status:'active'},message:'Offer accepted. Your engagement is now active.'});
+ }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not accept offer.'});}finally{client.release();}
 });
 app.get('/api/engagements',auth,async(req,res)=>{
  const field=req.user.role==='organization'?'organization_id':'professional_id';
@@ -107,10 +121,10 @@ app.post('/api/milestones/:id/approve',auth,requireRole('organization'),async(re
   const m=rows[0];if(!m||m.organization_id!==req.user.id)throw Object.assign(new Error('Milestone not found.'),{status:404});
   if(m.status!=='submitted')throw Object.assign(new Error('Only submitted work can be approved.'),{status:409});
   await client.query("UPDATE milestones SET status='approved',approved_at=now() WHERE id=$1",[m.id]);
-  const provider=process.env.PAYMENTS_MODE==='demo'?'demo':'stripe_connect';
-  const paymentStatus=provider==='demo'?'paid_demo':'pending';
+  const provider='demo';
+  const paymentStatus='paid_demo';
   const payment=await client.query('INSERT INTO payments(milestone_id,engagement_id,amount_cents,provider,status) VALUES($1,$2,$3,$4,$5) RETURNING *',[m.id,m.engagement_id,m.amount_cents,provider,paymentStatus]);
-  await client.query('COMMIT');res.json({milestone:{...m,status:'approved'},payment:payment.rows[0],notice:provider==='demo'?'Demo ledger entry only; no money moved.':'Payment queued for Stripe Connect integration.'});
+  await client.query('COMMIT');res.json({milestone:{...m,status:'approved'},payment:payment.rows[0],notice:'Demo ledger entry only; no money moved. Live payment processing is not connected.'});
  }catch(e){await client.query('ROLLBACK');res.status(e.status||500).json({error:e.message||'Could not approve milestone.'});}finally{client.release();}
 });
 app.get('/api/payments',auth,async(req,res)=>{
