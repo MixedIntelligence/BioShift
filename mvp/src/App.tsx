@@ -39,14 +39,14 @@ export default function App() {
       headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) }
     });
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.error?.formErrors?.join(', ') || data.error?.fieldErrors ? 'Please check the fields and try again.' : data.error || 'Request failed.');
+    if (!response.ok) { const detail = typeof data.error === 'string' ? data.error : data.error?.formErrors?.join(', ') || Object.values(data.error?.fieldErrors || {}).flat().join(', ') || 'Please check the fields and try again.'; throw new Error(detail); }
     return data;
   }, [token]);
 
   const refresh = useCallback(async () => {
     if (!user) return;
     const [gigData, engagementData] = await Promise.all([
-      request('/gigs'),
+      user.role === 'organization' ? request('/organizations/gigs') : request('/gigs'),
       request('/engagements')
     ]);
     setGigs(gigData.gigs || []);
