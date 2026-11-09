@@ -11,7 +11,7 @@ The first release focuses on a complete hire-to-delivery transaction between two
 - **Engagements** contain three milestone-based deliverables.
 - **Approvals** create an auditable payment-ledger record.
 
-The included React experience runs in **interactive demo mode** with sample data so the product can be explored without credentials or a database. The Express/PostgreSQL API is the next connected runtime path and includes registration, login, marketplace, applications, offers, milestones, and payment-ledger endpoints.
+The React experience now supports **live API mode**: register or sign in as an organization or professional, discover and post gigs, apply, review applicants, issue offers, accept or decline offers, and move work through milestones. The Express/PostgreSQL API persists the transaction workflow. The database must be configured before live API mode can be used.
 
 ## Stack
 
@@ -29,7 +29,7 @@ npm install
 npm run dev:web
 ```
 
-Open http://localhost:5173.
+Open http://localhost:5173. The Vite development server proxies `/api` requests to `http://localhost:4000`.
 
 ## Run the API
 
@@ -72,6 +72,6 @@ Not yet included: production authentication UI, file storage, chat, e-signatures
 ## Security notes
 
 - Set a unique, high-entropy `JWT_SECRET` in every non-local environment.
-- Configure HTTPS, strict CORS, request rate limits, audit logging, backups, and secret management before public deployment.
+- Set `VITE_API_URL` to the API origin when the frontend and API are deployed separately. Configure `CLIENT_ORIGIN` to the exact frontend origin.\n- Configure HTTPS, strict CORS, request rate limits, audit logging, backups, and secret management before public deployment.
 - Never store bank account or card details in BioShift.
 - The demo UI uses browser local state only. It is not a production identity or payment environment.
