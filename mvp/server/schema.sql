@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS engagements (
   organization_id UUID NOT NULL REFERENCES users(id),
   professional_id UUID NOT NULL REFERENCES users(id),
   agreed_total_cents INTEGER NOT NULL CHECK (agreed_total_cents > 0),
-  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','awaiting_review','completed','cancelled')),
+  status TEXT NOT NULL DEFAULT 'offered' CHECK (status IN ('offered','active','awaiting_review','completed','cancelled')),
   created_at TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
