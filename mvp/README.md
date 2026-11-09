@@ -49,10 +49,11 @@ API health check: http://localhost:4000/api/health
 
 1. Organization publishes an open gig with scope, discipline, location, hourly rate, and estimated hours.
 2. Professional applies once per gig.
-3. Organization issues an offer; the API creates an engagement and a 25/50/25 milestone plan in one database transaction.
-4. Professional starts and submits each milestone.
-5. Organization approves submitted work.
-6. Approval creates a payment ledger entry. In demo mode this is explicitly marked `paid_demo`; it is not a real payment or transfer.
+3. Organization issues an offer; the API creates a pending engagement and a 25/50/25 milestone plan in one database transaction.
+4. Professional explicitly accepts the offer; only then does the engagement become active and the gig move to in progress.
+5. Professional starts and submits each milestone.
+6. Organization approves submitted work.
+7. Approval creates a demo payment-ledger entry. In demo mode this is explicitly marked `paid_demo`; it is not a real payment or transfer.
 
 ## Payments are deliberately not represented as escrow
 
