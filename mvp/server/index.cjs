@@ -61,7 +61,8 @@ app.post('/api/gigs',auth,requireRole('organization'),async(req,res)=>{
   res.status(201).json({gig:rows[0]});
 });
 app.post('/api/gigs/:id/applications',auth,requireRole('professional'),async(req,res)=>{
-  try { const {rows}=await db.query('INSERT INTO applications(gig_id,professional_id,cover_note,proposed_rate_cents) SELECT id,$2,$3,$4 FROM gigs WHERE id=$1 AND status=\'open\' RETURNING *',[req.params.id,req.user.id,String(req.body.coverNote||''),req.body.proposedRateCents||null]); if(!rows[0])return res.status(404).json({error:'Open opportunity not found.'});res.status(201).json({application:rows[0]}); }
+  const parsed=applicationSchema.safeParse(req.body||{}); if(!parsed.success)return res.status(400).json({error:parsed.error.flatten()});
+  try { const {rows}=await db.query('INSERT INTO applications(gig_id,professional_id,cover_note,proposed_rate_cents) SELECT id,$2,$3,$4 FROM gigs WHERE id=$1 AND status=\'open\' RETURNING *',[req.params.id,req.user.id,parsed.data.coverNote,parsed.data.proposedRateCents??null]); if(!rows[0])return res.status(404).json({error:'Open opportunity not found.'});res.status(201).json({application:rows[0]}); }
   catch(e){if(e.code==='23505')return res.status(409).json({error:'You have already applied.'});throw e;}
 });
 app.get('/api/organizations/applications',auth,requireRole('organization'),async(req,res)=>{
