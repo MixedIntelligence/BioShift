@@ -30,7 +30,7 @@ const seedEngagement: Engagement = {
 };
 
 const money = (n: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n);
-const statusClass = (s: string) => s.toLowerCase().replaceAll(' ', '-');
+const statusClass = (s: string) => s.toLowerCase().replace(/\s+/g, '-');
 
 export default function App() {
   const [role, setRole] = useState<Role>('professional');
