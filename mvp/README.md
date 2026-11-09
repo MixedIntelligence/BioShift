@@ -50,7 +50,7 @@ API health check: http://localhost:4000/api/health
 1. Organization publishes an open gig with scope, discipline, location, hourly rate, and estimated hours.
 2. Professional applies once per gig.
 3. Organization issues an offer; the API creates a pending engagement and a 25/50/25 milestone plan in one database transaction.
-4. Professional explicitly accepts the offer; only then does the engagement become active and the gig move to in progress.
+4. Professional explicitly accepts or declines the offer; only acceptance activates the engagement and moves the gig to in progress.
 5. Professional starts and submits each milestone.
 6. Organization approves submitted work.
 7. Approval creates a demo payment-ledger entry. In demo mode this is explicitly marked `paid_demo`; it is not a real payment or transfer.
@@ -58,6 +58,10 @@ API health check: http://localhost:4000/api/health
 ## Payments are deliberately not represented as escrow
 
 The demo does not collect, hold, or transfer real funds. A production marketplace payment flow requires Stripe Connect onboarding, payment collection, verified webhooks, refunds/disputes handling, transfer controls, and legal/accounting review. Stripe Connect's separate charges and transfers model can support a platform charging a buyer and transferring to a connected professional later; it does not make BioShift an escrow provider. Do not enable real payments until the complete flow and obligations have been reviewed.
+
+## Continuous integration
+
+GitHub Actions runs an API syntax check and TypeScript/Vite production build for changes under `mvp/`.
 
 ## MVP boundaries
 
