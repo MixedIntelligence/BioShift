@@ -34,10 +34,10 @@ export default function App() {
   const [coverNote, setCoverNote] = useState('');
 
   const request = useCallback(async (path: string, options: RequestInit = {}) => {
-    const response = await fetch(`${API}/api${path}`, {
-      ...options,
-      headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}), ...(options.headers || {}) }
-    });
+    const headers = new Headers(options.headers);
+    headers.set('Content-Type', 'application/json');
+    if (token) headers.set('Authorization', `Bearer ${token}`);
+    const response = await fetch(`${API}/api${path}`, { ...options, headers });
     const data = await response.json().catch(() => ({}));
     if (!response.ok) { const detail = typeof data.error === 'string' ? data.error : data.error?.formErrors?.join(', ') || Object.values(data.error?.fieldErrors || {}).flat().join(', ') || 'Please check the fields and try again.'; throw new Error(detail); }
     return data;
