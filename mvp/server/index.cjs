@@ -24,7 +24,7 @@ async function auth(req, res, next) {
   } catch { return res.status(401).json({ error: 'Invalid or expired session.' }); }
 }
 const requireRole = role => (req,res,next) => req.user.role === role ? next() : res.status(403).json({error:'This action is not available for your account.'});
-const registerSchema = z.object({ email:z.string().email(), password:z.string().min(10), role:z.enum(['organization','professional']), fullName:z.string().min(2), organizationName:z.string().optional() });
+const registerSchema = z.object({ email:z.string().email(), password:z.string().min(10), role:z.enum(['organization','professional']), fullName:z.string().min(2), organizationName:z.string().optional() }).superRefine((v,ctx)=>{ if(v.role==='organization' && !v.organizationName?.trim()) ctx.addIssue({code:z.ZodIssueCode.custom,path:['organizationName'],message:'Organization name is required.'}); });
 const applicationSchema = z.object({ coverNote:z.string().max(3000).default(''), proposedRateCents:z.number().int().positive().optional() });
 const gigSchema = z.object({ title:z.string().min(5).max(120), description:z.string().min(30).max(5000), discipline:z.string().min(2), location:z.string().default('Remote'), workMode:z.enum(['Remote','On-site','Hybrid']).default('Remote'), hourlyRateCents:z.number().int().positive(), estimatedHours:z.number().int().positive(), skills:z.array(z.string()).default([]) });
 
@@ -50,10 +50,11 @@ app.get('/api/auth/me',auth,(req,res)=>res.json({user:req.user}));
 app.get('/api/gigs', async (req,res)=>{
   const q=String(req.query.q||'').trim();
   const values=[]; let where="g.status='open'";
-  if(q){values.push('%'+q+'%');where+=' AND (g.title ILIKE $1 OR g.description ILIKE $1 OR g.discipline ILIKE $1 OR $1=ANY(g.skills))';}
+  if(q){values.push('%'+q+'%');where+=' AND (g.title ILIKE $1 OR g.description ILIKE $1 OR g.discipline ILIKE $1 OR EXISTS (SELECT 1 FROM unnest(g.skills) skill WHERE skill ILIKE $1))';}
   const {rows}=await db.query(`SELECT g.*,u.organization_name,u.full_name AS organization_contact FROM gigs g JOIN users u ON u.id=g.organization_id WHERE ${where} ORDER BY g.created_at DESC LIMIT 100`,values);
   res.json({gigs:rows});
 });
+app.get('/api/organizations/gigs',auth,requireRole('organization'),async(req,res)=>{ const {rows}=await db.query("SELECT g.*,u.organization_name,u.full_name AS organization_contact FROM gigs g JOIN users u ON u.id=g.organization_id WHERE g.organization_id=$1 ORDER BY g.created_at DESC",[req.user.id]); res.json({gigs:rows}); });
 app.post('/api/gigs',auth,requireRole('organization'),async(req,res)=>{
   const parsed=gigSchema.safeParse(req.body); if(!parsed.success)return res.status(400).json({error:parsed.error.flatten()});
   const v=parsed.data;
@@ -68,6 +69,7 @@ app.post('/api/gigs/:id/applications',auth,requireRole('professional'),async(req
 app.get('/api/organizations/applications',auth,requireRole('organization'),async(req,res)=>{
  const {rows}=await db.query('SELECT a.*,g.title AS gig_title,u.full_name,u.headline,u.skills FROM applications a JOIN gigs g ON g.id=a.gig_id JOIN users u ON u.id=a.professional_id WHERE g.organization_id=$1 ORDER BY a.created_at DESC',[req.user.id]);res.json({applications:rows});
 });
+app.get('/api/my/applications',auth,requireRole('professional'),async(req,res)=>{ const {rows}=await db.query('SELECT a.*,g.title AS gig_title,g.discipline,u.organization_name FROM applications a JOIN gigs g ON g.id=a.gig_id JOIN users u ON u.id=g.organization_id WHERE a.professional_id=$1 ORDER BY a.created_at DESC',[req.user.id]); res.json({applications:rows}); });
 app.post('/api/applications/:id/offer',auth,requireRole('organization'),async(req,res)=>{
  const client=await db.connect();
  try{
