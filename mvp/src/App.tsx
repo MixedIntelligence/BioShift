@@ -7,6 +7,7 @@ type Gig = { id: string; title: string; description: string; discipline: string;
 type Application = { id: string; gig_id: string; professional_id: string; status: string; cover_note: string; gig_title: string; full_name: string; headline?: string; skills?: string[] };
 type Engagement = { id: string; gig_id: string; title: string; discipline: string; counterparty: string; status: string; agreed_total_cents: number };
 type Milestone = { id: string; title: string; description: string; amount_cents: number; status: string; due_date?: string };
+type Payment = { id: string; amount_cents: number; status: string; currency: string; milestone_title: string; gig_title: string; created_at: string; provider: string };
 
 const API = import.meta.env.VITE_API_URL || '';
 const money = (cents: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(cents / 100);
@@ -25,6 +26,7 @@ export default function App() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [engagements, setEngagements] = useState<Engagement[]>([]);
   const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [activeEngagement, setActiveEngagement] = useState<Engagement | null>(null);
   const [selectedGig, setSelectedGig] = useState<Gig | null>(null);
   const [query, setQuery] = useState('');
@@ -45,12 +47,14 @@ export default function App() {
 
   const refresh = useCallback(async () => {
     if (!user) return;
-    const [gigData, engagementData] = await Promise.all([
+    const [gigData, engagementData, paymentData] = await Promise.all([
       user.role === 'organization' ? request('/organizations/gigs') : request('/gigs'),
-      request('/engagements')
+      request('/engagements'),
+      request('/payments')
     ]);
     setGigs(gigData.gigs || []);
     setEngagements(engagementData.engagements || []);
+    setPayments(paymentData.payments || []);
     if (user.role === 'organization') {
       const appData = await request('/organizations/applications');
       setApplications(appData.applications || []);
@@ -84,7 +88,7 @@ export default function App() {
     } catch (e) { flash(e instanceof Error ? e.message : 'Could not sign in.'); }
     finally { setBusy(false); }
   };
-  const signOut = () => { sessionStorage.removeItem('bioshift_token'); setToken(''); setUser(null); setGigs([]); setApplications([]); setEngagements([]); setTab('Discover'); };
+  const signOut = () => { sessionStorage.removeItem('bioshift_token'); setToken(''); setUser(null); setGigs([]); setApplications([]); setEngagements([]); setPayments([]); setTab('Discover'); };
   const run = async (fn: () => Promise<void>) => { setBusy(true); try { await fn(); } catch (e) { flash(e instanceof Error ? e.message : 'Something went wrong.'); } finally { setBusy(false); } };
 
   const postGig = (e: FormEvent) => {
@@ -137,7 +141,7 @@ export default function App() {
   </main>;
 
   const isOrg = user.role === 'organization';
-  const nav = isOrg ? ['Overview', 'My gigs', 'Applicants', 'Engagements', 'Post a gig'] : ['Discover', 'My applications', 'Engagements'];
+  const nav = isOrg ? ['Overview', 'My gigs', 'Applicants', 'Engagements', 'Payments', 'Post a gig'] : ['Discover', 'My applications', 'Engagements', 'Payments'];
   const visibleGigs = gigs.filter(g => [g.title, g.description, g.discipline, g.organization_name, ...(g.skills || [])].join(' ').toLowerCase().includes(query.toLowerCase()));
   return <div className="workspace">
     <aside className="rail"><div className="rail-brand"><span className="brand-mark">b<span>.</span></span><b>BioShift</b></div><div className="rail-caption">WORKSPACE</div><div className="account-chip"><div className="avatar">{user.full_name.slice(0,1).toUpperCase()}</div><div><b>{user.full_name}</b><small>{isOrg ? user.organization_name || 'Organization' : 'STEM Professional'}</small></div></div><div className="rail-caption">WORK</div><nav>{nav.map(n => <button key={n} className={tab === n ? 'active' : ''} onClick={() => setTab(n)}>{n}</button>)}</nav><div className="rail-bottom"><span className="live-dot"/> LIVE API CONNECTED<button className="signout" onClick={signOut}>Sign out ↗</button></div></aside>
@@ -150,6 +154,7 @@ export default function App() {
         {tab === 'Applicants' && isOrg && <><div className="eyebrow">TALENT PIPELINE</div><h1>Applicants.</h1>{applications.map(a => <article className="list-card" key={a.id}><div><h3>{a.full_name}</h3><p>{a.gig_title} · {a.headline || 'STEM professional'}</p><small>{a.cover_note}</small><span className="tag">{a.status}</span></div>{['submitted','shortlisted'].includes(a.status) && <button className="primary" onClick={() => offer(a)}>Send offer →</button>}</article>)}</>}
         {tab === 'My applications' && !isOrg && <><div className="eyebrow">YOUR ACTIVITY</div><h1>My applications.</h1>{applications.map(a => <article className="list-card" key={a.id}><div><h3>{a.gig_title}</h3><p>{a.status}</p></div></article>)}</>}
         {tab === 'Engagements' && <><div className="eyebrow">PROJECT DELIVERY</div><h1>Engagements.</h1>{engagements.map(e => <article className="list-card" key={e.id}><div><h3>{e.title}</h3><p>{e.discipline} · {e.counterparty} · {e.status}</p><b>{money(e.agreed_total_cents)}</b></div><button className="secondary" onClick={() => openEngagement(e)}>Open project →</button>{!isOrg && e.status === 'offered' && <div className="decision"><button className="primary" onClick={() => decideOffer(e,'accept')}>Accept</button><button className="secondary" onClick={() => decideOffer(e,'decline')}>Decline</button></div>}</article>)}</>}
+        {tab === 'Payments' && <><div className="eyebrow">PAYMENT LEDGER</div><h1>Payment history.</h1><p className="lead">A record of approved project milestones. Demo entries do not represent money transferred.</p>{payments.length === 0 ? <div className="empty">No milestone approvals have been recorded yet.</div> : payments.map(p => <article className="list-card" key={p.id}><div><h3>{p.milestone_title}</h3><p>{p.gig_title} · {new Date(p.created_at).toLocaleDateString()}</p><small>{p.provider === 'demo' ? 'Demo ledger entry · no funds moved' : p.provider}</small></div><div className="payment-amount"><b>{money(p.amount_cents)}</b><span className="tag">{p.status === 'paid_demo' ? 'Demo recorded' : p.status}</span></div></article>)}</>}
         {tab === 'Engagement detail' && activeEngagement && <><button className="back" onClick={() => setTab('Engagements')}>← Back to engagements</button><div className="eyebrow">MILESTONE PLAN</div><h1>{activeEngagement.title}</h1><p className="lead">{activeEngagement.counterparty} · {money(activeEngagement.agreed_total_cents)}</p>{milestones.map(m => <article className="list-card" key={m.id}><div><h3>{m.title}</h3><p>{m.status} · {money(m.amount_cents)}</p></div>{!isOrg && m.status === 'upcoming' && <button className="secondary" onClick={() => milestoneAction(m.id,'start')}>Start work</button>}{!isOrg && m.status === 'in_progress' && <button className="primary" onClick={() => milestoneAction(m.id,'submit')}>Submit</button>}{isOrg && m.status === 'submitted' && <button className="primary" onClick={() => milestoneAction(m.id,'approve')}>Approve work</button>}</article>)}</>}
       </section>
     </main>
