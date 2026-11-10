@@ -55,7 +55,7 @@ To run either process separately, use `npm run dev:web` or `npm run dev:api`.
 
 GitHub Actions provisions PostgreSQL and runs an end-to-end transaction test covering registration, gig search, application, offer, acceptance, milestone delivery, demo ledger entries, completion, and offer decline. CI also checks API syntax and builds the frontend.
 
-Run the integration test locally with `npm run test:integration` after setting `DATABASE_URL` to a disposable test database. The test drops and recreates that database's public schema; never point it at a database containing data you need.
+Run the integration test locally with `npm run test:integration` after setting `DATABASE_URL` to a disposable test database. Use a fresh, empty disposable database; the test inserts sample accounts and project data.
 
 ## Deployment
 
