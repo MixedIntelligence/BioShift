@@ -50,7 +50,7 @@ app.get('/api/auth/me',auth,(req,res)=>res.json({user:req.user}));
 app.get('/api/gigs', async (req,res)=>{
   const q=String(req.query.q||'').trim();
   const values=[]; let where="g.status='open'";
-  if(q){values.push('%'+q+'%');where+=' AND (g.title ILIKE $1 OR g.description ILIKE $1 OR g.discipline ILIKE $1 OR EXISTS (SELECT 1 FROM unnest(g.skills) skill WHERE skill ILIKE $1))';}
+  if(q){values.push('%'+q+'%');where+=' AND (g.title ILIKE $1 OR g.description ILIKE $1 OR g.discipline ILIKE $1 OR EXISTS (SELECT 1 FROM unnest(g.skills) AS s(skill) WHERE s.skill ILIKE $1))';}
   const {rows}=await db.query(`SELECT g.*,u.organization_name,u.full_name AS organization_contact FROM gigs g JOIN users u ON u.id=g.organization_id WHERE ${where} ORDER BY g.created_at DESC LIMIT 100`,values);
   res.json({gigs:rows});
 });
@@ -130,7 +130,7 @@ app.post('/api/milestones/:id/start',auth,requireRole('professional'),async(req,
  if(!rows[0])return res.status(409).json({error:'Milestone cannot be started.'});res.json({milestone:rows[0]});
 });
 app.post('/api/milestones/:id/submit',auth,requireRole('professional'),async(req,res)=>{
- const {rows}=await db.query("UPDATE milestones m SET status='submitted',submitted_at=now() FROM engagements e WHERE m.id=$1 AND m.engagement_id=e.id AND e.professional_id=$2 AND e.status='active' AND m.status IN ('in_progress','upcoming') RETURNING m.*",[req.params.id,req.user.id]);
+ const {rows}=await db.query("UPDATE milestones m SET status='submitted',submitted_at=now() FROM engagements e WHERE m.id=$1 AND m.engagement_id=e.id AND e.professional_id=$2 AND e.status='active' AND m.status='in_progress' RETURNING m.*",[req.params.id,req.user.id]);
  if(!rows[0])return res.status(409).json({error:'Milestone cannot be submitted.'});res.json({milestone:rows[0]});
 });
 app.post('/api/milestones/:id/approve',auth,requireRole('organization'),async(req,res)=>{
