@@ -75,8 +75,9 @@ app.post('/api/applications/:id/offer',auth,requireRole('organization'),async(re
  const client=await db.connect();
  try{
   await client.query('BEGIN');
-  const {rows}=await client.query("SELECT a.*,g.organization_id,g.hourly_rate_cents,g.estimated_hours FROM applications a JOIN gigs g ON g.id=a.gig_id WHERE a.id=$1 FOR UPDATE",[req.params.id]);
+  const {rows}=await client.query("SELECT a.*,g.organization_id,g.hourly_rate_cents,g.estimated_hours,g.status AS gig_status FROM applications a JOIN gigs g ON g.id=a.gig_id WHERE a.id=$1 FOR UPDATE",[req.params.id]);
   const a=rows[0];if(!a||a.organization_id!==req.user.id)throw Object.assign(new Error('Application not found.'),{status:404});
+  if(a.gig_status!=='open')throw Object.assign(new Error('This opportunity is no longer open.'),{status:409});
   if(!['submitted','shortlisted'].includes(a.status))throw Object.assign(new Error('Application cannot be offered in its current state.'),{status:409});
   const total=Number(req.body.agreedTotalCents||a.hourly_rate_cents*a.estimated_hours);
   if(!Number.isInteger(total)||total<=0)throw Object.assign(new Error('Invalid agreed amount.'),{status:400});
