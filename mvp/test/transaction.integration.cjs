@@ -43,7 +43,7 @@ async function register(role, email, fullName, organizationName) {
 async function main() {
   client = new Client({ connectionString: process.env.DATABASE_URL });
   await client.connect();
-  await client.query('DROP SCHEMA public CASCADE; CREATE SCHEMA public;');
+  // GitHub Actions provisions a fresh, disposable PostgreSQL database for each run.
   const schema = await readFile(path.join(__dirname, '..', 'server', 'schema.sql'), 'utf8');
   await client.query(schema);
 
