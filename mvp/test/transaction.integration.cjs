@@ -52,6 +52,7 @@ async function main() {
 
   const org = await register('organization', 'lab@example.test', 'Lab Owner', 'Example Research Lab');
   const worker = await register('professional', 'scientist@example.test', 'Sam Scientist');
+  const secondWorker = await register('professional', 'second@example.test', 'Taylor Researcher');
 
   const gigBody = {
     title: 'Electrochemical assay validation',
@@ -73,6 +74,8 @@ async function main() {
     token: worker.token, method: 'POST', body: { coverNote: 'I have relevant assay validation experience.' }
   });
   assert.equal(application.status, 201, JSON.stringify(application.data));
+  const waitingApplication = await api(`/gigs/${posted.data.gig.id}/applications`, { token: secondWorker.token, method: 'POST', body: {} });
+  assert.equal(waitingApplication.status, 201);
   const applicants = await api('/organizations/applications', { token: org.token });
   assert.equal(applicants.status, 200);
   const offer = await api(`/applications/${application.data.application.id}/offer`, { token: org.token, method: 'POST', body: {} });
@@ -109,7 +112,9 @@ async function main() {
   const completed = await api('/engagements', { token: worker.token });
   assert.equal(completed.data.engagements[0].status, 'completed');
   const orgGigs = await api('/organizations/gigs', { token: org.token });
-  assert.equal(orgGigs.data.gigs[0].status, 'completed');
+  assert.equal(orgGigs.data.gigs.find(gig => gig.id === posted.data.gig.id).status, 'completed');
+  const staleOffer = await api(`/applications/${waitingApplication.data.application.id}/offer`, { token: org.token, method: 'POST', body: {} });
+  assert.equal(staleOffer.status, 409, 'completed gigs must not receive new offers');
 
   const secondGig = await api('/gigs', { token: org.token, method: 'POST', body: { ...gigBody, title: 'Microscopy image analysis' } });
   assert.equal(secondGig.status, 201);
