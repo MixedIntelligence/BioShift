@@ -1,0 +1,49 @@
+name: BioShift MVP CI
+
+on:
+  push:
+    paths:
+      - "mvp/**"
+      - ".github/workflows/bioshift-mvp.yml"
+  pull_request:
+    paths:
+      - "mvp/**"
+      - ".github/workflows/bioshift-mvp.yml"
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: bioshift_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d bioshift_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/bioshift_test
+      JWT_SECRET: integration-test-secret-at-least-32-characters
+      NODE_ENV: test
+    defaults:
+      run:
+        working-directory: mvp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Check API syntax
+        run: node --check server/index.cjs
+      - name: Run PostgreSQL transaction integration test
+        run: npm run test:integration
+      - name: Build frontend
+        run: npm run build
