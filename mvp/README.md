@@ -4,74 +4,77 @@ A fresh, isolated implementation of the BioShift STEM gig marketplace. This live
 
 ## Product slice
 
-The first release focuses on a complete hire-to-delivery transaction between two account types:
-
-- **Organizations** post specialized STEM gigs, review applications, and issue offers.
-- **Professionals** discover opportunities, apply, and manage active engagements.
-- **Engagements** contain three milestone-based deliverables.
-- **Approvals** create an auditable payment-ledger record.
-
-The React experience now supports **live API mode**: register or sign in as an organization or professional, discover and post gigs, apply, review applicants, issue offers, accept or decline offers, and move work through milestones. The Express/PostgreSQL API persists the transaction workflow. The database must be configured before live API mode can be used.
+- **Organizations** register, post specialized STEM gigs, review applications, and issue offers.
+- **Professionals** register, discover opportunities, apply, and manage engagements.
+- **Offers** require explicit acceptance or decline by the professional.
+- **Engagements** contain three milestone deliverables (25/50/25 of the agreed amount).
+- **Milestones** move through upcoming → in progress → submitted → approved.
+- **Approvals** create demo payment-ledger records; no real money moves.
+- The engagement and gig are marked completed after all milestones are approved.
 
 ## Stack
 
 - React 18 + TypeScript + Vite
-- Express API
-- PostgreSQL
+- Express API + PostgreSQL
 - JWT sessions + bcrypt password hashing
 - Zod request validation
 
-## Run the demo
+## Local setup
+
+Requirements: Node.js 20+ and PostgreSQL.
 
 ```bash
 cd mvp
 npm install
-npm run dev:web
+cp .env.example .env
 ```
 
-Open http://localhost:5173. The Vite development server proxies `/api` requests to `http://localhost:4000`.
-
-## Run the API
-
-Create a PostgreSQL database, then:
+Set `DATABASE_URL` and a long random `JWT_SECRET` in `.env`, then initialize the database:
 
 ```bash
-cp .env.example .env
-# Set DATABASE_URL and a long random JWT_SECRET
 psql "$DATABASE_URL" -f server/schema.sql
-npm install
-npm run dev:api
+npm run dev
 ```
 
-API health check: http://localhost:4000/api/health
+The web app runs at http://localhost:5173 and the API at http://localhost:4000. Vite proxies `/api` requests to the local API. API health check: http://localhost:4000/api/health.
 
-## Transaction model
+To run either process separately, use `npm run dev:web` or `npm run dev:api`.
 
-1. Organization publishes an open gig with scope, discipline, location, hourly rate, and estimated hours.
+## Transaction lifecycle
+
+1. Organization publishes an open gig.
 2. Professional applies once per gig.
-3. Organization issues an offer; the API creates a pending engagement and a 25/50/25 milestone plan in one database transaction.
-4. Professional explicitly accepts or declines the offer; only acceptance activates the engagement and moves the gig to in progress.
-5. Professional starts and submits each milestone.
+3. Organization issues an offer. The API creates a pending engagement and a 25/50/25 milestone plan in one database transaction.
+4. Professional explicitly accepts or declines. Only acceptance activates the engagement and moves the gig to in progress.
+5. Professional starts and submits milestones.
 6. Organization approves submitted work.
-7. Approval creates a demo payment-ledger entry. In demo mode this is explicitly marked `paid_demo`; it is not a real payment or transfer.\n8. When all milestones are approved, the engagement and gig are marked completed.
-
-## Payments are deliberately not represented as escrow
-
-The demo does not collect, hold, or transfer real funds. A production marketplace payment flow requires Stripe Connect onboarding, payment collection, verified webhooks, refunds/disputes handling, transfer controls, and legal/accounting review. Stripe Connect's separate charges and transfers model can support a platform charging a buyer and transferring to a connected professional later; it does not make BioShift an escrow provider. Do not enable real payments until the complete flow and obligations have been reviewed.
+7. Each approval creates a `paid_demo` ledger entry. It is not a real payment or transfer.
+8. The engagement and gig are marked completed when all milestones are approved.
 
 ## Continuous integration
 
-GitHub Actions runs an API syntax check and TypeScript/Vite production build for changes under `mvp/`.
+GitHub Actions provisions PostgreSQL and runs an end-to-end transaction test covering registration, gig search, application, offer, acceptance, milestone delivery, demo ledger entries, completion, and offer decline. CI also checks API syntax and builds the frontend.
 
-## MVP boundaries
+Run the integration test locally with `npm run test:integration` after setting `DATABASE_URL` to a disposable test database. The test drops and recreates that database's public schema; never point it at a database containing data you need.
 
-Included: two-sided marketplace, gig creation, applications, offers, engagements, milestone progression, approval, and payment ledger.
+## Deployment
 
-Not yet included: production authentication UI, file storage, chat, e-signatures, KYC/credential verification, live Stripe Connect transfers, tax reporting, dispute handling, and automated matching.
+For Vercel, set the project Root Directory to `mvp`. The `mvp/vercel.json` configuration builds the Vite app from that directory. Leave the repository-root Vercel configuration untouched because it belongs to the legacy app.
+
+When frontend and API are deployed separately:
+- Set `VITE_API_URL` to the API origin at frontend build time.
+- Set `CLIENT_ORIGIN` to the exact frontend origin on the API.
+- Configure HTTPS and a production-grade PostgreSQL database.
+
+## Payments and production boundaries
+
+The demo does not collect, hold, or transfer real funds. A production marketplace payment flow requires Stripe Connect onboarding, payment collection, verified webhooks, refunds/disputes handling, transfer controls, and legal/accounting review. Do not enable real payments until the complete flow and obligations have been reviewed.
+
+Not yet included: account recovery, production-grade identity controls, file storage, chat, e-signatures, KYC/credential verification, live Stripe Connect transfers, tax reporting, dispute handling, automated matching, rate limiting, audit logging, and production observability.
 
 ## Security notes
 
 - Set a unique, high-entropy `JWT_SECRET` in every non-local environment.
-- For Vercel, set the project Root Directory to `mvp`; `mvp/vercel.json` builds the Vite app from that directory. The repository-root Vercel config belongs to the legacy app and should remain untouched.\n- Set `VITE_API_URL` to the API origin when the frontend and API are deployed separately. Configure `CLIENT_ORIGIN` to the exact frontend origin.\n- Configure HTTPS, strict CORS, request rate limits, audit logging, backups, and secret management before public deployment.
+- Configure strict CORS, request rate limits, audit logging, backups, and secret management before public deployment.
 - Never store bank account or card details in BioShift.
-- The demo UI uses browser local state only. It is not a production identity or payment environment.
+- The app is an early MVP, not a production identity or payment environment.
