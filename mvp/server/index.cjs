@@ -1,4 +1,5 @@
 require('dotenv').config();
+require('express-async-errors');
 const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
@@ -154,7 +155,7 @@ app.post('/api/milestones/:id/approve',auth,requireRole('organization'),async(re
 });
 app.get('/api/payments',auth,async(req,res)=>{
  const field=req.user.role==='organization'?'e.organization_id':'e.professional_id';
- const {rows}=await db.query(`SELECT p.*,m.title AS milestone_title,g.title AS gig_title FROM payments p JOIN milestones m ON m.id=p.milestone_id JOIN engagements e ON e.id=p.engagement_id JOIN gigs g ON g.id=e.gig_id WHERE e.${field}=$1 ORDER BY p.created_at DESC`,[req.user.id]);
+ const {rows}=await db.query(`SELECT p.*,m.title AS milestone_title,g.title AS gig_title FROM payments p JOIN milestones m ON m.id=p.milestone_id JOIN engagements e ON e.id=p.engagement_id JOIN gigs g ON g.id=e.gig_id WHERE ${field}=$1 ORDER BY p.created_at DESC`,[req.user.id]);
  res.json({payments:rows});
 });
 
